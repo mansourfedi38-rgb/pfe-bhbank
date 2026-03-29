@@ -1,2 +1,45 @@
-<h1>Login Page</h1>
-<p>This is the login page.</p>
+<div class="login-page">
+  <div class="login-box">
+    <div class="login-header">
+      <h1>BH Bank Energy Platform</h1>
+      <p>Sign in to access the smart energy management dashboard.</p>
+    </div>
+
+    <form class="login-form" (ngSubmit)="goToDashboard()">
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input
+          id="email"
+          type="email"
+          placeholder="Enter your email address"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          placeholder="Enter your password"
+          required
+        />
+      </div>
+
+      <div class="form-options">
+        <label class="remember-me">
+          <input type="checkbox" />
+          <span>Remember me</span>
+        </label>
+
+        <a href="#" class="forgot-password">Forgot password?</a>
+      </div>
+
+      <button type="submit" class="login-btn">Sign In</button>
+    </form>
+
+    <div class="login-footer">
+      <p>Secure access for authorized users only.</p>
+    </div>
+  </div>
+</div>
