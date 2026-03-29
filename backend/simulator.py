@@ -37,7 +37,10 @@ def send_data():
 
         try:
             response = requests.post(API_URL, json=data)
+
             print(f"Sent to agency {agency_id}: {response.status_code}")
+            print("Response:", response.text)
+            print("-----------")
         except Exception as e:
             print("Error:", e)
 
