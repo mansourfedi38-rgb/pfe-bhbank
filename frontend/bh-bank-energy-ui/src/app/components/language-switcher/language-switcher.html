@@ -1,0 +1,15 @@
+<div class="language-switcher" [attr.dir]="selectedLanguage === 'ar' ? 'rtl' : 'ltr'">
+  <label for="languageSelect">{{ 'languageSelector.label' | translate }}</label>
+
+  <select
+    id="languageSelect"
+    [ngModel]="selectedLanguage"
+    (ngModelChange)="onLanguageChange($event)"
+  >
+    <option value="en">{{ 'languageSelector.english' | translate }}</option>
+    <option value="fr">{{ 'languageSelector.french' | translate }}</option>
+    <option value="ar">{{ 'languageSelector.arabic' | translate }}</option>
+    <option value="de">{{ 'languageSelector.german' | translate }}</option>
+  </select>
+</div>
+

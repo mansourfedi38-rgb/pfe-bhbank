@@ -1,0 +1,57 @@
+{
+  "languageSelector": {
+    "label": "Langue",
+    "english": "Anglais",
+    "french": "Français",
+    "arabic": "Arabe",
+    "german": "Allemand"
+  },
+  "navigation": {
+    "brand": "BH Bank",
+    "dashboard": "Tableau de bord",
+    "sensors": "Capteurs",
+    "energyUsage": "Consommation énergétique",
+    "reports": "Rapports",
+    "settings": "Paramètres",
+    "logout": "Déconnexion"
+  },
+  "login": {
+    "title": "Plateforme d'énergie BH Bank",
+    "subtitle": "Connectez-vous pour accéder au tableau de bord de gestion énergétique.",
+    "emailLabel": "Adresse e-mail",
+    "emailPlaceholder": "Entrez votre adresse e-mail",
+    "passwordLabel": "Mot de passe",
+    "passwordPlaceholder": "Entrez votre mot de passe",
+    "rememberMe": "Se souvenir de moi",
+    "forgotPassword": "Mot de passe oublié ?",
+    "signIn": "Se connecter",
+    "footer": "Accès sécurisé réservé aux utilisateurs autorisés."
+  },
+  "dashboard": {
+    "title": "Tableau de bord de gestion énergétique",
+    "subtitle": "Bienvenue sur la plateforme intelligente de surveillance BH Bank.",
+    "totalAgencies": "Nombre total d’agences",
+    "activeSensors": "Capteurs actifs",
+    "avgTemperature": "Température moyenne",
+    "energyStatus": "Statut énergétique"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "subtitle": "Gérez les préférences de la plateforme et la configuration utilisateur.",
+    "notifications": "Notifications",
+    "notificationsHelp": "Alertes par e-mail en cas de forte consommation d’énergie et de problèmes de capteurs.",
+    "enabled": "Activé",
+    "disabled": "Désactivé",
+    "theme": "Thème",
+    "themeHelp": "Apparence actuelle de l’interface pour le tableau de bord de la plateforme.",
+    "defaultTheme": "Par défaut",
+    "lightTheme": "Clair",
+    "darkTheme": "Sombre",
+    "language": "Langue",
+    "languageHelp": "Sélectionnez la langue préférée de la plateforme.",
+    "security": "Sécurité",
+    "securityHelp": "Mettez à jour le mot de passe et gérez l’accès au compte.",
+    "manage": "Gérer"
+  }
+}
+

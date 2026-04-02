@@ -1,25 +1,38 @@
 import { Component } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { LanguageService } from '../../services/language';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+
+import type { SupportedLanguageCode } from '../../language/supported-languages';
+import { supportedLanguages } from '../../language/supported-languages';
 
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, FormsModule],
+  imports: [RouterLink, RouterLinkActive, FormsModule, TranslateModule],
   templateUrl: './settings.html',
   styleUrl: './settings.scss'
 })
 export class SettingsComponent {
-  notifications = 'Enabled';
-  theme = 'Default';
-  language = 'English';
+  notificationsEnabled: 'enabled' | 'disabled' = 'enabled';
+  theme: 'default' | 'light' | 'dark' = 'default';
+
+  // App UI language
+  selectedLanguage: SupportedLanguageCode = 'en';
+
+  readonly supported = supportedLanguages;
 
   constructor(
     private router: Router,
-    public languageService: LanguageService
-  ) {
-    this.language = this.languageService.currentLanguage;
+    private translate: TranslateService
+  ) {}
+
+  ngOnInit(): void {
+    const stored =
+      typeof localStorage !== 'undefined'
+        ? (localStorage.getItem('language') as SupportedLanguageCode | null)
+        : null;
+    this.selectedLanguage = stored ?? 'en';
   }
 
   logout() {
@@ -30,7 +43,23 @@ export class SettingsComponent {
     alert('Security settings page will be added later.');
   }
 
-  changeLanguage() {
-    this.languageService.setLanguage(this.language);
+  onLanguageChange(lang: SupportedLanguageCode | string) {
+    const safeLang = supportedLanguages.includes(lang as SupportedLanguageCode)
+      ? (lang as SupportedLanguageCode)
+      : 'en';
+    this.selectedLanguage = safeLang;
+    this.translate.use(safeLang);
+
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('language', safeLang);
+    }
+
+    this.applyDirection(safeLang);
+  }
+
+  private applyDirection(lang: SupportedLanguageCode) {
+    if (typeof document === 'undefined') return;
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
   }
 }

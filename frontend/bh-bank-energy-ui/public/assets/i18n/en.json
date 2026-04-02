@@ -1,0 +1,57 @@
+{
+  "languageSelector": {
+    "label": "Language",
+    "english": "English",
+    "french": "French",
+    "arabic": "Arabic",
+    "german": "German"
+  },
+  "navigation": {
+    "brand": "BH Bank",
+    "dashboard": "Dashboard",
+    "sensors": "Sensors",
+    "energyUsage": "Energy Usage",
+    "reports": "Reports",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "login": {
+    "title": "BH Bank Energy Platform",
+    "subtitle": "Sign in to access the smart energy management dashboard.",
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "Enter your email address",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot password?",
+    "signIn": "Sign In",
+    "footer": "Secure access for authorized users only."
+  },
+  "dashboard": {
+    "title": "Energy Management Dashboard",
+    "subtitle": "Welcome to the BH Bank smart monitoring platform.",
+    "totalAgencies": "Total Agencies",
+    "activeSensors": "Active Sensors",
+    "avgTemperature": "Average Temperature",
+    "energyStatus": "Energy Status"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage platform preferences and user configuration.",
+    "notifications": "Notifications",
+    "notificationsHelp": "Email alerts for high energy usage and sensor issues.",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "theme": "Theme",
+    "themeHelp": "Current interface appearance for the platform dashboard.",
+    "defaultTheme": "Default",
+    "lightTheme": "Light",
+    "darkTheme": "Dark",
+    "language": "Language",
+    "languageHelp": "Select the preferred platform language.",
+    "security": "Security",
+    "securityHelp": "Update password and manage account access settings.",
+    "manage": "Manage"
+  }
+}
+

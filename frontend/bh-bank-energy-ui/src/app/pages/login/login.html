@@ -1,27 +1,27 @@
 <div class="login-page">
   <div class="login-box">
     <div class="login-header">
-      <h1>BH Bank Energy Platform</h1>
-      <p>Sign in to access the smart energy management dashboard.</p>
+      <h1>{{ 'login.title' | translate }}</h1>
+      <p>{{ 'login.subtitle' | translate }}</p>
     </div>
 
     <form class="login-form" (ngSubmit)="goToDashboard()">
       <div class="form-group">
-        <label for="email">Email Address</label>
+        <label for="email">{{ 'login.emailLabel' | translate }}</label>
         <input
           id="email"
           type="email"
-          placeholder="Enter your email address"
+          [attr.placeholder]="'login.emailPlaceholder' | translate"
           required
         />
       </div>
 
       <div class="form-group">
-        <label for="password">Password</label>
+        <label for="password">{{ 'login.passwordLabel' | translate }}</label>
         <input
           id="password"
           type="password"
-          placeholder="Enter your password"
+          [attr.placeholder]="'login.passwordPlaceholder' | translate"
           required
         />
       </div>
@@ -29,17 +29,17 @@
       <div class="form-options">
         <label class="remember-me">
           <input type="checkbox" />
-          <span>Remember me</span>
+          <span>{{ 'login.rememberMe' | translate }}</span>
         </label>
 
-        <a href="#" class="forgot-password">Forgot password?</a>
+        <a href="#" class="forgot-password">{{ 'login.forgotPassword' | translate }}</a>
       </div>
 
-      <button type="submit" class="login-btn">Sign In</button>
+      <button type="submit" class="login-btn">{{ 'login.signIn' | translate }}</button>
     </form>
 
     <div class="login-footer">
-      <p>Secure access for authorized users only.</p>
+      <p>{{ 'login.footer' | translate }}</p>
     </div>
   </div>
 </div>

@@ -1,0 +1,57 @@
+{
+  "languageSelector": {
+    "label": "اللغة",
+    "english": "الإنجليزية",
+    "french": "الفرنسية",
+    "arabic": "العربية",
+    "german": "الألمانية"
+  },
+  "navigation": {
+    "brand": "BH Bank",
+    "dashboard": "لوحة التحكم",
+    "sensors": "المستشعرات",
+    "energyUsage": "استهلاك الطاقة",
+    "reports": "التقارير",
+    "settings": "الإعدادات",
+    "logout": "تسجيل الخروج"
+  },
+  "login": {
+    "title": "منصة طاقة بنك BH",
+    "subtitle": "سجّل الدخول للوصول إلى لوحة إدارة الطاقة الذكية.",
+    "emailLabel": "عنوان البريد الإلكتروني",
+    "emailPlaceholder": "أدخل عنوان بريدك الإلكتروني",
+    "passwordLabel": "كلمة المرور",
+    "passwordPlaceholder": "أدخل كلمة المرور",
+    "rememberMe": "تذكرني",
+    "forgotPassword": "هل نسيت كلمة المرور؟",
+    "signIn": "تسجيل الدخول",
+    "footer": "وصول آمن للمستخدمين المصرح لهم فقط."
+  },
+  "dashboard": {
+    "title": "لوحة إدارة الطاقة",
+    "subtitle": "مرحبًا بك في منصة المراقبة الذكية الخاصة ببنك BH.",
+    "totalAgencies": "إجمالي عدد الوكالات",
+    "activeSensors": "المستشعرات النشطة",
+    "avgTemperature": "متوسط درجة الحرارة",
+    "energyStatus": "حالة الطاقة"
+  },
+  "settings": {
+    "title": "الإعدادات",
+    "subtitle": "إدارة تفضيلات المنصة وإعدادات المستخدم.",
+    "notifications": "الإشعارات",
+    "notificationsHelp": "تنبيهات البريد الإلكتروني عند ارتفاع استهلاك الطاقة ومشكلات المستشعرات.",
+    "enabled": "مفعل",
+    "disabled": "معطل",
+    "theme": "المظهر",
+    "themeHelp": "المظهر الحالي لواجهة لوحة التحكم.",
+    "defaultTheme": "افتراضي",
+    "lightTheme": "فاتح",
+    "darkTheme": "داكن",
+    "language": "اللغة",
+    "languageHelp": "اختر اللغة المفضلة للمنصة.",
+    "security": "الأمان",
+    "securityHelp": "تحديث كلمة المرور وإدارة إعدادات الوصول إلى الحساب.",
+    "manage": "إدارة"
+  }
+}
+

@@ -1,54 +1,54 @@
 <div class="dashboard-page">
   <aside class="sidebar">
-    <h2>BH Bank</h2>
+    <h2>{{ 'navigation.brand' | translate }}</h2>
 
     <ul>
       <li>
-        <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+        <a routerLink="/dashboard" routerLinkActive="active">{{ 'navigation.dashboard' | translate }}</a>
       </li>
       <li>
-        <a routerLink="/sensors" routerLinkActive="active">Sensors</a>
+        <a routerLink="/sensors" routerLinkActive="active">{{ 'navigation.sensors' | translate }}</a>
       </li>
       <li>
-        <a routerLink="/energy-usage" routerLinkActive="active">Energy Usage</a>
+        <a routerLink="/energy-usage" routerLinkActive="active">{{ 'navigation.energyUsage' | translate }}</a>
       </li>
       <li>
-        <a routerLink="/reports" routerLinkActive="active">Reports</a>
+        <a routerLink="/reports" routerLinkActive="active">{{ 'navigation.reports' | translate }}</a>
       </li>
       <li>
-        <a routerLink="/settings" routerLinkActive="active">Settings</a>
+        <a routerLink="/settings" routerLinkActive="active">{{ 'navigation.settings' | translate }}</a>
       </li>
     </ul>
 
     <div class="logout">
-      <button (click)="logout()">Logout</button>
+      <button (click)="logout()">{{ 'navigation.logout' | translate }}</button>
     </div>
   </aside>
 
   <main class="main-content">
     <header class="topbar">
-      <h1>Energy Management Dashboard</h1>
-      <p>Welcome to the BH Bank smart monitoring platform.</p>
+      <h1>{{ 'dashboard.title' | translate }}</h1>
+      <p>{{ 'dashboard.subtitle' | translate }}</p>
     </header>
 
     <section class="cards">
       <div class="card">
-        <h3>Total Agencies</h3>
+        <h3>{{ 'dashboard.totalAgencies' | translate }}</h3>
         <p>12</p>
       </div>
 
       <div class="card">
-        <h3>Active Sensors</h3>
+        <h3>{{ 'dashboard.activeSensors' | translate }}</h3>
         <p>48</p>
       </div>
 
       <div class="card">
-        <h3>Average Temperature</h3>
+        <h3>{{ 'dashboard.avgTemperature' | translate }}</h3>
         <p>22°C</p>
       </div>
 
       <div class="card">
-        <h3>Energy Status</h3>
+        <h3>{{ 'dashboard.energyStatus' | translate }}</h3>
         <p>Optimized</p>
       </div>
     </section>

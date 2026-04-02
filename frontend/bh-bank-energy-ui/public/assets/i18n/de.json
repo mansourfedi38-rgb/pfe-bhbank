@@ -1,0 +1,57 @@
+{
+  "languageSelector": {
+    "label": "Sprache",
+    "english": "Englisch",
+    "french": "Französisch",
+    "arabic": "Arabisch",
+    "german": "Deutsch"
+  },
+  "navigation": {
+    "brand": "BH Bank",
+    "dashboard": "Dashboard",
+    "sensors": "Sensoren",
+    "energyUsage": "Energieverbrauch",
+    "reports": "Berichte",
+    "settings": "Einstellungen",
+    "logout": "Abmelden"
+  },
+  "login": {
+    "title": "BH Bank Energieplattform",
+    "subtitle": "Melden Sie sich an, um das intelligente Energieverwaltungs-Dashboard zu nutzen.",
+    "emailLabel": "E-Mail-Adresse",
+    "emailPlaceholder": "Geben Sie Ihre E-Mail-Adresse ein",
+    "passwordLabel": "Passwort",
+    "passwordPlaceholder": "Geben Sie Ihr Passwort ein",
+    "rememberMe": "Angemeldet bleiben",
+    "forgotPassword": "Passwort vergessen?",
+    "signIn": "Anmelden",
+    "footer": "Sicherer Zugriff nur für autorisierte Benutzer."
+  },
+  "dashboard": {
+    "title": "Energieverwaltungs-Dashboard",
+    "subtitle": "Willkommen auf der intelligenten Überwachungsplattform der BH Bank.",
+    "totalAgencies": "Anzahl der Standorte",
+    "activeSensors": "Aktive Sensoren",
+    "avgTemperature": "Durchschnittstemperatur",
+    "energyStatus": "Energie-Status"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "subtitle": "Verwalten Sie Plattformpräferenzen und Benutzereinstellungen.",
+    "notifications": "Benachrichtigungen",
+    "notificationsHelp": "E-Mail-Benachrichtigungen bei hohem Energieverbrauch und Sensorproblemen.",
+    "enabled": "Aktiviert",
+    "disabled": "Deaktiviert",
+    "theme": "Design",
+    "themeHelp": "Aktuelles Erscheinungsbild der Plattform für das Dashboard.",
+    "defaultTheme": "Standard",
+    "lightTheme": "Hell",
+    "darkTheme": "Dunkel",
+    "language": "Sprache",
+    "languageHelp": "Wählen Sie die bevorzugte Sprache der Plattform.",
+    "security": "Sicherheit",
+    "securityHelp": "Passwort aktualisieren und Kontozugriff verwalten.",
+    "manage": "Verwalten"
+  }
+}
+
