@@ -52,6 +52,35 @@
     "security": "Sicherheit",
     "securityHelp": "Passwort aktualisieren und Kontozugriff verwalten.",
     "manage": "Verwalten"
+  },
+  "sensors": {
+    "title": "Sensorüberwachung",
+    "subtitle": "Verfolgen Sie Temperatur, Luftfeuchtigkeit und Sensorstatus in den Filialen der BH Bank.",
+    "temperatureSensor": "Temperatursensor",
+    "humiditySensor": "Feuchtigkeitssensor",
+    "airQuality": "Luftqualität",
+    "airQualityNormal": "Normal",
+    "systemStatus": "Systemstatus",
+    "systemOnline": "Online"
+  },
+  "energyUsage": {
+    "title": "Überblick über den Energieverbrauch",
+    "subtitle": "Überwachen Sie den Energieverbrauch und die Optimierung in den Filialen der BH Bank.",
+    "todayConsumption": "Verbrauch heute",
+    "weeklyConsumption": "Wochenverbrauch",
+    "monthlyAverage": "Monatsdurchschnitt",
+    "optimizationRate": "Optimierungsrate"
+  },
+  "reports": {
+    "title": "Berichte und Analysen",
+    "subtitle": "Überprüfen Sie betriebliche Zusammenfassungen und Energieberichte der BH-Bank-Filialen.",
+    "dailyReport": "Tagesbericht",
+    "weeklyReport": "Wochenbericht",
+    "monthlyAnalysis": "Monatsanalyse",
+    "performanceScore": "Leistungskennzahl",
+    "available": "Verfügbar",
+    "generated": "Erstellt",
+    "updated": "Aktualisiert"
   }
 }
 

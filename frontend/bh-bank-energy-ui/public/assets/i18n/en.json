@@ -52,6 +52,35 @@
     "security": "Security",
     "securityHelp": "Update password and manage account access settings.",
     "manage": "Manage"
+  },
+  "sensors": {
+    "title": "Sensors Monitoring",
+    "subtitle": "Track temperature, humidity, and sensor status across BH Bank agencies.",
+    "temperatureSensor": "Temperature Sensor",
+    "humiditySensor": "Humidity Sensor",
+    "airQuality": "Air Quality",
+    "airQualityNormal": "Normal",
+    "systemStatus": "System Status",
+    "systemOnline": "Online"
+  },
+  "energyUsage": {
+    "title": "Energy Usage Overview",
+    "subtitle": "Monitor energy consumption and optimization across BH Bank agencies.",
+    "todayConsumption": "Today Consumption",
+    "weeklyConsumption": "Weekly Consumption",
+    "monthlyAverage": "Monthly Average",
+    "optimizationRate": "Optimization Rate"
+  },
+  "reports": {
+    "title": "Reports & Analytics",
+    "subtitle": "Review operational summaries and energy performance reports for BH Bank agencies.",
+    "dailyReport": "Daily Report",
+    "weeklyReport": "Weekly Report",
+    "monthlyAnalysis": "Monthly Analysis",
+    "performanceScore": "Performance Score",
+    "available": "Available",
+    "generated": "Generated",
+    "updated": "Updated"
   }
 }
 

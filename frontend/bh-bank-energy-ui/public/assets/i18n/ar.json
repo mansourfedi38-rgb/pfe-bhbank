@@ -52,6 +52,35 @@
     "security": "الأمان",
     "securityHelp": "تحديث كلمة المرور وإدارة إعدادات الوصول إلى الحساب.",
     "manage": "إدارة"
+  },
+  "sensors": {
+    "title": "مراقبة المستشعرات",
+    "subtitle": "تابع درجة الحرارة والرطوبة وحالة المستشعرات عبر وكالات بنك BH.",
+    "temperatureSensor": "مستشعر الحرارة",
+    "humiditySensor": "مستشعر الرطوبة",
+    "airQuality": "جودة الهواء",
+    "airQualityNormal": "طبيعية",
+    "systemStatus": "حالة النظام",
+    "systemOnline": "متصل"
+  },
+  "energyUsage": {
+    "title": "نظرة عامة على استهلاك الطاقة",
+    "subtitle": "راقب استهلاك الطاقة وعمليات التحسين عبر وكالات بنك BH.",
+    "todayConsumption": "استهلاك اليوم",
+    "weeklyConsumption": "استهلاك الأسبوع",
+    "monthlyAverage": "المتوسط الشهري",
+    "optimizationRate": "نسبة التحسين"
+  },
+  "reports": {
+    "title": "التقارير والتحليلات",
+    "subtitle": "راجع الملخصات التشغيلية وتقارير أداء الطاقة الخاصة بوكالات بنك BH.",
+    "dailyReport": "تقرير يومي",
+    "weeklyReport": "تقرير أسبوعي",
+    "monthlyAnalysis": "تحليل شهري",
+    "performanceScore": "مؤشر الأداء",
+    "available": "متاح",
+    "generated": "تم إنشاؤه",
+    "updated": "محدّث"
   }
 }
 

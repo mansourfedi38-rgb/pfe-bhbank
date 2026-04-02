@@ -1,54 +1,54 @@
 <div class="energy-page">
   <aside class="sidebar">
-    <h2>BH Bank</h2>
+    <h2>{{ 'navigation.brand' | translate }}</h2>
 
     <ul>
       <li>
-        <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+        <a routerLink="/dashboard" routerLinkActive="active">{{ 'navigation.dashboard' | translate }}</a>
       </li>
       <li>
-        <a routerLink="/sensors" routerLinkActive="active">Sensors</a>
+        <a routerLink="/sensors" routerLinkActive="active">{{ 'navigation.sensors' | translate }}</a>
       </li>
       <li>
-        <a routerLink="/energy-usage" routerLinkActive="active">Energy Usage</a>
+        <a routerLink="/energy-usage" routerLinkActive="active">{{ 'navigation.energyUsage' | translate }}</a>
       </li>
       <li>
-        <a routerLink="/reports" routerLinkActive="active">Reports</a>
+        <a routerLink="/reports" routerLinkActive="active">{{ 'navigation.reports' | translate }}</a>
       </li>
       <li>
-        <a routerLink="/settings" routerLinkActive="active">Settings</a>
+        <a routerLink="/settings" routerLinkActive="active">{{ 'navigation.settings' | translate }}</a>
       </li>
     </ul>
 
     <div class="logout">
-      <button (click)="logout()">Logout</button>
+      <button (click)="logout()">{{ 'navigation.logout' | translate }}</button>
     </div>
   </aside>
 
   <main class="main-content">
     <header class="topbar">
-      <h1>Energy Usage Overview</h1>
-      <p>Monitor energy consumption and optimization across BH Bank agencies.</p>
+      <h1>{{ 'energyUsage.title' | translate }}</h1>
+      <p>{{ 'energyUsage.subtitle' | translate }}</p>
     </header>
 
     <section class="cards">
       <div class="card">
-        <h3>Today Consumption</h3>
+        <h3>{{ 'energyUsage.todayConsumption' | translate }}</h3>
         <p>245 kWh</p>
       </div>
 
       <div class="card">
-        <h3>Weekly Consumption</h3>
+        <h3>{{ 'energyUsage.weeklyConsumption' | translate }}</h3>
         <p>1,620 kWh</p>
       </div>
 
       <div class="card">
-        <h3>Monthly Average</h3>
+        <h3>{{ 'energyUsage.monthlyAverage' | translate }}</h3>
         <p>6,840 kWh</p>
       </div>
 
       <div class="card">
-        <h3>Optimization Rate</h3>
+        <h3>{{ 'energyUsage.optimizationRate' | translate }}</h3>
         <p>18%</p>
       </div>
     </section>

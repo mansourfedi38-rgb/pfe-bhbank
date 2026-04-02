@@ -52,6 +52,35 @@
     "security": "Sécurité",
     "securityHelp": "Mettez à jour le mot de passe et gérez l’accès au compte.",
     "manage": "Gérer"
+  },
+  "sensors": {
+    "title": "Surveillance des capteurs",
+    "subtitle": "Suivez la température, l’humidité et l’état des capteurs dans les agences BH Bank.",
+    "temperatureSensor": "Capteur de température",
+    "humiditySensor": "Capteur d’humidité",
+    "airQuality": "Qualité de l’air",
+    "airQualityNormal": "Normale",
+    "systemStatus": "État du système",
+    "systemOnline": "En ligne"
+  },
+  "energyUsage": {
+    "title": "Vue d’ensemble de la consommation énergétique",
+    "subtitle": "Surveillez la consommation d’énergie et l’optimisation dans les agences BH Bank.",
+    "todayConsumption": "Consommation du jour",
+    "weeklyConsumption": "Consommation hebdomadaire",
+    "monthlyAverage": "Moyenne mensuelle",
+    "optimizationRate": "Taux d’optimisation"
+  },
+  "reports": {
+    "title": "Rapports et analyses",
+    "subtitle": "Consultez les résumés opérationnels et les rapports de performance énergétique des agences BH Bank.",
+    "dailyReport": "Rapport quotidien",
+    "weeklyReport": "Rapport hebdomadaire",
+    "monthlyAnalysis": "Analyse mensuelle",
+    "performanceScore": "Score de performance",
+    "available": "Disponible",
+    "generated": "Généré",
+    "updated": "Mis à jour"
   }
 }
 

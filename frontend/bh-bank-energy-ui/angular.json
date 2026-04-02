@@ -65,7 +65,8 @@
               "buildTarget": "bh-bank-energy-ui:build:production"
             },
             "development": {
-              "buildTarget": "bh-bank-energy-ui:build:development"
+              "buildTarget": "bh-bank-energy-ui:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"
