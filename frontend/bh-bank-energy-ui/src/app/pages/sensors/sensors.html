@@ -1,13 +1,24 @@
 <div class="sensors-page">
   <aside class="sidebar">
     <h2>BH Bank</h2>
+
     <ul>
-      <li><a routerLink="/dashboard">Dashboard</a></li>
-      <li><a routerLink="/sensors">Sensors</a></li>
-      <li><a href="#">Energy Usage</a></li>
-      <li><a href="#">Reports</a></li>
-      <li><a href="#">Settings</a></li>
+      <li>
+        <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+      </li>
+      <li>
+        <a routerLink="/sensors" routerLinkActive="active">Sensors</a>
+      </li>
+      <li>
+        <a routerLink="/energy-usage" routerLinkActive="active">Energy Usage</a>
+      </li>
+      <li><a routerLink="/reports" routerLinkActive="active">Reports</a></li>
+      <li><a routerLink="/settings" routerLinkActive="active">Settings</a></li>
     </ul>
+
+    <div class="logout">
+      <button (click)="logout()">Logout</button>
+    </div>
   </aside>
 
   <main class="main-content">

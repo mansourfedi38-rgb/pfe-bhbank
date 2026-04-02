@@ -1,0 +1,62 @@
+<div class="settings-page">
+  <aside class="sidebar">
+    <h2>BH Bank</h2>
+
+    <ul>
+      <li><a routerLink="/dashboard" routerLinkActive="active">Dashboard</a></li>
+      <li><a routerLink="/sensors" routerLinkActive="active">Sensors</a></li>
+      <li><a routerLink="/energy-usage" routerLinkActive="active">Energy Usage</a></li>
+      <li><a routerLink="/reports" routerLinkActive="active">Reports</a></li>
+      <li><a routerLink="/settings" routerLinkActive="active">Settings</a></li>
+    </ul>
+
+    <div class="logout">
+      <button (click)="logout()">Logout</button>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <header class="topbar">
+      <h1>Settings</h1>
+      <p>Manage platform preferences and user configuration.</p>
+    </header>
+
+    <section class="settings-grid">
+      <div class="setting-card">
+        <h3>Notifications</h3>
+        <p>Email alerts for high energy usage and sensor issues.</p>
+        <select [(ngModel)]="language" (change)="changeLanguage()">
+          <option>Enabled</option>
+          <option>Disabled</option>
+        </select>
+      </div>
+
+      <div class="setting-card">
+        <h3>Theme</h3>
+        <p>Current interface appearance for the platform dashboard.</p>
+        <select [(ngModel)]="theme">
+          <option>Default</option>
+          <option>Light</option>
+          <option>Dark</option>
+        </select>
+      </div>
+
+      <div class="setting-card">
+        <h3>Language</h3>
+        <p>Select the preferred platform language.</p>
+        <select [(ngModel)]="language">
+          <option>English</option>
+          <option>French</option>
+          <option>Arabic</option>
+          <option>German</option>
+        </select>
+      </div>
+
+      <div class="setting-card">
+        <h3>Security</h3>
+        <p>Update password and manage account access settings.</p>
+        <button (click)="manageSecurity()">Manage</button>
+      </div>
+    </section>
+  </main>
+</div>

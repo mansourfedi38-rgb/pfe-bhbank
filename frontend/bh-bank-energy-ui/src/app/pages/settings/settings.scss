@@ -4,7 +4,7 @@
   padding: 0;
 }
 
-.dashboard-page {
+.settings-page {
   display: flex;
   min-height: 100vh;
   font-family: Arial, sans-serif;
@@ -89,27 +89,55 @@
   color: #64748b;
 }
 
-.cards {
+.settings-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 20px;
 }
 
-.card {
+.setting-card {
   background: white;
   padding: 24px;
   border-radius: 16px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
 }
 
-.card h3 {
-  font-size: 16px;
-  color: #475569;
+.setting-card h3 {
+  font-size: 18px;
+  color: #1e293b;
   margin-bottom: 10px;
 }
 
-.card p {
-  font-size: 28px;
-  font-weight: bold;
-  color: #1e293b;
+.setting-card p {
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.setting-card select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  background: white;
+}
+
+.setting-card select:focus {
+  border-color: #1d4ed8;
+}
+
+.setting-card button {
+  padding: 10px 16px;
+  background: #1d4ed8;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.setting-card button:hover {
+  background: #1e40af;
 }

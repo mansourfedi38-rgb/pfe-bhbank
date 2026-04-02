@@ -2,13 +2,13 @@ import { Component } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
-  selector: 'app-sensors',
+  selector: 'app-energy-usage',
   standalone: true,
   imports: [RouterLink, RouterLinkActive],
-  templateUrl: './sensors.html',
-  styleUrl: './sensors.scss'
+  templateUrl: './energy-usage.html',
+  styleUrl: './energy-usage.scss'
 })
-export class SensorsComponent {
+export class EnergyUsageComponent {
   constructor(private router: Router) {}
 
   logout() {
