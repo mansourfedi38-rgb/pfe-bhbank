@@ -34,6 +34,19 @@ class SensorDataViewSet(ModelViewSet):
     ordering_fields = ['timestamp', 'energy_usage', 'temperature', 'clients_count']
     ordering = ['-timestamp']
 
+
+@api_view(['GET'])
+def api_subjects(request):
+    subjects = [
+        'subjects',
+        'regions',
+        'agencies',
+        'sensor-data',
+        'kpis/energy/daily',
+    ]
+    return Response({'subjects': subjects})
+
+
 @api_view(['GET'])
 def daily_energy_kpi(request):
     data = (

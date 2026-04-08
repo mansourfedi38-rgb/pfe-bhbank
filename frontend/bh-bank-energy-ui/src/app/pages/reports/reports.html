@@ -1,55 +1,66 @@
 <div class="reports-page">
-  <aside class="sidebar">
-    <h2>{{ 'navigation.brand' | translate }}</h2>
-
-    <ul>
-      <li>
-        <a routerLink="/dashboard" routerLinkActive="active">{{ 'navigation.dashboard' | translate }}</a>
-      </li>
-      <li>
-        <a routerLink="/sensors" routerLinkActive="active">{{ 'navigation.sensors' | translate }}</a>
-      </li>
-      <li>
-        <a routerLink="/energy-usage" routerLinkActive="active">{{ 'navigation.energyUsage' | translate }}</a>
-      </li>
-      <li>
-        <a routerLink="/reports" routerLinkActive="active">{{ 'navigation.reports' | translate }}</a>
-      </li>
-      <li>
-        <a routerLink="/settings" routerLinkActive="active">{{ 'navigation.settings' | translate }}</a>
-      </li>
-    </ul>
-
-    <div class="logout">
-      <button (click)="logout()">{{ 'navigation.logout' | translate }}</button>
+  <header class="bank-header">
+    <div class="logo-area">
+      <div class="logo-mark">BH</div>
+      <div class="logo-text">
+        <span class="arabic">بنك</span>
+        <span class="latin">BANK</span>
+      </div>
     </div>
-  </aside>
+  </header>
+
+  <nav class="top-nav">
+    <a routerLink="/dashboard" routerLinkActive="active">{{ 'navigation.dashboard' | translate }}</a>
+    <a routerLink="/sensors" routerLinkActive="active">{{ 'navigation.sensors' | translate }}</a>
+    <a routerLink="/energy-usage" routerLinkActive="active">{{ 'navigation.energyUsage' | translate }}</a>
+    <a routerLink="/reports" routerLinkActive="active">{{ 'navigation.reports' | translate }}</a>
+    <a routerLink="/settings" routerLinkActive="active">{{ 'navigation.settings' | translate }}</a>
+    <button class="logout-btn" (click)="logout()">{{ 'navigation.logout' | translate }}</button>
+  </nav>
 
   <main class="main-content">
-    <header class="topbar">
-      <h1>{{ 'reports.title' | translate }}</h1>
-      <p>{{ 'reports.subtitle' | translate }}</p>
-    </header>
+    <section class="hero-section">
+      <div class="hero-text">
+        <div class="mini-brand">BH BANK</div>
+        <h1>{{ 'reports.title' | translate }}</h1>
+        <p>{{ 'reports.subtitle' | translate }}</p>
+
+        <div class="status-lines">
+          <p class="kpi-status">{{ backendStatus }}</p>
+        </div>
+      </div>
+
+      <div class="hero-badge">
+        <div class="badge-card">
+          <span class="badge-title">Reporting Center</span>
+          <span class="badge-value">Smart Reports</span>
+        </div>
+      </div>
+    </section>
 
     <section class="cards">
       <div class="card">
+        <div class="card-top red-line"></div>
         <h3>{{ 'reports.dailyReport' | translate }}</h3>
-        <p>{{ 'reports.available' | translate }}</p>
+        <p>{{ cards.dailyReport }}</p>
       </div>
 
       <div class="card">
+        <div class="card-top blue-line"></div>
         <h3>{{ 'reports.weeklyReport' | translate }}</h3>
-        <p>{{ 'reports.generated' | translate }}</p>
+        <p>{{ cards.weeklyReport }}</p>
       </div>
 
       <div class="card">
+        <div class="card-top red-line"></div>
         <h3>{{ 'reports.monthlyAnalysis' | translate }}</h3>
-        <p>{{ 'reports.updated' | translate }}</p>
+        <p>{{ cards.monthlyAnalysis }}</p>
       </div>
 
       <div class="card">
+        <div class="card-top blue-line"></div>
         <h3>{{ 'reports.performanceScore' | translate }}</h3>
-        <p>89%</p>
+        <p>{{ cards.performanceScore }}</p>
       </div>
     </section>
   </main>

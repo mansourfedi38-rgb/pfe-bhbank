@@ -1,28 +1,42 @@
 <div class="settings-page">
-  <aside class="sidebar">
-    <h2>{{ 'navigation.brand' | translate }}</h2>
-
-    <ul>
-      <li><a routerLink="/dashboard" routerLinkActive="active">{{ 'navigation.dashboard' | translate }}</a></li>
-      <li><a routerLink="/sensors" routerLinkActive="active">{{ 'navigation.sensors' | translate }}</a></li>
-      <li><a routerLink="/energy-usage" routerLinkActive="active">{{ 'navigation.energyUsage' | translate }}</a></li>
-      <li><a routerLink="/reports" routerLinkActive="active">{{ 'navigation.reports' | translate }}</a></li>
-      <li><a routerLink="/settings" routerLinkActive="active">{{ 'navigation.settings' | translate }}</a></li>
-    </ul>
-
-    <div class="logout">
-      <button (click)="logout()">{{ 'navigation.logout' | translate }}</button>
+  <header class="bank-header">
+    <div class="logo-area">
+      <div class="logo-mark">BH</div>
+      <div class="logo-text">
+        <span class="arabic">بنك</span>
+        <span class="latin">BANK</span>
+      </div>
     </div>
-  </aside>
+  </header>
+
+  <nav class="top-nav">
+    <a routerLink="/dashboard" routerLinkActive="active">{{ 'navigation.dashboard' | translate }}</a>
+    <a routerLink="/sensors" routerLinkActive="active">{{ 'navigation.sensors' | translate }}</a>
+    <a routerLink="/energy-usage" routerLinkActive="active">{{ 'navigation.energyUsage' | translate }}</a>
+    <a routerLink="/reports" routerLinkActive="active">{{ 'navigation.reports' | translate }}</a>
+    <a routerLink="/settings" routerLinkActive="active">{{ 'navigation.settings' | translate }}</a>
+    <button class="logout-btn" (click)="logout()">{{ 'navigation.logout' | translate }}</button>
+  </nav>
 
   <main class="main-content">
-    <header class="topbar">
-      <h1>{{ 'settings.title' | translate }}</h1>
-      <p>{{ 'settings.subtitle' | translate }}</p>
-    </header>
+    <section class="hero-section">
+      <div class="hero-text">
+        <div class="mini-brand">BH BANK</div>
+        <h1>{{ 'settings.title' | translate }}</h1>
+        <p>{{ 'settings.subtitle' | translate }}</p>
+      </div>
+
+      <div class="hero-badge">
+        <div class="badge-card">
+          <span class="badge-title">Configuration Center</span>
+          <span class="badge-value">Settings Control</span>
+        </div>
+      </div>
+    </section>
 
     <section class="settings-grid">
       <div class="setting-card">
+        <div class="card-top red-line"></div>
         <h3>{{ 'settings.notifications' | translate }}</h3>
         <p>{{ 'settings.notificationsHelp' | translate }}</p>
         <select [(ngModel)]="notificationsEnabled">
@@ -32,6 +46,7 @@
       </div>
 
       <div class="setting-card">
+        <div class="card-top blue-line"></div>
         <h3>{{ 'settings.theme' | translate }}</h3>
         <p>{{ 'settings.themeHelp' | translate }}</p>
         <select [(ngModel)]="theme">
@@ -42,6 +57,7 @@
       </div>
 
       <div class="setting-card">
+        <div class="card-top red-line"></div>
         <h3>{{ 'settings.language' | translate }}</h3>
         <p>{{ 'settings.languageHelp' | translate }}</p>
         <select [(ngModel)]="selectedLanguage" (change)="onLanguageChange(selectedLanguage)">
@@ -53,6 +69,7 @@
       </div>
 
       <div class="setting-card">
+        <div class="card-top blue-line"></div>
         <h3>{{ 'settings.security' | translate }}</h3>
         <p>{{ 'settings.securityHelp' | translate }}</p>
         <button (click)="manageSecurity()">{{ 'settings.manage' | translate }}</button>
