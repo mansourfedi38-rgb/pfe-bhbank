@@ -40,7 +40,8 @@ export class SettingsComponent {
   }
 
   manageSecurity() {
-    alert('Security settings page will be added later.');
+    // Placeholder: security settings is not implemented yet.
+    console.warn('Security settings page is not implemented yet.');
   }
 
   onLanguageChange(lang: SupportedLanguageCode | string) {

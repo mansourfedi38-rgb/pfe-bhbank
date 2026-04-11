@@ -13,6 +13,7 @@ import { TranslateModule } from '@ngx-translate/core';
 export class LoginComponent {
   constructor(private router: Router) {}
 
+  // NOTE: Authentication is not implemented yet. This is a demo/stub flow.
   goToDashboard() {
     this.router.navigate(['/dashboard']);
   }

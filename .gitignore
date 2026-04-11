@@ -6,6 +6,7 @@ venv/
 
 # Django
 db.sqlite3
+out.txt
 
 # Angular
 node_modules/
