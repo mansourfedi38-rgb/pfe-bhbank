@@ -14,6 +14,7 @@
     <a routerLink="/sensors" routerLinkActive="active">{{ 'navigation.sensors' | translate }}</a>
     <a routerLink="/energy-usage" routerLinkActive="active">{{ 'navigation.energyUsage' | translate }}</a>
     <a routerLink="/reports" routerLinkActive="active">{{ 'navigation.reports' | translate }}</a>
+    <a routerLink="/compare-agencies" routerLinkActive="active">{{ 'navigation.compareAgencies' | translate }}</a>
     <a routerLink="/settings" routerLinkActive="active">{{ 'navigation.settings' | translate }}</a>
     <button class="logout-btn" (click)="logout()">{{ 'navigation.logout' | translate }}</button>
   </nav>
@@ -62,6 +63,30 @@
         <div class="card-top blue-line"></div>
         <h3>{{ 'dashboard.energyStatus' | translate }}</h3>
         <p>{{ dashboardMetrics.energy_status }}</p>
+      </div>
+    </section>
+
+    <section class="kpi-table-section" *ngIf="dailyKpiRows.length > 0">
+      <div class="card">
+        <div class="card-top red-line"></div>
+        <h3>Daily Energy KPI by Agency</h3>
+
+        <table class="kpi-table">
+          <thead>
+            <tr>
+              <th>Agency</th>
+              <th>Date</th>
+              <th>Total Energy</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of dailyKpiRows">
+              <td>{{ row.agency_name }}</td>
+              <td>{{ row.date }}</td>
+              <td>{{ row.total_energy }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </section>
   </main>

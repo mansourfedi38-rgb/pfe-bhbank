@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
-export type ApiSubject = 'subjects' | 'regions' | 'agencies' | 'sensor-data' | 'kpis/energy/daily';
+export type ApiSubject = 'subjects' | 'regions' | 'agencies' | 'sensor-data' | 'kpis/energy/daily' | 'kpis/energy/compare';
 
 export const FRONTEND_API_SUBJECTS: readonly ApiSubject[] = [
   'subjects',
   'regions',
   'agencies',
   'sensor-data',
-  'kpis/energy/daily'
+  'kpis/energy/daily',
+  'kpis/energy/compare'
 ];
 
 export interface Region {
@@ -36,8 +36,54 @@ export interface SensorData {
 
 export interface DailyEnergyKpi {
   agency: number;
+  agency_name: string;
   date: string;
-  total_energy: string;
+  total_energy: number;
+}
+
+export interface AgencyMetrics {
+  id: number;
+  name: string;
+  region_name: string;
+  total_energy: number;
+  average_temperature: number;
+  total_clients: number;
+  average_clients: number;
+  energy_per_client: number;
+  ac_mode_counts: {
+    OFF: number;
+    ECO: number;
+    ON: number;
+  };
+}
+
+export interface ComparisonChartData {
+  date: string;
+  agency1: {
+    name: string;
+    energy: number | null;
+  };
+  agency2: {
+    name: string;
+    energy: number | null;
+  };
+}
+
+export interface Insight {
+  type: string;
+  text: string;
+  factor: string;
+}
+
+export interface ComparisonResponse {
+  agency_1: AgencyMetrics;
+  agency_2: AgencyMetrics;
+  chart_data: ComparisonChartData[];
+  insights: Insight[];
+  region: {
+    id: number;
+    name: string;
+  };
 }
 
 interface BackendSubjectsResponse {
@@ -87,6 +133,13 @@ export class ApiService {
     return this.http.get<DailyEnergyKpi[]>('/api/kpis/energy/daily/');
   }
 
+  compareAgencies(agency1Id: number, agency2Id: number): Observable<ComparisonResponse> {
+    const params = new HttpParams()
+      .set('agency1', agency1Id)
+      .set('agency2', agency2Id);
+    return this.http.get<ComparisonResponse>('/api/kpis/energy/compare/', { params });
+  }
+
   checkSubjectsCompatibility(): Observable<SubjectsCompatibilityResult> {
     return this.getSubjects().pipe(
       map((res) => {
@@ -103,4 +156,3 @@ export class ApiService {
     );
   }
 }
-

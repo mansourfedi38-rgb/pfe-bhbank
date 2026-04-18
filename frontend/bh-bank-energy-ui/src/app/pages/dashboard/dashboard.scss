@@ -262,6 +262,44 @@
   line-height: 1.1;
 }
 
+/* KPI TABLE */
+.kpi-table-section {
+  margin-top: 30px;
+}
+
+.kpi-table-section .card {
+  overflow-x: auto;
+}
+
+.kpi-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+  min-width: 520px;
+}
+
+.kpi-table th,
+.kpi-table td {
+  padding: 14px 12px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 15px;
+}
+
+.kpi-table th {
+  color: #6b7280;
+  font-weight: 700;
+  background: #f9fafb;
+}
+
+.kpi-table td {
+  color: #0a2342;
+}
+
+.kpi-table tbody tr:hover {
+  background: #f8fafc;
+}
+
 /* RESPONSIVE */
 @media (max-width: 992px) {
   .bank-header,

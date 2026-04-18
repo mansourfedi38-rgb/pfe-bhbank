@@ -1,19 +1,22 @@
+import { NgFor, NgIf } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { ApiService } from '../../services/api.service';
+import { ApiService, DailyEnergyKpi } from '../../services/api.service';
 import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, TranslateModule],
+  imports: [NgIf, NgFor, RouterLink, RouterLinkActive, TranslateModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })
 export class DashboardComponent implements OnInit {
   kpiStatus = 'Loading daily KPI...';
   compatibilityStatus = 'Checking backend/frontend subjects compatibility...';
+  dailyKpiRows: DailyEnergyKpi[] = [];
+
   dashboardMetrics = {
     total_agencies: 0,
     active_sensors: 0,
@@ -30,6 +33,8 @@ export class DashboardComponent implements OnInit {
       dailyKpi: this.api.getDailyEnergyKpi()
     }).subscribe({
       next: ({ agencies, sensorData, dailyKpi }) => {
+        this.dailyKpiRows = dailyKpi;
+
         this.dashboardMetrics.total_agencies = agencies.length;
         this.dashboardMetrics.active_sensors = sensorData.length;
 
@@ -41,14 +46,14 @@ export class DashboardComponent implements OnInit {
           this.dashboardMetrics.average_temperature = 'N/A';
         }
 
-        if (dailyKpi.length === 0) {
+        if (this.dailyKpiRows.length === 0) {
           this.dashboardMetrics.energy_status = 'No data';
         } else {
-          const totalEnergy = dailyKpi.reduce((sum, item) => sum + Number(item.total_energy), 0);
+          const totalEnergy = this.dailyKpiRows.reduce((sum, item) => sum + Number(item.total_energy), 0);
           this.dashboardMetrics.energy_status = totalEnergy > 0 ? 'Tracked' : 'Idle';
         }
 
-        this.kpiStatus = `Dashboard loaded from backend (${dailyKpi.length} KPI rows).`;
+        this.kpiStatus = `Dashboard loaded from backend (${this.dailyKpiRows.length} KPI rows).`;
       },
       error: (err) => {
         this.kpiStatus = `Dashboard backend load failed: ${String(err?.message ?? err)}`;
@@ -79,7 +84,7 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  logout() {
+  logout(): void {
     this.router.navigate(['/login']);
   }
 }
