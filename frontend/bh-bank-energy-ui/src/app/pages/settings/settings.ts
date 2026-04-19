@@ -28,11 +28,11 @@ export class SettingsComponent {
   ) {}
 
   ngOnInit(): void {
-    const stored =
+    const storedLanguage =
       typeof localStorage !== 'undefined'
         ? (localStorage.getItem('language') as SupportedLanguageCode | null)
         : null;
-    this.selectedLanguage = stored ?? 'en';
+    this.selectedLanguage = storedLanguage ?? 'en';
   }
 
   logout() {
