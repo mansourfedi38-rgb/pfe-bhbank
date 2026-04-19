@@ -8,25 +8,35 @@ import { ApiService, Region, Agency, ComparisonResponse } from '../../services/a
 @Component({
   selector: 'app-compare-agencies',
   standalone: true,
-  imports: [NgIf, NgFor, UpperCasePipe, RouterLink, RouterLinkActive, TranslateModule, DecimalPipe, FormsModule],
+  imports: [
+    NgIf,
+    NgFor,
+    UpperCasePipe,
+    RouterLink,
+    RouterLinkActive,
+    TranslateModule,
+    DecimalPipe,
+    FormsModule
+  ],
   templateUrl: './compare-agencies.html',
   styleUrl: './compare-agencies.scss'
 })
 export class CompareAgenciesComponent implements OnInit {
+
+  // Data
   regions: Region[] = [];
   agencies: Agency[] = [];
-  
+
+  // Selected values
   selectedRegionId: number | null = null;
   selectedAgency1Id: number | null = null;
   selectedAgency2Id: number | null = null;
-  
+
+  // Result & states
   comparisonResult: ComparisonResponse | null = null;
   errorMessage: string | null = null;
-  loadingMessage: string = '';
   isLoading = false;
-
-  agency1Agencies: Agency[] = [];
-  agency2Agencies: Agency[] = [];
+  loadingMessage = '';
 
   constructor(private router: Router, private api: ApiService) {}
 
@@ -34,25 +44,28 @@ export class CompareAgenciesComponent implements OnInit {
     this.loadRegions();
   }
 
+  // ===============================
+  // LOAD REGIONS
+  // ===============================
   loadRegions(): void {
     this.api.getRegions().subscribe({
       next: (regions) => {
         this.regions = regions;
       },
       error: (err) => {
-        this.errorMessage = `Failed to load regions: ${err?.message ?? err}`;
-        console.error('Load regions error', err);
+        this.errorMessage = 'Failed to load regions';
+        console.error('Load regions error:', err);
       }
     });
   }
 
+  // ===============================
+  // REGION CHANGE
+  // ===============================
   onRegionChange(): void {
-    this.selectedAgency1Id = null;
-    this.selectedAgency2Id = null;
-    this.comparisonResult = null;
-    this.errorMessage = null;
+    this.resetSelections();
 
-    if (this.selectedRegionId === null) {
+    if (!this.selectedRegionId) {
       this.agencies = [];
       return;
     }
@@ -60,40 +73,44 @@ export class CompareAgenciesComponent implements OnInit {
     this.api.getAgencies(this.selectedRegionId).subscribe({
       next: (agencies) => {
         this.agencies = agencies;
-        this.agency1Agencies = agencies;
-        this.agency2Agencies = agencies;
       },
       error: (err) => {
-        this.errorMessage = `Failed to load agencies: ${err?.message ?? err}`;
-        console.error('Load agencies error', err);
+        this.errorMessage = 'Failed to load agencies';
+        console.error('Load agencies error:', err);
       }
     });
   }
 
-  onAgency1Change(): void {
+  // ===============================
+  // RESET
+  // ===============================
+  resetSelections(): void {
+    this.selectedAgency1Id = null;
+    this.selectedAgency2Id = null;
     this.comparisonResult = null;
     this.errorMessage = null;
   }
 
-  onAgency2Change(): void {
-    this.comparisonResult = null;
-    this.errorMessage = null;
-  }
-
+  // ===============================
+  // COMPARE
+  // ===============================
   compareAgencies(): void {
+    this.errorMessage = null;
+    this.comparisonResult = null;
+
+    // Validation
     if (!this.selectedAgency1Id || !this.selectedAgency2Id) {
       this.errorMessage = 'Please select both agencies';
       return;
     }
 
     if (this.selectedAgency1Id === this.selectedAgency2Id) {
-      this.errorMessage = 'Please select different agencies';
+      this.errorMessage = 'Please select two different agencies';
       return;
     }
 
     this.isLoading = true;
     this.loadingMessage = 'Comparing agencies...';
-    this.errorMessage = null;
 
     this.api.compareAgencies(this.selectedAgency1Id, this.selectedAgency2Id).subscribe({
       next: (result) => {
@@ -102,20 +119,32 @@ export class CompareAgenciesComponent implements OnInit {
       },
       error: (err) => {
         this.isLoading = false;
-        this.errorMessage = `Comparison failed: ${err?.error?.error ?? err?.message ?? err}`;
-        console.error('Comparison error', err);
+        this.errorMessage = err?.error?.error || 'Comparison failed';
+        console.error('Comparison error:', err);
       }
     });
   }
 
-  logout(): void {
-    this.router.navigate(['/login']);
-  }
-
+  // ===============================
+  // HELPER
+  // ===============================
   getHigherEnergyAgency(): string {
     if (!this.comparisonResult) return '';
-    return this.comparisonResult.agency_1.total_energy > this.comparisonResult.agency_2.total_energy 
-      ? this.comparisonResult.agency_1.name 
+
+    const energy1 = this.comparisonResult.agency_1.total_energy;
+    const energy2 = this.comparisonResult.agency_2.total_energy;
+
+    if (energy1 === energy2) return 'Equal';
+
+    return energy1 > energy2
+      ? this.comparisonResult.agency_1.name
       : this.comparisonResult.agency_2.name;
+  }
+
+  // ===============================
+  // LOGOUT
+  // ===============================
+  logout(): void {
+    this.router.navigate(['/login']);
   }
 }

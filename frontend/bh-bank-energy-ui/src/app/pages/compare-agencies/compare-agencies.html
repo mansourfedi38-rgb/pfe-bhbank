@@ -26,21 +26,25 @@
         <h1>Company Energy Comparison</h1>
         <p>Compare energy consumption between two agencies in the same region</p>
       </div>
+
+      <div class="hero-badge">
+        <div class="badge-title">Comparison Center</div>
+        <div class="badge-value">Smart Agency Analysis</div>
+      </div>
     </section>
 
     <section class="comparison-section">
-      <!-- Selection Panel -->
       <div class="selection-panel">
         <h2>Select Agencies to Compare</h2>
-        
+
         <div class="form-group">
           <label for="region-select">Region:</label>
-          <select 
-            id="region-select" 
-            [(ngModel)]="selectedRegionId" 
+          <select
+            id="region-select"
+            [(ngModel)]="selectedRegionId"
             (change)="onRegionChange()">
-            <option [value]="null">-- Select a region --</option>
-            <option *ngFor="let region of regions" [value]="region.id">
+            <option [ngValue]="null">-- Select a region --</option>
+            <option *ngFor="let region of regions" [ngValue]="region.id">
               {{ region.name }}
             </option>
           </select>
@@ -49,12 +53,11 @@
         <div class="agency-row" *ngIf="selectedRegionId">
           <div class="form-group">
             <label for="agency1-select">Agency 1:</label>
-            <select 
-              id="agency1-select" 
-              [(ngModel)]="selectedAgency1Id" 
-              (change)="onAgency1Change()">
-              <option [value]="null">-- Select agency 1 --</option>
-              <option *ngFor="let agency of agencies" [value]="agency.id">
+            <select
+              id="agency1-select"
+              [(ngModel)]="selectedAgency1Id">
+              <option [ngValue]="null">-- Select agency 1 --</option>
+              <option *ngFor="let agency of agencies" [ngValue]="agency.id">
                 {{ agency.name }}
               </option>
             </select>
@@ -62,20 +65,19 @@
 
           <div class="form-group">
             <label for="agency2-select">Agency 2:</label>
-            <select 
-              id="agency2-select" 
-              [(ngModel)]="selectedAgency2Id" 
-              (change)="onAgency2Change()">
-              <option [value]="null">-- Select agency 2 --</option>
-              <option *ngFor="let agency of agencies" [value]="agency.id">
+            <select
+              id="agency2-select"
+              [(ngModel)]="selectedAgency2Id">
+              <option [ngValue]="null">-- Select agency 2 --</option>
+              <option *ngFor="let agency of agencies" [ngValue]="agency.id">
                 {{ agency.name }}
               </option>
             </select>
           </div>
         </div>
 
-        <button 
-          class="compare-btn" 
+        <button
+          class="compare-btn"
           (click)="compareAgencies()"
           [disabled]="!selectedAgency1Id || !selectedAgency2Id || isLoading">
           {{ isLoading ? loadingMessage : 'Compare' }}
@@ -86,37 +88,47 @@
         </div>
       </div>
 
-      <!-- Results Panel -->
       <div *ngIf="comparisonResult" class="results-panel">
-        
-        <!-- Summary Metrics -->
         <div class="metrics-comparison">
           <h2>Energy Metrics Comparison</h2>
-          
+
           <div class="metrics-grid">
-            <!-- Agency 1 -->
             <div class="agency-metrics">
               <h3>{{ comparisonResult.agency_1.name }}</h3>
+
               <div class="metric-row">
                 <span class="label">Total Energy:</span>
-                <span class="value">{{ comparisonResult.agency_1.total_energy | number: '1.2-2' }} kWh</span>
+                <span class="value">
+                  {{ comparisonResult.agency_1.total_energy | number:'1.2-2' }} kWh
+                </span>
               </div>
+
               <div class="metric-row">
                 <span class="label">Avg Temperature:</span>
-                <span class="value">{{ comparisonResult.agency_1.average_temperature | number: '1.1-1' }}°C</span>
+                <span class="value">
+                  {{ comparisonResult.agency_1.average_temperature | number:'1.1-1' }}°C
+                </span>
               </div>
+
               <div class="metric-row">
                 <span class="label">Total Clients:</span>
                 <span class="value">{{ comparisonResult.agency_1.total_clients }}</span>
               </div>
+
               <div class="metric-row">
                 <span class="label">Avg Clients:</span>
-                <span class="value">{{ comparisonResult.agency_1.average_clients | number: '1.1-1' }}</span>
+                <span class="value">
+                  {{ comparisonResult.agency_1.average_clients | number:'1.1-1' }}
+                </span>
               </div>
+
               <div class="metric-row">
                 <span class="label">Energy per Client:</span>
-                <span class="value">{{ comparisonResult.agency_1.energy_per_client | number: '1.2-2' }} kWh</span>
+                <span class="value">
+                  {{ comparisonResult.agency_1.energy_per_client | number:'1.2-2' }} kWh
+                </span>
               </div>
+
               <div class="ac-modes">
                 <span class="label">AC Modes:</span>
                 <div class="modes">
@@ -127,29 +139,42 @@
               </div>
             </div>
 
-            <!-- Agency 2 -->
             <div class="agency-metrics">
               <h3>{{ comparisonResult.agency_2.name }}</h3>
+
               <div class="metric-row">
                 <span class="label">Total Energy:</span>
-                <span class="value">{{ comparisonResult.agency_2.total_energy | number: '1.2-2' }} kWh</span>
+                <span class="value">
+                  {{ comparisonResult.agency_2.total_energy | number:'1.2-2' }} kWh
+                </span>
               </div>
+
               <div class="metric-row">
                 <span class="label">Avg Temperature:</span>
-                <span class="value">{{ comparisonResult.agency_2.average_temperature | number: '1.1-1' }}°C</span>
+                <span class="value">
+                  {{ comparisonResult.agency_2.average_temperature | number:'1.1-1' }}°C
+                </span>
               </div>
+
               <div class="metric-row">
                 <span class="label">Total Clients:</span>
                 <span class="value">{{ comparisonResult.agency_2.total_clients }}</span>
               </div>
+
               <div class="metric-row">
                 <span class="label">Avg Clients:</span>
-                <span class="value">{{ comparisonResult.agency_2.average_clients | number: '1.1-1' }}</span>
+                <span class="value">
+                  {{ comparisonResult.agency_2.average_clients | number:'1.1-1' }}
+                </span>
               </div>
+
               <div class="metric-row">
                 <span class="label">Energy per Client:</span>
-                <span class="value">{{ comparisonResult.agency_2.energy_per_client | number: '1.2-2' }} kWh</span>
+                <span class="value">
+                  {{ comparisonResult.agency_2.energy_per_client | number:'1.2-2' }} kWh
+                </span>
               </div>
+
               <div class="ac-modes">
                 <span class="label">AC Modes:</span>
                 <div class="modes">
@@ -162,10 +187,10 @@
           </div>
         </div>
 
-        <!-- Insights -->
         <div class="insights-section">
           <h2>Why {{ getHigherEnergyAgency() }} Consumes More Energy</h2>
-          <div *ngIf="comparisonResult.insights.length > 0" class="insights-list">
+
+          <div *ngIf="comparisonResult.insights.length > 0; else noInsights" class="insights-list">
             <div *ngFor="let insight of comparisonResult.insights" class="insight-card">
               <div class="insight-header">
                 <span class="insight-type">{{ insight.type | uppercase }}</span>
@@ -174,11 +199,15 @@
               <p class="insight-text">{{ insight.text }}</p>
             </div>
           </div>
+
+          <ng-template #noInsights>
+            <p>No insights available for this comparison.</p>
+          </ng-template>
         </div>
 
-        <!-- Chart Data Table -->
         <div class="chart-data-section">
           <h2>Daily Energy Comparison</h2>
+
           <div class="chart-table-wrapper">
             <table class="chart-table">
               <thead>
@@ -190,15 +219,26 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let row of comparisonResult.chart_data" [class.no-data]="!row.agency1.energy || !row.agency2.energy">
+                <tr
+                  *ngFor="let row of comparisonResult.chart_data"
+                  [class.no-data]="row.agency1.energy == null || row.agency2.energy == null">
                   <td>{{ row.date }}</td>
-                  <td>{{ row.agency1.energy ? (row.agency1.energy | number: '1.2-2') : 'N/A' }}</td>
-                  <td>{{ row.agency2.energy ? (row.agency2.energy | number: '1.2-2') : 'N/A' }}</td>
+
                   <td>
-                    <span *ngIf="row.agency1.energy && row.agency2.energy">
-                      {{ (row.agency1.energy - row.agency2.energy) | number: '1.2-2' }}
+                    {{ row.agency1.energy != null ? (row.agency1.energy | number:'1.2-2') : 'N/A' }}
+                  </td>
+
+                  <td>
+                    {{ row.agency2.energy != null ? (row.agency2.energy | number:'1.2-2') : 'N/A' }}
+                  </td>
+
+                  <td>
+                    <span *ngIf="row.agency1.energy != null && row.agency2.energy != null">
+                      {{ (row.agency1.energy - row.agency2.energy) | number:'1.2-2' }}
                     </span>
-                    <span *ngIf="!row.agency1.energy || !row.agency2.energy">N/A</span>
+                    <span *ngIf="row.agency1.energy == null || row.agency2.energy == null">
+                      N/A
+                    </span>
                   </td>
                 </tr>
               </tbody>
