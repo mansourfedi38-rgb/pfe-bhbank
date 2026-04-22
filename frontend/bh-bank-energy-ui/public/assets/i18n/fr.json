@@ -34,7 +34,30 @@
     "totalAgencies": "Nombre total d’agences",
     "activeSensors": "Capteurs actifs",
     "avgTemperature": "Température moyenne",
-    "energyStatus": "Statut énergétique"
+    "energyStatus": "Statut énergétique",
+    "badgeTitle": "Surveillance intelligente",
+    "badgeValue": "Plateforme énergétique",
+    "status": {
+      "loading": "Chargement des KPI quotidiens...",
+      "loaded": "Tableau de bord chargé depuis le backend ({{count}} lignes KPI).",
+      "failed": "Échec du chargement du tableau de bord depuis le backend : {{error}}",
+      "tracked": "Suivi",
+      "idle": "Inactif"
+    },
+    "compatibility": {
+      "checking": "Vérification de la compatibilité des sujets backend/frontend...",
+      "ok": "Compatibilité des sujets : OK (backend/frontend alignés à 100 %).",
+      "frontendOnly": "frontend uniquement : {{values}}",
+      "backendOnly": "backend uniquement : {{values}}",
+      "mismatch": "Incompatibilité des sujets ({{details}}).",
+      "failed": "Échec de la vérification de compatibilité des sujets : {{error}}"
+    },
+    "kpiTable": {
+      "title": "KPI énergétique quotidien par agence",
+      "agency": "Agence",
+      "date": "Date",
+      "totalEnergy": "Énergie totale"
+    }
   },
   "settings": {
     "title": "Paramètres",
@@ -62,7 +85,20 @@
     "airQuality": "Qualité de l’air",
     "airQualityNormal": "Normale",
     "systemStatus": "État du système",
-    "systemOnline": "En ligne"
+    "systemOnline": "En ligne",
+    "systemOffline": "Hors ligne",
+    "badgeTitle": "Surveillance en temps réel",
+    "badgeValue": "Aperçu des capteurs",
+    "metrics": {
+      "clients": "{{count}} clients",
+      "activeAc": "{{active}}/{{total}} climatisations actives"
+    },
+    "status": {
+      "loading": "Chargement des capteurs depuis le backend...",
+      "loaded": "{{count}} lignes de capteurs backend chargées.",
+      "noDataBackend": "Aucune donnée capteur dans le backend.",
+      "failed": "Échec du chargement des capteurs backend : {{error}}"
+    }
   },
   "energyUsage": {
     "title": "Vue d’ensemble de la consommation énergétique",
@@ -70,7 +106,15 @@
     "todayConsumption": "Consommation du jour",
     "weeklyConsumption": "Consommation hebdomadaire",
     "monthlyAverage": "Moyenne mensuelle",
-    "optimizationRate": "Taux d’optimisation"
+    "optimizationRate": "Taux d’optimisation",
+    "badgeTitle": "Analytique énergétique",
+    "badgeValue": "Suivi de consommation",
+    "status": {
+      "loading": "Chargement de la consommation énergétique depuis le backend...",
+      "loaded": "{{count}} lignes KPI chargées depuis le backend.",
+      "noDataBackend": "Aucune donnée KPI dans le backend.",
+      "failed": "Échec du chargement de la consommation énergétique backend : {{error}}"
+    }
   },
   "reports": {
     "title": "Rapports et analyses",
@@ -81,7 +125,61 @@
     "performanceScore": "Score de performance",
     "available": "Disponible",
     "generated": "Généré",
-    "updated": "Mis à jour"
+    "updated": "Mis à jour",
+    "badgeTitle": "Centre de reporting",
+    "badgeValue": "Rapports intelligents",
+    "status": {
+      "loading": "Chargement des rapports depuis le backend...",
+      "loaded": "Rapports chargés depuis {{count}} lignes KPI backend.",
+      "failed": "Échec du chargement des rapports backend : {{error}}"
+    }
+  },
+  "compareAgencies": {
+    "title": "Comparaison énergétique des agences",
+    "subtitle": "Comparez la consommation d’énergie entre deux agences dans la même région",
+    "badgeTitle": "Centre de comparaison",
+    "badgeValue": "Analyse intelligente des agences",
+    "selectTitle": "Sélectionner les agences à comparer",
+    "region": "Région",
+    "agency1": "Agence 1",
+    "agency2": "Agence 2",
+    "metricsTitle": "Comparaison des métriques énergétiques",
+    "insightsTitle": "Pourquoi {{agency}} consomme plus d’énergie",
+    "noInsights": "Aucun insight disponible pour cette comparaison.",
+    "dailyComparisonTitle": "Comparaison énergétique quotidienne",
+    "equal": "Égal",
+    "actions": {
+      "compare": "Comparer",
+      "comparing": "Comparaison des agences..."
+    },
+    "errors": {
+      "loadRegions": "Échec du chargement des régions",
+      "loadAgencies": "Échec du chargement des agences",
+      "selectBoth": "Veuillez sélectionner les deux agences",
+      "selectDifferent": "Veuillez sélectionner deux agences différentes",
+      "comparisonFailed": "Échec de la comparaison"
+    },
+    "placeholders": {
+      "selectRegion": "-- Sélectionnez une région --",
+      "selectAgency1": "-- Sélectionnez l’agence 1 --",
+      "selectAgency2": "-- Sélectionnez l’agence 2 --"
+    },
+    "labels": {
+      "totalEnergy": "Énergie totale",
+      "avgTemperature": "Température moyenne",
+      "totalClients": "Nombre total de clients",
+      "avgClients": "Clients moyens",
+      "energyPerClient": "Énergie par client",
+      "acModes": "Modes de climatisation"
+    },
+    "table": {
+      "date": "Date",
+      "difference": "Différence"
+    }
+  },
+  "common": {
+    "notAvailable": "N/D",
+    "noData": "Pas de données"
   }
 }
 

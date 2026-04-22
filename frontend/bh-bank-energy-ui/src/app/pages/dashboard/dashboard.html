@@ -34,8 +34,8 @@
 
       <div class="hero-badge">
         <div class="badge-card">
-          <span class="badge-title">Smart Monitoring</span>
-          <span class="badge-value">Energy Platform</span>
+          <span class="badge-title">{{ 'dashboard.badgeTitle' | translate }}</span>
+          <span class="badge-value">{{ 'dashboard.badgeValue' | translate }}</span>
         </div>
       </div>
     </section>
@@ -69,14 +69,14 @@
     <section class="kpi-table-section" *ngIf="dailyKpiRows.length > 0">
       <div class="card">
         <div class="card-top red-line"></div>
-        <h3>Daily Energy KPI by Agency</h3>
+        <h3>{{ 'dashboard.kpiTable.title' | translate }}</h3>
 
         <table class="kpi-table">
           <thead>
             <tr>
-              <th>Agency</th>
-              <th>Date</th>
-              <th>Total Energy</th>
+              <th>{{ 'dashboard.kpiTable.agency' | translate }}</th>
+              <th>{{ 'dashboard.kpiTable.date' | translate }}</th>
+              <th>{{ 'dashboard.kpiTable.totalEnergy' | translate }}</th>
             </tr>
           </thead>
           <tbody>

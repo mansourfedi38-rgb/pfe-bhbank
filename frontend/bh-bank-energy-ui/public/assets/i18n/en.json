@@ -34,7 +34,30 @@
     "totalAgencies": "Total Agencies",
     "activeSensors": "Active Sensors",
     "avgTemperature": "Average Temperature",
-    "energyStatus": "Energy Status"
+    "energyStatus": "Energy Status",
+    "badgeTitle": "Smart Monitoring",
+    "badgeValue": "Energy Platform",
+    "status": {
+      "loading": "Loading daily KPI...",
+      "loaded": "Dashboard loaded from backend ({{count}} KPI rows).",
+      "failed": "Dashboard backend load failed: {{error}}",
+      "tracked": "Tracked",
+      "idle": "Idle"
+    },
+    "compatibility": {
+      "checking": "Checking backend/frontend subjects compatibility...",
+      "ok": "Subjects compatibility: OK (backend/frontend are 100% aligned).",
+      "frontendOnly": "frontend only: {{values}}",
+      "backendOnly": "backend only: {{values}}",
+      "mismatch": "Subjects compatibility mismatch ({{details}}).",
+      "failed": "Subjects compatibility check failed: {{error}}"
+    },
+    "kpiTable": {
+      "title": "Daily Energy KPI by Agency",
+      "agency": "Agency",
+      "date": "Date",
+      "totalEnergy": "Total Energy"
+    }
   },
   "settings": {
     "title": "Settings",
@@ -62,7 +85,20 @@
     "airQuality": "Air Quality",
     "airQualityNormal": "Normal",
     "systemStatus": "System Status",
-    "systemOnline": "Online"
+    "systemOnline": "Online",
+    "systemOffline": "Offline",
+    "badgeTitle": "Real-Time Monitoring",
+    "badgeValue": "Sensors Overview",
+    "metrics": {
+      "clients": "{{count}} clients",
+      "activeAc": "{{active}}/{{total}} active AC"
+    },
+    "status": {
+      "loading": "Loading sensors from backend...",
+      "loaded": "Loaded {{count}} backend sensor rows.",
+      "noDataBackend": "No sensor data in backend.",
+      "failed": "Sensor backend load failed: {{error}}"
+    }
   },
   "energyUsage": {
     "title": "Energy Usage Overview",
@@ -70,7 +106,15 @@
     "todayConsumption": "Today Consumption",
     "weeklyConsumption": "Weekly Consumption",
     "monthlyAverage": "Monthly Average",
-    "optimizationRate": "Optimization Rate"
+    "optimizationRate": "Optimization Rate",
+    "badgeTitle": "Energy Analytics",
+    "badgeValue": "Usage Tracking",
+    "status": {
+      "loading": "Loading energy usage from backend...",
+      "loaded": "Loaded {{count}} KPI rows from backend.",
+      "noDataBackend": "No KPI data in backend.",
+      "failed": "Energy usage backend load failed: {{error}}"
+    }
   },
   "reports": {
     "title": "Reports & Analytics",
@@ -81,7 +125,61 @@
     "performanceScore": "Performance Score",
     "available": "Available",
     "generated": "Generated",
-    "updated": "Updated"
+    "updated": "Updated",
+    "badgeTitle": "Reporting Center",
+    "badgeValue": "Smart Reports",
+    "status": {
+      "loading": "Loading reports from backend...",
+      "loaded": "Reports loaded from {{count}} backend KPI rows.",
+      "failed": "Reports backend load failed: {{error}}"
+    }
+  },
+  "compareAgencies": {
+    "title": "Company Energy Comparison",
+    "subtitle": "Compare energy consumption between two agencies in the same region",
+    "badgeTitle": "Comparison Center",
+    "badgeValue": "Smart Agency Analysis",
+    "selectTitle": "Select Agencies to Compare",
+    "region": "Region",
+    "agency1": "Agency 1",
+    "agency2": "Agency 2",
+    "metricsTitle": "Energy Metrics Comparison",
+    "insightsTitle": "Why {{agency}} Consumes More Energy",
+    "noInsights": "No insights available for this comparison.",
+    "dailyComparisonTitle": "Daily Energy Comparison",
+    "equal": "Equal",
+    "actions": {
+      "compare": "Compare",
+      "comparing": "Comparing agencies..."
+    },
+    "errors": {
+      "loadRegions": "Failed to load regions",
+      "loadAgencies": "Failed to load agencies",
+      "selectBoth": "Please select both agencies",
+      "selectDifferent": "Please select two different agencies",
+      "comparisonFailed": "Comparison failed"
+    },
+    "placeholders": {
+      "selectRegion": "-- Select a region --",
+      "selectAgency1": "-- Select agency 1 --",
+      "selectAgency2": "-- Select agency 2 --"
+    },
+    "labels": {
+      "totalEnergy": "Total Energy",
+      "avgTemperature": "Avg Temperature",
+      "totalClients": "Total Clients",
+      "avgClients": "Avg Clients",
+      "energyPerClient": "Energy per Client",
+      "acModes": "AC Modes"
+    },
+    "table": {
+      "date": "Date",
+      "difference": "Difference"
+    }
+  },
+  "common": {
+    "notAvailable": "N/A",
+    "noData": "No data"
   }
 }
 

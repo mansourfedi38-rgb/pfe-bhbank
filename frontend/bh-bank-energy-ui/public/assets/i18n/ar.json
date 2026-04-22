@@ -34,7 +34,30 @@
     "totalAgencies": "إجمالي عدد الوكالات",
     "activeSensors": "المستشعرات النشطة",
     "avgTemperature": "متوسط درجة الحرارة",
-    "energyStatus": "حالة الطاقة"
+    "energyStatus": "حالة الطاقة",
+    "badgeTitle": "مراقبة ذكية",
+    "badgeValue": "منصة الطاقة",
+    "status": {
+      "loading": "جاري تحميل مؤشرات الأداء اليومية...",
+      "loaded": "تم تحميل لوحة التحكم من الخلفية ({{count}} صفوف KPI).",
+      "failed": "فشل تحميل لوحة التحكم من الخلفية: {{error}}",
+      "tracked": "متتبع",
+      "idle": "خامل"
+    },
+    "compatibility": {
+      "checking": "جاري التحقق من توافق المواضيع بين الخلفية والواجهة...",
+      "ok": "توافق المواضيع: ممتاز (الخلفية والواجهة متطابقتان 100%).",
+      "frontendOnly": "في الواجهة فقط: {{values}}",
+      "backendOnly": "في الخلفية فقط: {{values}}",
+      "mismatch": "عدم تطابق توافق المواضيع ({{details}}).",
+      "failed": "فشل التحقق من توافق المواضيع: {{error}}"
+    },
+    "kpiTable": {
+      "title": "مؤشر الطاقة اليومي حسب الوكالة",
+      "agency": "الوكالة",
+      "date": "التاريخ",
+      "totalEnergy": "إجمالي الطاقة"
+    }
   },
   "settings": {
     "title": "الإعدادات",
@@ -62,7 +85,20 @@
     "airQuality": "جودة الهواء",
     "airQualityNormal": "طبيعية",
     "systemStatus": "حالة النظام",
-    "systemOnline": "متصل"
+    "systemOnline": "متصل",
+    "systemOffline": "غير متصل",
+    "badgeTitle": "مراقبة لحظية",
+    "badgeValue": "نظرة عامة على المستشعرات",
+    "metrics": {
+      "clients": "{{count}} عملاء",
+      "activeAc": "{{active}}/{{total}} أجهزة تكييف نشطة"
+    },
+    "status": {
+      "loading": "جاري تحميل بيانات المستشعرات من الخلفية...",
+      "loaded": "تم تحميل {{count}} صفوف مستشعرات من الخلفية.",
+      "noDataBackend": "لا توجد بيانات مستشعرات في الخلفية.",
+      "failed": "فشل تحميل المستشعرات من الخلفية: {{error}}"
+    }
   },
   "energyUsage": {
     "title": "نظرة عامة على استهلاك الطاقة",
@@ -70,7 +106,15 @@
     "todayConsumption": "استهلاك اليوم",
     "weeklyConsumption": "استهلاك الأسبوع",
     "monthlyAverage": "المتوسط الشهري",
-    "optimizationRate": "نسبة التحسين"
+    "optimizationRate": "نسبة التحسين",
+    "badgeTitle": "تحليلات الطاقة",
+    "badgeValue": "تتبع الاستهلاك",
+    "status": {
+      "loading": "جاري تحميل استهلاك الطاقة من الخلفية...",
+      "loaded": "تم تحميل {{count}} صفوف KPI من الخلفية.",
+      "noDataBackend": "لا توجد بيانات KPI في الخلفية.",
+      "failed": "فشل تحميل استهلاك الطاقة من الخلفية: {{error}}"
+    }
   },
   "reports": {
     "title": "التقارير والتحليلات",
@@ -81,7 +125,61 @@
     "performanceScore": "مؤشر الأداء",
     "available": "متاح",
     "generated": "تم إنشاؤه",
-    "updated": "محدّث"
+    "updated": "محدّث",
+    "badgeTitle": "مركز التقارير",
+    "badgeValue": "تقارير ذكية",
+    "status": {
+      "loading": "جاري تحميل التقارير من الخلفية...",
+      "loaded": "تم تحميل التقارير من {{count}} صفوف KPI من الخلفية.",
+      "failed": "فشل تحميل التقارير من الخلفية: {{error}}"
+    }
+  },
+  "compareAgencies": {
+    "title": "مقارنة الطاقة بين الوكالات",
+    "subtitle": "قارن استهلاك الطاقة بين وكالتين في نفس المنطقة",
+    "badgeTitle": "مركز المقارنة",
+    "badgeValue": "تحليل ذكي للوكالات",
+    "selectTitle": "اختر الوكالات للمقارنة",
+    "region": "المنطقة",
+    "agency1": "الوكالة 1",
+    "agency2": "الوكالة 2",
+    "metricsTitle": "مقارنة مؤشرات الطاقة",
+    "insightsTitle": "لماذا {{agency}} تستهلك طاقة أكثر",
+    "noInsights": "لا توجد رؤى متاحة لهذه المقارنة.",
+    "dailyComparisonTitle": "مقارنة الطاقة اليومية",
+    "equal": "متساوي",
+    "actions": {
+      "compare": "قارن",
+      "comparing": "جارٍ مقارنة الوكالات..."
+    },
+    "errors": {
+      "loadRegions": "فشل تحميل المناطق",
+      "loadAgencies": "فشل تحميل الوكالات",
+      "selectBoth": "يرجى اختيار كلتا الوكالتين",
+      "selectDifferent": "يرجى اختيار وكالتين مختلفتين",
+      "comparisonFailed": "فشلت المقارنة"
+    },
+    "placeholders": {
+      "selectRegion": "-- اختر منطقة --",
+      "selectAgency1": "-- اختر الوكالة 1 --",
+      "selectAgency2": "-- اختر الوكالة 2 --"
+    },
+    "labels": {
+      "totalEnergy": "إجمالي الطاقة",
+      "avgTemperature": "متوسط الحرارة",
+      "totalClients": "إجمالي العملاء",
+      "avgClients": "متوسط العملاء",
+      "energyPerClient": "الطاقة لكل عميل",
+      "acModes": "أنماط التكييف"
+    },
+    "table": {
+      "date": "التاريخ",
+      "difference": "الفرق"
+    }
+  },
+  "common": {
+    "notAvailable": "غير متاح",
+    "noData": "لا توجد بيانات"
   }
 }
 

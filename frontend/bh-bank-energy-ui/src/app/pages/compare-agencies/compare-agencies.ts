@@ -1,7 +1,7 @@
 import { NgFor, NgIf, DecimalPipe, UpperCasePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
 import { ApiService, Region, Agency, ComparisonResponse } from '../../services/api.service';
 
@@ -38,7 +38,11 @@ export class CompareAgenciesComponent implements OnInit {
   isLoading = false;
   loadingMessage = '';
 
-  constructor(private router: Router, private api: ApiService) {}
+  constructor(
+    private router: Router,
+    private api: ApiService,
+    private translate: TranslateService
+  ) {}
 
   ngOnInit(): void {
     this.loadRegions();
@@ -53,7 +57,7 @@ export class CompareAgenciesComponent implements OnInit {
         this.regions = regions;
       },
       error: (err) => {
-        this.errorMessage = 'Failed to load regions';
+        this.errorMessage = this.translate.instant('compareAgencies.errors.loadRegions');
         console.error('Load regions error:', err);
       }
     });
@@ -75,7 +79,7 @@ export class CompareAgenciesComponent implements OnInit {
         this.agencies = agencies;
       },
       error: (err) => {
-        this.errorMessage = 'Failed to load agencies';
+        this.errorMessage = this.translate.instant('compareAgencies.errors.loadAgencies');
         console.error('Load agencies error:', err);
       }
     });
@@ -100,17 +104,17 @@ export class CompareAgenciesComponent implements OnInit {
 
     // Validation
     if (!this.selectedAgency1Id || !this.selectedAgency2Id) {
-      this.errorMessage = 'Please select both agencies';
+      this.errorMessage = this.translate.instant('compareAgencies.errors.selectBoth');
       return;
     }
 
     if (this.selectedAgency1Id === this.selectedAgency2Id) {
-      this.errorMessage = 'Please select two different agencies';
+      this.errorMessage = this.translate.instant('compareAgencies.errors.selectDifferent');
       return;
     }
 
     this.isLoading = true;
-    this.loadingMessage = 'Comparing agencies...';
+    this.loadingMessage = this.translate.instant('compareAgencies.actions.comparing');
 
     this.api.compareAgencies(this.selectedAgency1Id, this.selectedAgency2Id).subscribe({
       next: (result) => {
@@ -119,7 +123,7 @@ export class CompareAgenciesComponent implements OnInit {
       },
       error: (err) => {
         this.isLoading = false;
-        this.errorMessage = err?.error?.error || 'Comparison failed';
+        this.errorMessage = err?.error?.error || this.translate.instant('compareAgencies.errors.comparisonFailed');
         console.error('Comparison error:', err);
       }
     });
@@ -134,7 +138,7 @@ export class CompareAgenciesComponent implements OnInit {
     const energy1 = this.comparisonResult.agency_1.total_energy;
     const energy2 = this.comparisonResult.agency_2.total_energy;
 
-    if (energy1 === energy2) return 'Equal';
+    if (energy1 === energy2) return this.translate.instant('compareAgencies.equal');
 
     return energy1 > energy2
       ? this.comparisonResult.agency_1.name

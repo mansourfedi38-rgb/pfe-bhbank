@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ApiService } from '../../services/api.service';
 
 @Component({
@@ -11,22 +11,29 @@ import { ApiService } from '../../services/api.service';
   styleUrl: './sensors.scss'
 })
 export class SensorsComponent implements OnInit {
-  backendStatus = 'Loading sensors from backend...';
+  backendStatus = '';
   cards = {
-    temperature: 'N/A',
-    humidity: 'N/A',
-    airQuality: 'N/A',
-    systemStatus: 'N/A'
+    temperature: '',
+    humidity: '',
+    airQuality: '',
+    systemStatus: ''
   };
 
-  constructor(private router: Router, private api: ApiService) {}
+  constructor(
+    private router: Router,
+    private api: ApiService,
+    private translate: TranslateService
+  ) {}
 
   ngOnInit(): void {
+    this.setLoadingState();
+    this.translate.onLangChange.subscribe(() => this.setLoadingState());
+
     this.api.getSensorData().subscribe({
       next: (rows) => {
         if (rows.length === 0) {
-          this.backendStatus = 'No sensor data in backend.';
-          this.cards.systemStatus = 'No data';
+          this.backendStatus = this.translate.instant('sensors.status.noDataBackend');
+          this.cards.systemStatus = this.translate.instant('common.noData');
           return;
         }
 
@@ -36,19 +43,34 @@ export class SensorsComponent implements OnInit {
         const activeAc = rows.filter((item) => item.ac_mode !== 'OFF').length;
 
         this.cards.temperature = `${avgTemperature.toFixed(1)}°C`;
-        this.cards.humidity = `${avgClients.toFixed(0)} clients`;
-        this.cards.airQuality = `${activeAc}/${rows.length} active AC`;
-        this.cards.systemStatus = 'Online';
-        this.backendStatus = `Loaded ${rows.length} backend sensor rows.`;
+        this.cards.humidity = this.translate.instant('sensors.metrics.clients', {
+          count: avgClients.toFixed(0)
+        });
+        this.cards.airQuality = this.translate.instant('sensors.metrics.activeAc', {
+          active: activeAc,
+          total: rows.length
+        });
+        this.cards.systemStatus = this.translate.instant('sensors.systemOnline');
+        this.backendStatus = this.translate.instant('sensors.status.loaded', { count: rows.length });
       },
       error: (err) => {
-        this.backendStatus = `Sensor backend load failed: ${String(err?.message ?? err)}`;
-        this.cards.systemStatus = 'Offline';
+        this.backendStatus = this.translate.instant('sensors.status.failed', {
+          error: String(err?.message ?? err)
+        });
+        this.cards.systemStatus = this.translate.instant('sensors.systemOffline');
       }
     });
   }
 
   logout() {
     this.router.navigate(['/login']);
+  }
+
+  private setLoadingState(): void {
+    this.backendStatus = this.translate.instant('sensors.status.loading');
+    this.cards.temperature = this.translate.instant('common.notAvailable');
+    this.cards.humidity = this.translate.instant('common.notAvailable');
+    this.cards.airQuality = this.translate.instant('common.notAvailable');
+    this.cards.systemStatus = this.translate.instant('common.notAvailable');
   }
 }

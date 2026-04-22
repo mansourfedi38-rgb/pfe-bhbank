@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ApiService } from '../../services/api.service';
 
 @Component({
@@ -11,7 +11,7 @@ import { ApiService } from '../../services/api.service';
   styleUrl: './energy-usage.scss'
 })
 export class EnergyUsageComponent implements OnInit {
-  backendStatus = 'Loading energy usage from backend...';
+  backendStatus = '';
   cards = {
     todayConsumption: 'N/A',
     weeklyConsumption: 'N/A',
@@ -19,13 +19,20 @@ export class EnergyUsageComponent implements OnInit {
     optimizationRate: 'N/A'
   };
 
-  constructor(private router: Router, private api: ApiService) {}
+  constructor(
+    private router: Router,
+    private api: ApiService,
+    private translate: TranslateService
+  ) {}
 
   ngOnInit(): void {
+    this.setLoadingState();
+    this.translate.onLangChange.subscribe(() => this.setLoadingState());
+
     this.api.getDailyEnergyKpi().subscribe({
       next: (rows) => {
         if (rows.length === 0) {
-          this.backendStatus = 'No KPI data in backend.';
+          this.backendStatus = this.translate.instant('energyUsage.status.noDataBackend');
           return;
         }
 
@@ -37,15 +44,23 @@ export class EnergyUsageComponent implements OnInit {
         this.cards.weeklyConsumption = `${(avg * 7).toFixed(2)} kWh`;
         this.cards.monthlyAverage = `${(avg * 30).toFixed(2)} kWh`;
         this.cards.optimizationRate = `${Math.max(0, Math.min(100, 100 - avg)).toFixed(1)}%`;
-        this.backendStatus = `Loaded ${rows.length} KPI rows from backend.`;
+        this.backendStatus = this.translate.instant('energyUsage.status.loaded', {
+          count: rows.length
+        });
       },
       error: (err) => {
-        this.backendStatus = `Energy usage backend load failed: ${String(err?.message ?? err)}`;
+        this.backendStatus = this.translate.instant('energyUsage.status.failed', {
+          error: String(err?.message ?? err)
+        });
       }
     });
   }
 
   logout() {
     this.router.navigate(['/login']);
+  }
+
+  private setLoadingState(): void {
+    this.backendStatus = this.translate.instant('energyUsage.status.loading');
   }
 }
