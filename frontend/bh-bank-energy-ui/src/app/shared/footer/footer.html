@@ -1,0 +1,52 @@
+<footer class="bh-footer">
+  <div class="footer-container">
+    <div class="footer-column footer-brand">
+      <h2 class="logo-text">
+        <span class="bh-red">BH</span><span class="bank-white">BANK</span>
+      </h2>
+      <p class="footer-description">
+        BH Bank, votre partenaire financier pour des solutions sur mesure et un service de qualite. Vers de
+        nouvelles perspectives.
+      </p>
+      <div class="social-icons">
+        @for (social of socialLinks; track social.href) {
+          <a [href]="social.href" [attr.aria-label]="social.name" target="_blank" rel="noopener noreferrer">
+            <i [class]="social.iconClass"></i>
+          </a>
+        }
+      </div>
+    </div>
+
+    <div class="footer-column">
+      <h3>Nous contacter</h3>
+      <div class="footer-item">
+        <i class="icon fa-solid fa-phone"></i>
+        <span>(+216) 71 126 000</span>
+      </div>
+      <div class="footer-item">
+        <i class="icon fa-solid fa-envelope"></i>
+        <span>Contact@bhbank.tn</span>
+      </div>
+      <div class="footer-item">
+        <i class="icon fa-solid fa-location-dot"></i>
+        <span>18 Avenue Mohamed V Tunis 1023</span>
+      </div>
+    </div>
+
+    <div class="footer-column">
+      <h3>Mediator</h3>
+      <p class="mediator-name">Meftah Ziadi</p>
+    </div>
+
+    <div class="footer-column">
+      <h3>Nous suivre</h3>
+      <div class="social-icons">
+        @for (social of socialLinks; track social.href) {
+          <a [href]="social.href" [attr.aria-label]="social.name" target="_blank" rel="noopener noreferrer">
+            <i [class]="social.iconClass"></i>
+          </a>
+        }
+      </div>
+    </div>
+  </div>
+</footer>
