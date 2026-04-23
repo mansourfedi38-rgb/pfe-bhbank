@@ -62,6 +62,8 @@
   "settings": {
     "title": "الإعدادات",
     "subtitle": "إدارة تفضيلات المنصة وإعدادات المستخدم.",
+    "badgeTitle": "مركز الإعدادات",
+    "badgeValue": "التحكم في الإعدادات",
     "notifications": "الإشعارات",
     "notificationsHelp": "تنبيهات البريد الإلكتروني عند ارتفاع استهلاك الطاقة ومشكلات المستشعرات.",
     "enabled": "مفعل",
@@ -123,6 +125,7 @@
     "weeklyReport": "تقرير أسبوعي",
     "monthlyAnalysis": "تحليل شهري",
     "performanceScore": "مؤشر الأداء",
+    "entries": "{{count}} سجل",
     "available": "متاح",
     "generated": "تم إنشاؤه",
     "updated": "محدّث",

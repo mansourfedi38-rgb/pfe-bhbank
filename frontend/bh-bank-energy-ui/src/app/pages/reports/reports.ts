@@ -31,7 +31,7 @@ export class ReportsComponent implements OnInit {
 
     this.api.getDailyEnergyKpi().subscribe({
       next: (rows) => {
-        this.cards.dailyReport = `${rows.length} entries`;
+        this.cards.dailyReport = this.translate.instant('reports.entries', { count: rows.length });
         this.cards.weeklyReport = rows.length > 0
           ? this.translate.instant('reports.generated')
           : this.translate.instant('common.noData');

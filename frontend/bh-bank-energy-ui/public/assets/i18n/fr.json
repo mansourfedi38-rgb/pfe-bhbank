@@ -62,6 +62,8 @@
   "settings": {
     "title": "Paramètres",
     "subtitle": "Gérez les préférences de la plateforme et la configuration utilisateur.",
+    "badgeTitle": "Centre de configuration",
+    "badgeValue": "Contrôle des paramètres",
     "notifications": "Notifications",
     "notificationsHelp": "Alertes par e-mail en cas de forte consommation d’énergie et de problèmes de capteurs.",
     "enabled": "Activé",
@@ -123,6 +125,7 @@
     "weeklyReport": "Rapport hebdomadaire",
     "monthlyAnalysis": "Analyse mensuelle",
     "performanceScore": "Score de performance",
+    "entries": "{{count}} entrées",
     "available": "Disponible",
     "generated": "Généré",
     "updated": "Mis à jour",

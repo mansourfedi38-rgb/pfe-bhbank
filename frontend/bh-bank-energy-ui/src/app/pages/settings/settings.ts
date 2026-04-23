@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -13,7 +13,7 @@ import { supportedLanguages } from '../../language/supported-languages';
   templateUrl: './settings.html',
   styleUrl: './settings.scss'
 })
-export class SettingsComponent {
+export class SettingsComponent implements OnInit {
   notificationsEnabled: 'enabled' | 'disabled' = 'enabled';
   theme: 'default' | 'light' | 'dark' = 'default';
 
@@ -32,7 +32,16 @@ export class SettingsComponent {
       typeof localStorage !== 'undefined'
         ? (localStorage.getItem('language') as SupportedLanguageCode | null)
         : null;
-    this.selectedLanguage = storedLanguage ?? 'en';
+
+    const currentLanguage = this.translate.currentLang as SupportedLanguageCode | undefined;
+    const candidate = storedLanguage ?? currentLanguage ?? 'en';
+    const safeLang = supportedLanguages.includes(candidate as SupportedLanguageCode)
+      ? (candidate as SupportedLanguageCode)
+      : 'en';
+
+    this.selectedLanguage = safeLang;
+    this.translate.use(safeLang);
+    this.applyDirection(safeLang);
   }
 
   logout() {

@@ -62,6 +62,8 @@
   "settings": {
     "title": "Einstellungen",
     "subtitle": "Verwalten Sie Plattformpräferenzen und Benutzereinstellungen.",
+    "badgeTitle": "Konfigurationszentrum",
+    "badgeValue": "Einstellungssteuerung",
     "notifications": "Benachrichtigungen",
     "notificationsHelp": "E-Mail-Benachrichtigungen bei hohem Energieverbrauch und Sensorproblemen.",
     "enabled": "Aktiviert",
@@ -123,6 +125,7 @@
     "weeklyReport": "Wochenbericht",
     "monthlyAnalysis": "Monatsanalyse",
     "performanceScore": "Leistungskennzahl",
+    "entries": "{{count}} Einträge",
     "available": "Verfügbar",
     "generated": "Erstellt",
     "updated": "Aktualisiert",

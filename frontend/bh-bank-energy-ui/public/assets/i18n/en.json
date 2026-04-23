@@ -62,6 +62,8 @@
   "settings": {
     "title": "Settings",
     "subtitle": "Manage platform preferences and user configuration.",
+    "badgeTitle": "Configuration Center",
+    "badgeValue": "Settings Control",
     "notifications": "Notifications",
     "notificationsHelp": "Email alerts for high energy usage and sensor issues.",
     "enabled": "Enabled",
@@ -123,6 +125,7 @@
     "weeklyReport": "Weekly Report",
     "monthlyAnalysis": "Monthly Analysis",
     "performanceScore": "Performance Score",
+    "entries": "{{count}} entries",
     "available": "Available",
     "generated": "Generated",
     "updated": "Updated",
