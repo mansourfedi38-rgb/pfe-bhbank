@@ -40,25 +40,36 @@
     </section>
 
     <section class="cards">
-      <div class="card">
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="loading-indicator">
+        <p>{{ 'sensors.status.loading' | translate }}</p>
+      </div>
+
+      <!-- Error State -->
+      <div *ngIf="hasError && !isLoading" class="error-indicator">
+        <p>{{ 'sensors.status.failed' | translate }}</p>
+      </div>
+
+      <!-- Data Cards -->
+      <div *ngIf="!isLoading" class="card">
         <div class="card-top red-line"></div>
         <h3>{{ 'sensors.temperatureSensor' | translate }}</h3>
         <p>{{ cards.temperature }}</p>
       </div>
 
-      <div class="card">
+      <div *ngIf="!isLoading" class="card">
         <div class="card-top blue-line"></div>
-        <h3>{{ 'sensors.humiditySensor' | translate }}</h3>
-        <p>{{ cards.humidity }}</p>
+        <h3>{{ 'sensors.clientsCount' | translate }}</h3>
+        <p>{{ cards.clientsCount }}</p>
       </div>
 
-      <div class="card">
+      <div *ngIf="!isLoading" class="card">
         <div class="card-top red-line"></div>
-        <h3>{{ 'sensors.airQuality' | translate }}</h3>
-        <p>{{ cards.airQuality }}</p>
+        <h3>{{ 'sensors.activeAC' | translate }}</h3>
+        <p>{{ cards.activeAC }}</p>
       </div>
 
-      <div class="card">
+      <div *ngIf="!isLoading" class="card">
         <div class="card-top blue-line"></div>
         <h3>{{ 'sensors.systemStatus' | translate }}</h3>
         <p>{{ cards.systemStatus }}</p>

@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { NgIf } from '@angular/common';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ApiService } from '../../services/api.service';
@@ -6,53 +7,71 @@ import { ApiService } from '../../services/api.service';
 @Component({
   selector: 'app-reports',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, TranslateModule],
+  imports: [NgIf, RouterLink, RouterLinkActive, TranslateModule],
   templateUrl: './reports.html',
   styleUrl: './reports.scss'
 })
 export class ReportsComponent implements OnInit {
   backendStatus = '';
+  isLoading = true;
+  hasError = false;
   cards = {
     dailyReport: 'N/A',
-    weeklyReport: 'N/A',
-    monthlyAnalysis: 'N/A',
-    performanceScore: 'N/A'
+    totalEnergyTracked: 'N/A',
+    agenciesCount: 'N/A',
+    dataPointsCount: 'N/A'
   };
 
   constructor(
     private router: Router,
     private api: ApiService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.setLoadingState();
-    this.translate.onLangChange.subscribe(() => this.setLoadingState());
+    this.translate.onLangChange.subscribe(() => {
+      if (this.isLoading) {
+        this.setLoadingState();
+      }
+    });
 
     this.api.getDailyEnergyKpi().subscribe({
       next: (rows) => {
-        this.cards.dailyReport = this.translate.instant('reports.entries', { count: rows.length });
-        this.cards.weeklyReport = rows.length > 0
-          ? this.translate.instant('reports.generated')
-          : this.translate.instant('common.noData');
-        this.cards.monthlyAnalysis = rows.length > 0
-          ? this.translate.instant('reports.updated')
-          : this.translate.instant('common.noData');
-
-        if (rows.length > 0) {
-          const uniqueAgencies = new Set(rows.map((item) => item.agency)).size;
-          const score = Math.min(100, Math.round((uniqueAgencies / Math.max(1, rows.length)) * 100));
-          this.cards.performanceScore = `${score}%`;
-        } else {
-          this.cards.performanceScore = '0%';
+        this.isLoading = false;
+        this.hasError = false;
+        
+        if (rows.length === 0) {
+          this.backendStatus = this.translate.instant('reports.status.noDataBackend');
+          this.cdr.detectChanges();
+          return;
         }
 
+        // Calculate real metrics from backend data
+        const totalEnergy = rows.reduce((sum, item) => sum + Number(item.total_energy), 0);
+        const uniqueAgencies = new Set(rows.map((item) => item.agency)).size;
+        const totalDataPoints = rows.length;
+
+        this.cards.dailyReport = this.translate.instant('reports.entries', { count: rows.length });
+        this.cards.totalEnergyTracked = `${totalEnergy.toFixed(2)} kWh`;
+        this.cards.agenciesCount = `${uniqueAgencies} agencies`;
+        this.cards.dataPointsCount = `${totalDataPoints} records`;
+
         this.backendStatus = this.translate.instant('reports.status.loaded', { count: rows.length });
+        
+        // Force change detection
+        this.cdr.detectChanges();
       },
       error: (err) => {
+        this.isLoading = false;
+        this.hasError = true;
         this.backendStatus = this.translate.instant('reports.status.failed', {
           error: String(err?.message ?? err)
         });
+        
+        // Force change detection
+        this.cdr.detectChanges();
       }
     });
   }
@@ -62,8 +81,11 @@ export class ReportsComponent implements OnInit {
   }
 
   private setLoadingState(): void {
+    this.isLoading = true;
+    this.hasError = false;
     this.backendStatus = this.translate.instant('reports.status.loading');
-    this.cards.weeklyReport = this.translate.instant('common.notAvailable');
-    this.cards.monthlyAnalysis = this.translate.instant('common.notAvailable');
+    this.cards.totalEnergyTracked = this.translate.instant('common.notAvailable');
+    this.cards.agenciesCount = this.translate.instant('common.notAvailable');
+    this.cards.dataPointsCount = this.translate.instant('common.notAvailable');
   }
 }

@@ -57,6 +57,13 @@
       "agency": "Agency",
       "date": "Date",
       "totalEnergy": "Total Energy"
+    },
+    "charts": {
+      "energyByAgency": "Energy Consumption by Agency",
+      "energyOverTime": "Energy Consumption Over Time",
+      "loading": "Loading charts...",
+      "noData": "No chart data available",
+      "error": "Failed to load charts"
     }
   },
   "settings": {
@@ -81,10 +88,10 @@
   },
   "sensors": {
     "title": "Sensors Monitoring",
-    "subtitle": "Track temperature, humidity, and sensor status across BH Bank agencies.",
-    "temperatureSensor": "Temperature Sensor",
-    "humiditySensor": "Humidity Sensor",
-    "airQuality": "Air Quality",
+    "subtitle": "Track temperature, clients count, and AC mode across BH Bank agencies.",
+    "temperatureSensor": "Temperature",
+    "clientsCount": "Clients Count",
+    "activeAC": "Active AC Units",
     "airQualityNormal": "Normal",
     "systemStatus": "System Status",
     "systemOnline": "Online",
@@ -105,10 +112,10 @@
   "energyUsage": {
     "title": "Energy Usage Overview",
     "subtitle": "Monitor energy consumption and optimization across BH Bank agencies.",
-    "todayConsumption": "Today Consumption",
-    "weeklyConsumption": "Weekly Consumption",
-    "monthlyAverage": "Monthly Average",
-    "optimizationRate": "Optimization Rate",
+    "totalEnergy": "Total Energy",
+    "averageEnergyPerDay": "Average Energy/Day",
+    "totalAgenciesTracked": "Agencies Tracked",
+    "latestReading": "Latest Reading",
     "badgeTitle": "Energy Analytics",
     "badgeValue": "Usage Tracking",
     "status": {
@@ -122,9 +129,9 @@
     "title": "Reports & Analytics",
     "subtitle": "Review operational summaries and energy performance reports for BH Bank agencies.",
     "dailyReport": "Daily Report",
-    "weeklyReport": "Weekly Report",
-    "monthlyAnalysis": "Monthly Analysis",
-    "performanceScore": "Performance Score",
+    "totalEnergyTracked": "Total Energy Tracked",
+    "agenciesCount": "Agencies Count",
+    "dataPointsCount": "Data Points",
     "entries": "{{count}} entries",
     "available": "Available",
     "generated": "Generated",
@@ -134,6 +141,7 @@
     "status": {
       "loading": "Loading reports from backend...",
       "loaded": "Reports loaded from {{count}} backend KPI rows.",
+      "noDataBackend": "No KPI data in backend.",
       "failed": "Reports backend load failed: {{error}}"
     }
   },

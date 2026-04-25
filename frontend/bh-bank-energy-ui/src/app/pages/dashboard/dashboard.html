@@ -89,5 +89,62 @@
         </table>
       </div>
     </section>
+
+    <!-- Charts Section -->
+    <section class="charts-section">
+      <div class="chart-container">
+        <div class="card">
+          <div class="card-top red-line"></div>
+          <h3>{{ 'dashboard.charts.energyByAgency' | translate }}</h3>
+          
+          <!-- Loading State -->
+          <div *ngIf="chartsLoading" class="chart-loading">
+            <p>{{ 'dashboard.charts.loading' | translate }}</p>
+          </div>
+          
+          <!-- Error State -->
+          <div *ngIf="!chartsLoading && chartError" class="chart-empty">
+            <p>{{ 'dashboard.charts.error' | translate }}</p>
+          </div>
+          
+          <!-- Empty State -->
+          <div *ngIf="!chartsLoading && !chartError && chartsEmpty" class="chart-empty">
+            <p>{{ 'dashboard.charts.noData' | translate }}</p>
+          </div>
+          
+          <!-- Chart -->
+          <div *ngIf="!chartsLoading && !chartError && !chartsEmpty" class="chart-wrapper">
+            <canvas id="agencyChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-container">
+        <div class="card">
+          <div class="card-top blue-line"></div>
+          <h3>{{ 'dashboard.charts.energyOverTime' | translate }}</h3>
+          
+          <!-- Loading State -->
+          <div *ngIf="chartsLoading" class="chart-loading">
+            <p>{{ 'dashboard.charts.loading' | translate }}</p>
+          </div>
+          
+          <!-- Error State -->
+          <div *ngIf="!chartsLoading && chartError" class="chart-empty">
+            <p>{{ 'dashboard.charts.error' | translate }}</p>
+          </div>
+          
+          <!-- Empty State -->
+          <div *ngIf="!chartsLoading && !chartError && chartsEmpty" class="chart-empty">
+            <p>{{ 'dashboard.charts.noData' | translate }}</p>
+          </div>
+          
+          <!-- Chart -->
+          <div *ngIf="!chartsLoading && !chartError && !chartsEmpty" class="chart-wrapper">
+            <canvas id="timeChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 </div>

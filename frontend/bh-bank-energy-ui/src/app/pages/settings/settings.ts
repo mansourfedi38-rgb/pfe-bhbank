@@ -42,6 +42,17 @@ export class SettingsComponent implements OnInit {
     this.selectedLanguage = safeLang;
     this.translate.use(safeLang);
     this.applyDirection(safeLang);
+
+    // Load saved theme
+    const storedTheme =
+      typeof localStorage !== 'undefined'
+        ? (localStorage.getItem('theme') as 'default' | 'light' | 'dark' | null)
+        : null;
+
+    if (storedTheme && ['default', 'light', 'dark'].includes(storedTheme)) {
+      this.theme = storedTheme;
+      this.applyTheme(storedTheme);
+    }
   }
 
   logout() {
@@ -67,9 +78,35 @@ export class SettingsComponent implements OnInit {
     this.applyDirection(safeLang);
   }
 
+  onThemeChange(newTheme: 'default' | 'light' | 'dark') {
+    this.theme = newTheme;
+    this.applyTheme(newTheme);
+
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('theme', newTheme);
+    }
+  }
+
   private applyDirection(lang: SupportedLanguageCode) {
     if (typeof document === 'undefined') return;
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  }
+
+  private applyTheme(theme: 'default' | 'light' | 'dark') {
+    if (typeof document === 'undefined') return;
+
+    const body = document.body;
+    
+    // Remove all theme classes first
+    body.classList.remove('theme-light', 'theme-dark');
+
+    // Apply the selected theme
+    if (theme === 'light') {
+      body.classList.add('theme-light');
+    } else if (theme === 'dark') {
+      body.classList.add('theme-dark');
+    }
+    // 'default' theme means no extra classes (uses base styles)
   }
 }

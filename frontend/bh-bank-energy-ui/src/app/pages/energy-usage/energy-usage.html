@@ -40,28 +40,39 @@
     </section>
 
     <section class="cards">
-      <div class="card">
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="loading-indicator">
+        <p>{{ 'energyUsage.status.loading' | translate }}</p>
+      </div>
+
+      <!-- Error State -->
+      <div *ngIf="hasError && !isLoading" class="error-indicator">
+        <p>{{ 'energyUsage.status.failed' | translate }}</p>
+      </div>
+
+      <!-- Data Cards -->
+      <div *ngIf="!isLoading" class="card">
         <div class="card-top red-line"></div>
-        <h3>{{ 'energyUsage.todayConsumption' | translate }}</h3>
-        <p>{{ cards.todayConsumption }}</p>
+        <h3>{{ 'energyUsage.totalEnergy' | translate }}</h3>
+        <p>{{ cards.totalEnergy }}</p>
       </div>
 
-      <div class="card">
+      <div *ngIf="!isLoading" class="card">
         <div class="card-top blue-line"></div>
-        <h3>{{ 'energyUsage.weeklyConsumption' | translate }}</h3>
-        <p>{{ cards.weeklyConsumption }}</p>
+        <h3>{{ 'energyUsage.averageEnergyPerDay' | translate }}</h3>
+        <p>{{ cards.averageEnergyPerDay }}</p>
       </div>
 
-      <div class="card">
+      <div *ngIf="!isLoading" class="card">
         <div class="card-top red-line"></div>
-        <h3>{{ 'energyUsage.monthlyAverage' | translate }}</h3>
-        <p>{{ cards.monthlyAverage }}</p>
+        <h3>{{ 'energyUsage.totalAgenciesTracked' | translate }}</h3>
+        <p>{{ cards.totalAgenciesTracked }}</p>
       </div>
 
-      <div class="card">
+      <div *ngIf="!isLoading" class="card">
         <div class="card-top blue-line"></div>
-        <h3>{{ 'energyUsage.optimizationRate' | translate }}</h3>
-        <p>{{ cards.optimizationRate }}</p>
+        <h3>{{ 'energyUsage.latestReading' | translate }}</h3>
+        <p>{{ cards.latestReading }}</p>
       </div>
     </section>
   </main>

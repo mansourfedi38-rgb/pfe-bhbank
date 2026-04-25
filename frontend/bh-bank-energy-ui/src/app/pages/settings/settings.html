@@ -50,7 +50,7 @@
         <div class="card-top blue-line"></div>
         <h3>{{ 'settings.theme' | translate }}</h3>
         <p>{{ 'settings.themeHelp' | translate }}</p>
-        <select [(ngModel)]="theme">
+        <select [(ngModel)]="theme" (change)="onThemeChange(theme)">
           <option value="default">{{ 'settings.defaultTheme' | translate }}</option>
           <option value="light">{{ 'settings.lightTheme' | translate }}</option>
           <option value="dark">{{ 'settings.darkTheme' | translate }}</option>

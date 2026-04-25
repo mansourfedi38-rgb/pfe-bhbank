@@ -312,3 +312,29 @@
     font-size: 28px;
   }
 }
+
+/* LOADING & ERROR STATES */
+.loading-indicator,
+.error-indicator {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 40px;
+}
+
+.loading-indicator p {
+  font-size: 18px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.error-indicator p {
+  font-size: 18px;
+  font-weight: 600;
+  color: #e30613;
+}

@@ -57,6 +57,13 @@
       "agency": "الوكالة",
       "date": "التاريخ",
       "totalEnergy": "إجمالي الطاقة"
+    },
+    "charts": {
+      "energyByAgency": "استهلاك الطاقة حسب الوكالة",
+      "energyOverTime": "استهلاك الطاقة عبر الزمن",
+      "loading": "جاري تحميل الرسوم البيانية...",
+      "noData": "لا توجد بيانات متاحة للرسوم البيانية",
+      "error": "فشل تحميل الرسوم البيانية"
     }
   },
   "settings": {
@@ -81,10 +88,10 @@
   },
   "sensors": {
     "title": "مراقبة المستشعرات",
-    "subtitle": "تابع درجة الحرارة والرطوبة وحالة المستشعرات عبر وكالات بنك BH.",
-    "temperatureSensor": "مستشعر الحرارة",
-    "humiditySensor": "مستشعر الرطوبة",
-    "airQuality": "جودة الهواء",
+    "subtitle": "تابع درجة الحرارة وعدد العملاء ووضع التكييف عبر وكالات بنك BH.",
+    "temperatureSensor": "درجة الحرارة",
+    "clientsCount": "عدد العملاء",
+    "activeAC": "أجهزة التكييف النشطة",
     "airQualityNormal": "طبيعية",
     "systemStatus": "حالة النظام",
     "systemOnline": "متصل",
@@ -105,10 +112,10 @@
   "energyUsage": {
     "title": "نظرة عامة على استهلاك الطاقة",
     "subtitle": "راقب استهلاك الطاقة وعمليات التحسين عبر وكالات بنك BH.",
-    "todayConsumption": "استهلاك اليوم",
-    "weeklyConsumption": "استهلاك الأسبوع",
-    "monthlyAverage": "المتوسط الشهري",
-    "optimizationRate": "نسبة التحسين",
+    "totalEnergy": "إجمالي الطاقة",
+    "averageEnergyPerDay": "متوسط/يوم",
+    "totalAgenciesTracked": "الوكالات المتتبعة",
+    "latestReading": "آخر قراءة",
     "badgeTitle": "تحليلات الطاقة",
     "badgeValue": "تتبع الاستهلاك",
     "status": {
@@ -122,9 +129,9 @@
     "title": "التقارير والتحليلات",
     "subtitle": "راجع الملخصات التشغيلية وتقارير أداء الطاقة الخاصة بوكالات بنك BH.",
     "dailyReport": "تقرير يومي",
-    "weeklyReport": "تقرير أسبوعي",
-    "monthlyAnalysis": "تحليل شهري",
-    "performanceScore": "مؤشر الأداء",
+    "totalEnergyTracked": "إجمالي الطاقة المتتبعة",
+    "agenciesCount": "عدد الوكالات",
+    "dataPointsCount": "نقاط البيانات",
     "entries": "{{count}} سجل",
     "available": "متاح",
     "generated": "تم إنشاؤه",
@@ -134,6 +141,7 @@
     "status": {
       "loading": "جاري تحميل التقارير من الخلفية...",
       "loaded": "تم تحميل التقارير من {{count}} صفوف KPI من الخلفية.",
+      "noDataBackend": "لا توجد بيانات KPI في الخلفية.",
       "failed": "فشل تحميل التقارير من الخلفية: {{error}}"
     }
   },

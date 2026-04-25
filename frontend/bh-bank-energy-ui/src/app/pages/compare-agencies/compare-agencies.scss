@@ -403,6 +403,164 @@
   background: #e30613;
 }
 
+/* DARK MODE OVERRIDES */
+body.theme-dark {
+  .top-nav a {
+    color: #a0c4ff !important;
+
+    &.active {
+      background: #e30613 !important;
+      color: #ffffff !important;
+    }
+  }
+
+  .hero-badge {
+    background: #1a3a6e !important;
+    color: #e0ecff !important;
+    border: 1px solid #2a5aa0 !important;
+  }
+
+  .hero-badge .badge-title {
+    color: #6ea8fe !important;
+  }
+
+  .hero-badge .badge-value {
+    color: #e0ecff !important;
+  }
+
+  .compare-btn {
+    background: #e30613 !important;
+    color: #ffffff !important;
+
+    &:hover:not(:disabled) {
+      background: #ff1744 !important;
+    }
+
+    &:disabled {
+      background: #4a5568 !important;
+      color: #a0aec0 !important;
+      cursor: not-allowed;
+    }
+  }
+
+  .agency-metrics {
+    background: #0f2040 !important;
+    border: 1px solid #1a3a6e !important;
+
+    h3 {
+      color: #e0ecff !important;
+    }
+  }
+
+  .metric-row {
+    border-bottom: 1px solid #1a3a6e !important;
+
+    .label {
+      color: #6ea8fe !important;
+    }
+
+    .value {
+      color: #b8ccf0 !important;
+    }
+  }
+
+  .mode {
+    color: #ffffff !important;
+  }
+
+  .insight-card {
+    background: #1a3a6e !important;
+    border: 1px solid #2a5aa0 !important;
+    border-left: 4px solid #2196f3 !important;
+
+    .insight-type {
+      background: #2196f3 !important;
+      color: #ffffff !important;
+    }
+
+    .insight-factor {
+      background: #0f2040 !important;
+      color: #a0c4ff !important;
+    }
+
+    .insight-text {
+      color: #b8ccf0 !important;
+    }
+  }
+
+  .chart-table {
+    background: #0f2040 !important;
+    border: 1px solid #1a3a6e !important;
+
+    thead {
+      background: #1a3a6e !important;
+
+      th {
+        background: #1a3a6e !important;
+        color: #f0f6ff !important;
+        border-bottom: 2px solid #2a5aa0 !important;
+      }
+    }
+
+    tbody {
+      tr {
+        background: #0f2040 !important;
+
+        &:hover {
+          background: #152a50 !important;
+        }
+
+        td {
+          background: #0f2040 !important;
+          color: #b8ccf0 !important;
+          border-bottom: 1px solid #1a3a6e !important;
+        }
+      }
+
+      .no-data td {
+        color: #6ea8fe !important;
+        font-style: italic;
+      }
+    }
+  }
+
+  .selection-panel {
+    background: #0f2040 !important;
+    border: 1px solid #1a3a6e !important;
+
+    h2 {
+      color: #e0ecff !important;
+    }
+
+    label {
+      color: #6ea8fe !important;
+    }
+
+    select {
+      background: #1a3a6e !important;
+      color: #e0ecff !important;
+      border: 1px solid #2a5aa0 !important;
+
+      option {
+        background: #1a3a6e !important;
+        color: #e0ecff !important;
+      }
+    }
+  }
+
+  .error-message {
+    background: #2a1520 !important;
+    border: 1px solid #4a2030 !important;
+    color: #ff6b6b !important;
+  }
+
+  .insights-section h2,
+  .chart-data-section h2,
+  .metrics-comparison h2 {
+    color: #e0ecff !important;
+  }
+}
+
 /* INSIGHTS */
 .insights-list {
   display: grid;

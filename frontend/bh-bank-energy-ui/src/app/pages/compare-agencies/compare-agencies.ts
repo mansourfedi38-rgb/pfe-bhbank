@@ -1,5 +1,5 @@
 import { NgFor, NgIf, DecimalPipe, UpperCasePipe } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
@@ -41,7 +41,8 @@ export class CompareAgenciesComponent implements OnInit {
   constructor(
     private router: Router,
     private api: ApiService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -55,10 +56,12 @@ export class CompareAgenciesComponent implements OnInit {
     this.api.getRegions().subscribe({
       next: (regions) => {
         this.regions = regions;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.errorMessage = this.translate.instant('compareAgencies.errors.loadRegions');
         console.error('Load regions error:', err);
+        this.cdr.detectChanges();
       }
     });
   }
@@ -77,10 +80,12 @@ export class CompareAgenciesComponent implements OnInit {
     this.api.getAgencies(this.selectedRegionId).subscribe({
       next: (agencies) => {
         this.agencies = agencies;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.errorMessage = this.translate.instant('compareAgencies.errors.loadAgencies');
         console.error('Load agencies error:', err);
+        this.cdr.detectChanges();
       }
     });
   }
@@ -120,11 +125,13 @@ export class CompareAgenciesComponent implements OnInit {
       next: (result) => {
         this.comparisonResult = result;
         this.isLoading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.isLoading = false;
         this.errorMessage = err?.error?.error || this.translate.instant('compareAgencies.errors.comparisonFailed');
         console.error('Comparison error:', err);
+        this.cdr.detectChanges();
       }
     });
   }

@@ -40,28 +40,39 @@
     </section>
 
     <section class="cards">
-      <div class="card">
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="loading-indicator">
+        <p>{{ 'reports.status.loading' | translate }}</p>
+      </div>
+
+      <!-- Error State -->
+      <div *ngIf="hasError && !isLoading" class="error-indicator">
+        <p>{{ 'reports.status.failed' | translate }}</p>
+      </div>
+
+      <!-- Data Cards -->
+      <div *ngIf="!isLoading" class="card">
         <div class="card-top red-line"></div>
         <h3>{{ 'reports.dailyReport' | translate }}</h3>
         <p>{{ cards.dailyReport }}</p>
       </div>
 
-      <div class="card">
+      <div *ngIf="!isLoading" class="card">
         <div class="card-top blue-line"></div>
-        <h3>{{ 'reports.weeklyReport' | translate }}</h3>
-        <p>{{ cards.weeklyReport }}</p>
+        <h3>{{ 'reports.totalEnergyTracked' | translate }}</h3>
+        <p>{{ cards.totalEnergyTracked }}</p>
       </div>
 
-      <div class="card">
+      <div *ngIf="!isLoading" class="card">
         <div class="card-top red-line"></div>
-        <h3>{{ 'reports.monthlyAnalysis' | translate }}</h3>
-        <p>{{ cards.monthlyAnalysis }}</p>
+        <h3>{{ 'reports.agenciesCount' | translate }}</h3>
+        <p>{{ cards.agenciesCount }}</p>
       </div>
 
-      <div class="card">
+      <div *ngIf="!isLoading" class="card">
         <div class="card-top blue-line"></div>
-        <h3>{{ 'reports.performanceScore' | translate }}</h3>
-        <p>{{ cards.performanceScore }}</p>
+        <h3>{{ 'reports.dataPointsCount' | translate }}</h3>
+        <p>{{ cards.dataPointsCount }}</p>
       </div>
     </section>
   </main>

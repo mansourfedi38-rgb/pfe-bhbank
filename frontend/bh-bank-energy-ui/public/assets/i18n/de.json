@@ -57,6 +57,13 @@
       "agency": "Agentur",
       "date": "Datum",
       "totalEnergy": "Gesamtenergie"
+    },
+    "charts": {
+      "energyByAgency": "Energieverbrauch nach Agentur",
+      "energyOverTime": "Energieverbrauch im Zeitverlauf",
+      "loading": "Diagramme werden geladen...",
+      "noData": "Keine Daten für Diagramme verfügbar",
+      "error": "Diagramme konnten nicht geladen werden"
     }
   },
   "settings": {
@@ -81,10 +88,10 @@
   },
   "sensors": {
     "title": "Sensorüberwachung",
-    "subtitle": "Verfolgen Sie Temperatur, Luftfeuchtigkeit und Sensorstatus in den Filialen der BH Bank.",
-    "temperatureSensor": "Temperatursensor",
-    "humiditySensor": "Feuchtigkeitssensor",
-    "airQuality": "Luftqualität",
+    "subtitle": "Verfolgen Sie Temperatur, Kundenanzahl und AC-Modus in den Filialen der BH Bank.",
+    "temperatureSensor": "Temperatur",
+    "clientsCount": "Kundenanzahl",
+    "activeAC": "Aktive Klimageräte",
     "airQualityNormal": "Normal",
     "systemStatus": "Systemstatus",
     "systemOnline": "Online",
@@ -105,10 +112,10 @@
   "energyUsage": {
     "title": "Überblick über den Energieverbrauch",
     "subtitle": "Überwachen Sie den Energieverbrauch und die Optimierung in den Filialen der BH Bank.",
-    "todayConsumption": "Verbrauch heute",
-    "weeklyConsumption": "Wochenverbrauch",
-    "monthlyAverage": "Monatsdurchschnitt",
-    "optimizationRate": "Optimierungsrate",
+    "totalEnergy": "Gesamtenergie",
+    "averageEnergyPerDay": "Durchschnitt/Tag",
+    "totalAgenciesTracked": "Überwachte Filialen",
+    "latestReading": "Letzte Messung",
     "badgeTitle": "Energieanalyse",
     "badgeValue": "Verbrauchsverfolgung",
     "status": {
@@ -122,9 +129,9 @@
     "title": "Berichte und Analysen",
     "subtitle": "Überprüfen Sie betriebliche Zusammenfassungen und Energieberichte der BH-Bank-Filialen.",
     "dailyReport": "Tagesbericht",
-    "weeklyReport": "Wochenbericht",
-    "monthlyAnalysis": "Monatsanalyse",
-    "performanceScore": "Leistungskennzahl",
+    "totalEnergyTracked": "Gesamtenergie verfolgt",
+    "agenciesCount": "Filialanzahl",
+    "dataPointsCount": "Datenpunkte",
     "entries": "{{count}} Einträge",
     "available": "Verfügbar",
     "generated": "Erstellt",
@@ -134,6 +141,7 @@
     "status": {
       "loading": "Berichte werden aus dem Backend geladen...",
       "loaded": "Berichte aus {{count}} Backend-KPI-Zeilen geladen.",
+      "noDataBackend": "Keine KPI-Daten im Backend.",
       "failed": "Backend-Laden der Berichte fehlgeschlagen: {{error}}"
     }
   },
