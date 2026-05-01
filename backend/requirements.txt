@@ -4,5 +4,6 @@ djangorestframework==3.16.1
 psycopg2-binary==2.9.11
 sqlparse==0.5.5
 tzdata==2025.3
-django-filter==23.2
+django-filter==25.2
 requests==2.31.0
+djangorestframework-simplejwt==5.5.0

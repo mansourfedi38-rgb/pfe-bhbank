@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { AuthService } from '../../services/auth.service';
 
 import type { SupportedLanguageCode } from '../../language/supported-languages';
 import { supportedLanguages } from '../../language/supported-languages';
@@ -24,7 +25,8 @@ export class SettingsComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private auth: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -56,7 +58,7 @@ export class SettingsComponent implements OnInit {
   }
 
   logout() {
-    this.router.navigate(['/login']);
+    this.auth.logout();
   }
 
   manageSecurity() {

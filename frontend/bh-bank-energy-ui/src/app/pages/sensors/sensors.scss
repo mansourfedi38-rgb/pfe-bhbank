@@ -338,3 +338,93 @@
   font-weight: 600;
   color: #e30613;
 }
+
+/* SENSOR TABLE */
+.sensor-table-section {
+  margin-top: 30px;
+}
+
+.sensor-table-section .card {
+  overflow-x: auto;
+}
+
+.table-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 16px;
+}
+
+.table-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: #6b7280;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.sensor-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+  min-width: 600px;
+}
+
+.sensor-table th,
+.sensor-table td {
+  padding: 14px 12px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 15px;
+}
+
+.sensor-table th {
+  color: #6b7280;
+  font-weight: 700;
+  background: #f9fafb;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 13px;
+}
+
+.sensor-table td {
+  color: #0a2342;
+}
+
+.sensor-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+/* AC MODE BADGES */
+.ac-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.ac-on {
+  background: rgba(227, 6, 19, 0.12);
+  color: #e30613;
+  border: 1px solid rgba(227, 6, 19, 0.25);
+}
+
+.ac-eco {
+  background: rgba(34, 197, 94, 0.12);
+  color: #16a34a;
+  border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+.ac-off {
+  background: rgba(107, 114, 128, 0.12);
+  color: #6b7280;
+  border: 1px solid rgba(107, 114, 128, 0.25);
+}

@@ -3,6 +3,7 @@ import { Component, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/co
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ApiService, DailyEnergyKpi } from '../../services/api.service';
+import { AuthService } from '../../services/auth.service';
 import { forkJoin } from 'rxjs';
 import Chart from 'chart.js/auto';
 
@@ -37,7 +38,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     private router: Router,
     private api: ApiService,
     private translate: TranslateService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private auth: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -139,7 +141,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   logout(): void {
-    this.router.navigate(['/login']);
+    this.auth.logout();
   }
 
   private createCharts(): void {

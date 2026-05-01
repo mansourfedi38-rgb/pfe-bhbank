@@ -8,8 +8,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from decimal import Decimal
 
+from rest_framework_simplejwt.views import TokenObtainPairView
+
 from .models import Region, Agency, SensorData, ACMode
-from .serializers import RegionSerializer, AgencySerializer, SensorDataSerializer
+from .serializers import RegionSerializer, AgencySerializer, SensorDataSerializer, EmailTokenObtainPairSerializer
 
 
 class RegionViewSet(ModelViewSet):
@@ -256,3 +258,7 @@ def _generate_insights(agency1_metrics: dict, agency2_metrics: dict) -> list:
             'factor': 'No significant differences detected'
         }
     ]
+
+
+class EmailTokenObtainPairView(TokenObtainPairView):
+    serializer_class = EmailTokenObtainPairSerializer

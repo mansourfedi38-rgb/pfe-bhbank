@@ -1,7 +1,8 @@
 import { NgModule, APP_INITIALIZER } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { TranslateHttpLoader, TRANSLATE_HTTP_LOADER_CONFIG } from '@ngx-translate/http-loader';
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
+import { AuthInterceptor } from './interceptors/auth.interceptor';
 
 import { supportedLanguages } from './language/supported-languages';
 
@@ -42,6 +43,11 @@ export function translateInitializer(translate: TranslateService) {
       provide: APP_INITIALIZER,
       useFactory: translateInitializer,
       deps: [TranslateService],
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
       multi: true
     }
   ]

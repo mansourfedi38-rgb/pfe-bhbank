@@ -33,12 +33,14 @@
           <p>{{ 'login.footer' | translate }}</p>
         </div>
 
-        <form class="login-form" (ngSubmit)="goToDashboard()">
+        <form class="login-form" (ngSubmit)="onSubmit()">
           <div class="form-group">
             <label for="email">{{ 'login.emailLabel' | translate }}</label>
             <input
               id="email"
+              name="email"
               type="email"
+              [(ngModel)]="email"
               [attr.placeholder]="'login.emailPlaceholder' | translate"
               required
             />
@@ -48,10 +50,16 @@
             <label for="password">{{ 'login.passwordLabel' | translate }}</label>
             <input
               id="password"
+              name="password"
               type="password"
+              [(ngModel)]="password"
               [attr.placeholder]="'login.passwordPlaceholder' | translate"
               required
             />
+          </div>
+
+          <div *ngIf="errorMessage" class="error-message" style="color: #e30613; font-size: 14px; margin-bottom: 10px;">
+            {{ errorMessage }}
           </div>
 
           <div class="form-options">
@@ -63,7 +71,9 @@
             <a href="#" class="forgot-password">{{ 'login.forgotPassword' | translate }}</a>
           </div>
 
-          <button type="submit" class="login-btn">{{ 'login.signIn' | translate }}</button>
+          <button type="submit" class="login-btn" [disabled]="isLoading">
+            {{ isLoading ? 'Signing in...' : ('login.signIn' | translate) }}
+          </button>
         </form>
       </div>
     </section>

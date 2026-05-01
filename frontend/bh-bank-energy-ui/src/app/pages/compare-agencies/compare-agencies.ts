@@ -4,6 +4,7 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
 import { ApiService, Region, Agency, ComparisonResponse } from '../../services/api.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-compare-agencies',
@@ -42,7 +43,8 @@ export class CompareAgenciesComponent implements OnInit {
     private router: Router,
     private api: ApiService,
     private translate: TranslateService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private auth: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -156,6 +158,6 @@ export class CompareAgenciesComponent implements OnInit {
   // LOGOUT
   // ===============================
   logout(): void {
-    this.router.navigate(['/login']);
+    this.auth.logout();
   }
 }

@@ -1,17 +1,18 @@
-import { NgIf } from '@angular/common';
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { NgFor, NgIf } from '@angular/common';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { ApiService } from '../../services/api.service';
+import { ApiService, SensorData } from '../../services/api.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-sensors',
   standalone: true,
-  imports: [NgIf, RouterLink, RouterLinkActive, TranslateModule],
+  imports: [NgIf, NgFor, RouterLink, RouterLinkActive, TranslateModule],
   templateUrl: './sensors.html',
   styleUrl: './sensors.scss'
 })
-export class SensorsComponent implements OnInit {
+export class SensorsComponent implements OnInit, OnDestroy {
   backendStatus = '';
   isLoading = true;
   hasError = false;
@@ -22,11 +23,16 @@ export class SensorsComponent implements OnInit {
     systemStatus: ''
   };
 
+  sensorRows: SensorData[] = [];
+  agenciesMap = new Map<number, string>();
+  private pollingInterval: any;
+
   constructor(
     private router: Router,
     private api: ApiService,
     private translate: TranslateService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private auth: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -37,11 +43,33 @@ export class SensorsComponent implements OnInit {
       }
     });
 
+    // Load agency names for mapping
+    this.api.getAgencies().subscribe({
+      next: (agencies) => {
+        agencies.forEach((a) => this.agenciesMap.set(a.id, a.name));
+      },
+      error: () => {
+        // Continue even if agencies fail to load
+      }
+    });
+
+    this.loadSensorData();
+    this.pollingInterval = setInterval(() => this.loadSensorData(), 5000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.pollingInterval) {
+      clearInterval(this.pollingInterval);
+    }
+  }
+
+  loadSensorData(): void {
     this.api.getSensorData().subscribe({
       next: (rows) => {
         this.isLoading = false;
         this.hasError = false;
-        
+        this.sensorRows = rows;
+
         if (rows.length === 0) {
           this.backendStatus = this.translate.instant('sensors.status.noDataBackend');
           this.cards.systemStatus = this.translate.instant('common.noData');
@@ -64,8 +92,7 @@ export class SensorsComponent implements OnInit {
         });
         this.cards.systemStatus = this.translate.instant('sensors.systemOnline');
         this.backendStatus = this.translate.instant('sensors.status.loaded', { count: rows.length });
-        
-        // Force change detection
+
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -75,15 +102,40 @@ export class SensorsComponent implements OnInit {
           error: String(err?.message ?? err)
         });
         this.cards.systemStatus = this.translate.instant('sensors.systemOffline');
-        
-        // Force change detection
+        this.sensorRows = [];
         this.cdr.detectChanges();
       }
     });
   }
 
   logout() {
-    this.router.navigate(['/login']);
+    this.auth.logout();
+  }
+
+  getAgencyName(id: number): string {
+    return this.agenciesMap.get(id) || `Agency #${id}`;
+  }
+
+  formatTemperature(val: string): string {
+    return `${Number(val).toFixed(1)}°C`;
+  }
+
+  formatEnergy(val: string): string {
+    return `${Number(val).toFixed(3)} kWh`;
+  }
+
+  formatTimestamp(val: string): string {
+    const date = new Date(val);
+    return date.toLocaleString();
+  }
+
+  acModeClass(mode: string): string {
+    switch (mode) {
+      case 'ON': return 'ac-on';
+      case 'ECO': return 'ac-eco';
+      case 'OFF': return 'ac-off';
+      default: return 'ac-off';
+    }
   }
 
   private setLoadingState(): void {

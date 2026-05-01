@@ -1,9 +1,40 @@
 from django.db import IntegrityError
+from django.contrib.auth import get_user_model
 
 from rest_framework import serializers
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.validators import UniqueTogetherValidator
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from .models import Region, Agency, SensorData
+
+User = get_user_model()
+FAILED_LOGIN_MESSAGE = "Wrong email address or password."
+
+
+class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
+    default_error_messages = {
+        "no_active_account": FAILED_LOGIN_MESSAGE,
+    }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields.pop("username", None)
+        self.fields["email"] = serializers.EmailField(required=True)
+
+    def validate(self, attrs):
+        email = attrs.get("email")
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            raise AuthenticationFailed(
+                FAILED_LOGIN_MESSAGE,
+                code="no_active_account",
+            )
+
+        attrs[self.username_field] = user.username
+        return super().validate(attrs)
 
 
 class RegionSerializer(serializers.ModelSerializer):

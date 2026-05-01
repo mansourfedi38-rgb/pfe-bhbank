@@ -6,14 +6,15 @@ import { EnergyUsageComponent } from './pages/energy-usage/energy-usage';
 import { ReportsComponent } from './pages/reports/reports';
 import { CompareAgenciesComponent } from './pages/compare-agencies/compare-agencies';
 import { SettingsComponent } from './pages/settings/settings';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
-  { path: 'dashboard', component: DashboardComponent },
-  { path: 'sensors', component: SensorsComponent },
-  { path: 'energy-usage', component: EnergyUsageComponent },
-  { path: 'reports', component: ReportsComponent },
-  { path: 'compare-agencies', component: CompareAgenciesComponent },
-  { path: 'settings', component: SettingsComponent }
+  { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
+  { path: 'sensors', component: SensorsComponent, canActivate: [authGuard] },
+  { path: 'energy-usage', component: EnergyUsageComponent, canActivate: [authGuard] },
+  { path: 'reports', component: ReportsComponent, canActivate: [authGuard] },
+  { path: 'compare-agencies', component: CompareAgenciesComponent, canActivate: [authGuard] },
+  { path: 'settings', component: SettingsComponent, canActivate: [authGuard] }
 ];

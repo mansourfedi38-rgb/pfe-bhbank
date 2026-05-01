@@ -3,6 +3,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ApiService } from '../../services/api.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-reports',
@@ -26,7 +27,8 @@ export class ReportsComponent implements OnInit {
     private router: Router,
     private api: ApiService,
     private translate: TranslateService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private auth: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -77,7 +79,7 @@ export class ReportsComponent implements OnInit {
   }
 
   logout() {
-    this.router.navigate(['/login']);
+    this.auth.logout();
   }
 
   private setLoadingState(): void {

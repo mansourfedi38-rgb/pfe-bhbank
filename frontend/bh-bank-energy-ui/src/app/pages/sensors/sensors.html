@@ -71,5 +71,47 @@
         <p>{{ cards.systemStatus }}</p>
       </div>
     </section>
+
+    <!-- Live Sensor Data Table -->
+    <section class="sensor-table-section" *ngIf="!isLoading && !hasError">
+      <div class="card">
+        <div class="card-top red-line"></div>
+        <h3>Live Sensor Data</h3>
+        <p class="table-subtitle">Updates every 5 seconds</p>
+
+        <div *ngIf="sensorRows.length === 0" class="table-empty">
+          <p>{{ 'common.noData' | translate }}</p>
+        </div>
+
+        <div *ngIf="sensorRows.length > 0" class="table-wrapper">
+          <table class="sensor-table">
+            <thead>
+              <tr>
+                <th>Agency</th>
+                <th>Temperature</th>
+                <th>Clients</th>
+                <th>Energy Usage</th>
+                <th>AC Mode</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of sensorRows">
+                <td>{{ getAgencyName(row.agency) }}</td>
+                <td>{{ formatTemperature(row.temperature) }}</td>
+                <td>{{ row.clients_count }}</td>
+                <td>{{ formatEnergy(row.energy_usage) }}</td>
+                <td>
+                  <span class="ac-badge" [class]="acModeClass(row.ac_mode)">
+                    {{ row.ac_mode }}
+                  </span>
+                </td>
+                <td>{{ formatTimestamp(row.timestamp) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
   </main>
 </div>
