@@ -1,537 +1,537 @@
 [
-{
-  "model": "monitoring.region",
-  "pk": 1,
-  "fields": {
-    "name": "cap bon"
-  }
-},
-{
-  "model": "monitoring.agency",
-  "pk": 1,
-  "fields": {
-    "name": "BH bank nabeul",
-    "region": 1
-  }
-},
-{
-  "model": "monitoring.agency",
-  "pk": 2,
-  "fields": {
-    "name": "bh bank mrezga",
-    "region": 1
-  }
-},
-{
-  "model": "monitoring.agency",
-  "pk": 3,
-  "fields": {
-    "name": "BH bank dar chaaben",
-    "region": 1
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 1,
-  "fields": {
-    "agency": 1,
-    "temperature": "31.98",
-    "clients_count": 6,
-    "energy_usage": "2.764",
-    "ac_mode": "ON",
-    "timestamp": "2026-03-26T22:49:06.180Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 2,
-  "fields": {
-    "agency": 1,
-    "temperature": "21.47",
-    "clients_count": 14,
-    "energy_usage": "1.818",
-    "ac_mode": "OFF",
-    "timestamp": "2026-03-26T22:54:06.233Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 3,
-  "fields": {
-    "agency": 1,
-    "temperature": "28.84",
-    "clients_count": 18,
-    "energy_usage": "0.843",
-    "ac_mode": "ECO",
-    "timestamp": "2026-03-26T22:59:06.284Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 4,
-  "fields": {
-    "agency": 1,
-    "temperature": "20.03",
-    "clients_count": 7,
-    "energy_usage": "1.662",
-    "ac_mode": "OFF",
-    "timestamp": "2026-03-26T23:04:06.335Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 5,
-  "fields": {
-    "agency": 1,
-    "temperature": "27.50",
-    "clients_count": 0,
-    "energy_usage": "1.720",
-    "ac_mode": "ECO",
-    "timestamp": "2026-03-29T13:48:32.242Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 6,
-  "fields": {
-    "agency": 1,
-    "temperature": "21.59",
-    "clients_count": 13,
-    "energy_usage": "2.182",
-    "ac_mode": "OFF",
-    "timestamp": "2026-03-29T13:54:58.843Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 7,
-  "fields": {
-    "agency": 1,
-    "temperature": "30.45",
-    "clients_count": 11,
-    "energy_usage": "1.157",
-    "ac_mode": "ON",
-    "timestamp": "2026-03-29T14:01:13.868Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 8,
-  "fields": {
-    "agency": 1,
-    "temperature": "23.70",
-    "clients_count": 3,
-    "energy_usage": "2.147",
-    "ac_mode": "OFF",
-    "timestamp": "2026-03-29T14:06:13.906Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 9,
-  "fields": {
-    "agency": 1,
-    "temperature": "32.31",
-    "clients_count": 9,
-    "energy_usage": "1.426",
-    "ac_mode": "ON",
-    "timestamp": "2026-03-29T14:11:13.968Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 10,
-  "fields": {
-    "agency": 1,
-    "temperature": "32.48",
-    "clients_count": 18,
-    "energy_usage": "0.858",
-    "ac_mode": "ON",
-    "timestamp": "2026-03-29T14:13:12.741Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 11,
-  "fields": {
-    "agency": 2,
-    "temperature": "32.07",
-    "clients_count": 9,
-    "energy_usage": "1.306",
-    "ac_mode": "ON",
-    "timestamp": "2026-03-29T14:13:12.757Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 12,
-  "fields": {
-    "agency": 3,
-    "temperature": "22.10",
-    "clients_count": 15,
-    "energy_usage": "0.592",
-    "ac_mode": "OFF",
-    "timestamp": "2026-03-29T14:13:12.801Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 13,
-  "fields": {
-    "agency": 1,
-    "temperature": "28.07",
-    "clients_count": 11,
-    "energy_usage": "2.126",
-    "ac_mode": "ECO",
-    "timestamp": "2026-03-29T14:18:12.816Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 14,
-  "fields": {
-    "agency": 2,
-    "temperature": "31.81",
-    "clients_count": 16,
-    "energy_usage": "2.038",
-    "ac_mode": "ON",
-    "timestamp": "2026-03-29T14:18:12.845Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 15,
-  "fields": {
-    "agency": 3,
-    "temperature": "32.92",
-    "clients_count": 3,
-    "energy_usage": "1.772",
-    "ac_mode": "ON",
-    "timestamp": "2026-03-29T14:18:12.865Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 16,
-  "fields": {
-    "agency": 1,
-    "temperature": "33.00",
-    "clients_count": 16,
-    "energy_usage": "2.751",
-    "ac_mode": "ON",
-    "timestamp": "2026-03-29T14:23:12.883Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 17,
-  "fields": {
-    "agency": 2,
-    "temperature": "24.40",
-    "clients_count": 11,
-    "energy_usage": "2.655",
-    "ac_mode": "ECO",
-    "timestamp": "2026-03-29T14:23:12.913Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 18,
-  "fields": {
-    "agency": 3,
-    "temperature": "30.85",
-    "clients_count": 19,
-    "energy_usage": "0.762",
-    "ac_mode": "ON",
-    "timestamp": "2026-03-29T14:23:12.936Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 19,
-  "fields": {
-    "agency": 1,
-    "temperature": "26.66",
-    "clients_count": 11,
-    "energy_usage": "0.750",
-    "ac_mode": "ECO",
-    "timestamp": "2026-03-29T14:28:12.955Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 20,
-  "fields": {
-    "agency": 2,
-    "temperature": "24.14",
-    "clients_count": 16,
-    "energy_usage": "2.595",
-    "ac_mode": "ECO",
-    "timestamp": "2026-03-29T14:28:12.981Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 21,
-  "fields": {
-    "agency": 3,
-    "temperature": "22.33",
-    "clients_count": 18,
-    "energy_usage": "2.744",
-    "ac_mode": "OFF",
-    "timestamp": "2026-03-29T14:28:13.006Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 22,
-  "fields": {
-    "agency": 1,
-    "temperature": "26.33",
-    "clients_count": 16,
-    "energy_usage": "1.941",
-    "ac_mode": "ECO",
-    "timestamp": "2026-03-29T14:29:59.579Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 23,
-  "fields": {
-    "agency": 2,
-    "temperature": "27.63",
-    "clients_count": 14,
-    "energy_usage": "2.821",
-    "ac_mode": "ECO",
-    "timestamp": "2026-03-29T14:29:59.601Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 24,
-  "fields": {
-    "agency": 3,
-    "temperature": "26.72",
-    "clients_count": 4,
-    "energy_usage": "1.661",
-    "ac_mode": "ECO",
-    "timestamp": "2026-03-29T14:29:59.615Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 25,
-  "fields": {
-    "agency": 1,
-    "temperature": "33.69",
-    "clients_count": 7,
-    "energy_usage": "1.333",
-    "ac_mode": "ON",
-    "timestamp": "2026-03-29T14:34:59.640Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 26,
-  "fields": {
-    "agency": 2,
-    "temperature": "23.86",
-    "clients_count": 9,
-    "energy_usage": "0.721",
-    "ac_mode": "OFF",
-    "timestamp": "2026-03-29T14:34:59.669Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 27,
-  "fields": {
-    "agency": 3,
-    "temperature": "25.88",
-    "clients_count": 4,
-    "energy_usage": "2.487",
-    "ac_mode": "ECO",
-    "timestamp": "2026-03-29T14:34:59.690Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 28,
-  "fields": {
-    "agency": 1,
-    "temperature": "32.16",
-    "clients_count": 16,
-    "energy_usage": "0.843",
-    "ac_mode": "ON",
-    "timestamp": "2026-03-29T14:36:56.549Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 29,
-  "fields": {
-    "agency": 2,
-    "temperature": "30.82",
-    "clients_count": 6,
-    "energy_usage": "1.127",
-    "ac_mode": "ON",
-    "timestamp": "2026-03-29T14:36:56.567Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 30,
-  "fields": {
-    "agency": 3,
-    "temperature": "32.34",
-    "clients_count": 0,
-    "energy_usage": "1.289",
-    "ac_mode": "ON",
-    "timestamp": "2026-03-29T14:36:56.580Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 31,
-  "fields": {
-    "agency": 1,
-    "temperature": "24.03",
-    "clients_count": 15,
-    "energy_usage": "2.670",
-    "ac_mode": "ECO",
-    "timestamp": "2026-03-29T14:41:56.605Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 32,
-  "fields": {
-    "agency": 2,
-    "temperature": "27.82",
-    "clients_count": 12,
-    "energy_usage": "1.810",
-    "ac_mode": "ECO",
-    "timestamp": "2026-03-29T14:41:56.631Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 33,
-  "fields": {
-    "agency": 3,
-    "temperature": "23.62",
-    "clients_count": 20,
-    "energy_usage": "0.690",
-    "ac_mode": "OFF",
-    "timestamp": "2026-03-29T14:41:56.653Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 34,
-  "fields": {
-    "agency": 1,
-    "temperature": "26.19",
-    "clients_count": 14,
-    "energy_usage": "1.313",
-    "ac_mode": "ECO",
-    "timestamp": "2026-04-11T19:44:24.253Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 35,
-  "fields": {
-    "agency": 2,
-    "temperature": "34.37",
-    "clients_count": 17,
-    "energy_usage": "1.372",
-    "ac_mode": "ON",
-    "timestamp": "2026-04-11T19:44:24.279Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 36,
-  "fields": {
-    "agency": 3,
-    "temperature": "33.33",
-    "clients_count": 7,
-    "energy_usage": "2.393",
-    "ac_mode": "ON",
-    "timestamp": "2026-04-11T19:44:24.296Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 37,
-  "fields": {
-    "agency": 1,
-    "temperature": "22.28",
-    "clients_count": 1,
-    "energy_usage": "1.989",
-    "ac_mode": "OFF",
-    "timestamp": "2026-04-11T19:49:24.312Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 38,
-  "fields": {
-    "agency": 2,
-    "temperature": "28.74",
-    "clients_count": 17,
-    "energy_usage": "1.553",
-    "ac_mode": "ECO",
-    "timestamp": "2026-04-11T19:49:24.343Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 39,
-  "fields": {
-    "agency": 3,
-    "temperature": "31.19",
-    "clients_count": 2,
-    "energy_usage": "2.714",
-    "ac_mode": "ON",
-    "timestamp": "2026-04-11T19:49:24.365Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 40,
-  "fields": {
-    "agency": 1,
-    "temperature": "25.42",
-    "clients_count": 6,
-    "energy_usage": "2.450",
-    "ac_mode": "ECO",
-    "timestamp": "2026-04-18T09:32:58.960Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 41,
-  "fields": {
-    "agency": 2,
-    "temperature": "26.08",
-    "clients_count": 1,
-    "energy_usage": "2.924",
-    "ac_mode": "ECO",
-    "timestamp": "2026-04-18T09:32:58.987Z"
-  }
-},
-{
-  "model": "monitoring.sensordata",
-  "pk": 42,
-  "fields": {
-    "agency": 3,
-    "temperature": "30.95",
-    "clients_count": 9,
-    "energy_usage": "2.104",
-    "ac_mode": "ON",
-    "timestamp": "2026-04-18T09:32:59.002Z"
-  }
-}
+    {
+        "model": "monitoring.region",
+        "pk": 1,
+        "fields": {
+            "name": "cap bon"
+        }
+    },
+    {
+        "model": "monitoring.agency",
+        "pk": 1,
+        "fields": {
+            "name": "BH bank nabeul",
+            "region": 1
+        }
+    },
+    {
+        "model": "monitoring.agency",
+        "pk": 2,
+        "fields": {
+            "name": "bh bank mrezga",
+            "region": 1
+        }
+    },
+    {
+        "model": "monitoring.agency",
+        "pk": 3,
+        "fields": {
+            "name": "BH bank dar chaaben",
+            "region": 1
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 1,
+        "fields": {
+            "agency": 1,
+            "temperature": "31.98",
+            "clients_count": 6,
+            "energy_usage": "2.764",
+            "ac_mode": "ON",
+            "timestamp": "2026-03-26T22:49:06.180Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 2,
+        "fields": {
+            "agency": 1,
+            "temperature": "21.47",
+            "clients_count": 14,
+            "energy_usage": "1.818",
+            "ac_mode": "OFF",
+            "timestamp": "2026-03-26T22:54:06.233Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 3,
+        "fields": {
+            "agency": 1,
+            "temperature": "28.84",
+            "clients_count": 18,
+            "energy_usage": "0.843",
+            "ac_mode": "ECO",
+            "timestamp": "2026-03-26T22:59:06.284Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 4,
+        "fields": {
+            "agency": 1,
+            "temperature": "20.03",
+            "clients_count": 7,
+            "energy_usage": "1.662",
+            "ac_mode": "OFF",
+            "timestamp": "2026-03-26T23:04:06.335Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 5,
+        "fields": {
+            "agency": 1,
+            "temperature": "27.50",
+            "clients_count": 0,
+            "energy_usage": "1.720",
+            "ac_mode": "ECO",
+            "timestamp": "2026-03-29T13:48:32.242Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 6,
+        "fields": {
+            "agency": 1,
+            "temperature": "21.59",
+            "clients_count": 13,
+            "energy_usage": "2.182",
+            "ac_mode": "OFF",
+            "timestamp": "2026-03-29T13:54:58.843Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 7,
+        "fields": {
+            "agency": 1,
+            "temperature": "30.45",
+            "clients_count": 11,
+            "energy_usage": "1.157",
+            "ac_mode": "ON",
+            "timestamp": "2026-03-29T14:01:13.868Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 8,
+        "fields": {
+            "agency": 1,
+            "temperature": "23.70",
+            "clients_count": 3,
+            "energy_usage": "2.147",
+            "ac_mode": "OFF",
+            "timestamp": "2026-03-29T14:06:13.906Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 9,
+        "fields": {
+            "agency": 1,
+            "temperature": "32.31",
+            "clients_count": 9,
+            "energy_usage": "1.426",
+            "ac_mode": "ON",
+            "timestamp": "2026-03-29T14:11:13.968Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 10,
+        "fields": {
+            "agency": 1,
+            "temperature": "32.48",
+            "clients_count": 18,
+            "energy_usage": "0.858",
+            "ac_mode": "ON",
+            "timestamp": "2026-03-29T14:13:12.741Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 11,
+        "fields": {
+            "agency": 2,
+            "temperature": "32.07",
+            "clients_count": 9,
+            "energy_usage": "1.306",
+            "ac_mode": "ON",
+            "timestamp": "2026-03-29T14:13:12.757Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 12,
+        "fields": {
+            "agency": 3,
+            "temperature": "22.10",
+            "clients_count": 15,
+            "energy_usage": "0.592",
+            "ac_mode": "OFF",
+            "timestamp": "2026-03-29T14:13:12.801Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 13,
+        "fields": {
+            "agency": 1,
+            "temperature": "28.07",
+            "clients_count": 11,
+            "energy_usage": "2.126",
+            "ac_mode": "ECO",
+            "timestamp": "2026-03-29T14:18:12.816Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 14,
+        "fields": {
+            "agency": 2,
+            "temperature": "31.81",
+            "clients_count": 16,
+            "energy_usage": "2.038",
+            "ac_mode": "ON",
+            "timestamp": "2026-03-29T14:18:12.845Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 15,
+        "fields": {
+            "agency": 3,
+            "temperature": "32.92",
+            "clients_count": 3,
+            "energy_usage": "1.772",
+            "ac_mode": "ON",
+            "timestamp": "2026-03-29T14:18:12.865Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 16,
+        "fields": {
+            "agency": 1,
+            "temperature": "33.00",
+            "clients_count": 16,
+            "energy_usage": "2.751",
+            "ac_mode": "ON",
+            "timestamp": "2026-03-29T14:23:12.883Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 17,
+        "fields": {
+            "agency": 2,
+            "temperature": "24.40",
+            "clients_count": 11,
+            "energy_usage": "2.655",
+            "ac_mode": "ECO",
+            "timestamp": "2026-03-29T14:23:12.913Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 18,
+        "fields": {
+            "agency": 3,
+            "temperature": "30.85",
+            "clients_count": 19,
+            "energy_usage": "0.762",
+            "ac_mode": "ON",
+            "timestamp": "2026-03-29T14:23:12.936Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 19,
+        "fields": {
+            "agency": 1,
+            "temperature": "26.66",
+            "clients_count": 11,
+            "energy_usage": "0.750",
+            "ac_mode": "ECO",
+            "timestamp": "2026-03-29T14:28:12.955Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 20,
+        "fields": {
+            "agency": 2,
+            "temperature": "24.14",
+            "clients_count": 16,
+            "energy_usage": "2.595",
+            "ac_mode": "ECO",
+            "timestamp": "2026-03-29T14:28:12.981Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 21,
+        "fields": {
+            "agency": 3,
+            "temperature": "22.33",
+            "clients_count": 18,
+            "energy_usage": "2.744",
+            "ac_mode": "OFF",
+            "timestamp": "2026-03-29T14:28:13.006Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 22,
+        "fields": {
+            "agency": 1,
+            "temperature": "26.33",
+            "clients_count": 16,
+            "energy_usage": "1.941",
+            "ac_mode": "ECO",
+            "timestamp": "2026-03-29T14:29:59.579Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 23,
+        "fields": {
+            "agency": 2,
+            "temperature": "27.63",
+            "clients_count": 14,
+            "energy_usage": "2.821",
+            "ac_mode": "ECO",
+            "timestamp": "2026-03-29T14:29:59.601Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 24,
+        "fields": {
+            "agency": 3,
+            "temperature": "26.72",
+            "clients_count": 4,
+            "energy_usage": "1.661",
+            "ac_mode": "ECO",
+            "timestamp": "2026-03-29T14:29:59.615Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 25,
+        "fields": {
+            "agency": 1,
+            "temperature": "33.69",
+            "clients_count": 7,
+            "energy_usage": "1.333",
+            "ac_mode": "ON",
+            "timestamp": "2026-03-29T14:34:59.640Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 26,
+        "fields": {
+            "agency": 2,
+            "temperature": "23.86",
+            "clients_count": 9,
+            "energy_usage": "0.721",
+            "ac_mode": "OFF",
+            "timestamp": "2026-03-29T14:34:59.669Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 27,
+        "fields": {
+            "agency": 3,
+            "temperature": "25.88",
+            "clients_count": 4,
+            "energy_usage": "2.487",
+            "ac_mode": "ECO",
+            "timestamp": "2026-03-29T14:34:59.690Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 28,
+        "fields": {
+            "agency": 1,
+            "temperature": "32.16",
+            "clients_count": 16,
+            "energy_usage": "0.843",
+            "ac_mode": "ON",
+            "timestamp": "2026-03-29T14:36:56.549Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 29,
+        "fields": {
+            "agency": 2,
+            "temperature": "30.82",
+            "clients_count": 6,
+            "energy_usage": "1.127",
+            "ac_mode": "ON",
+            "timestamp": "2026-03-29T14:36:56.567Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 30,
+        "fields": {
+            "agency": 3,
+            "temperature": "32.34",
+            "clients_count": 0,
+            "energy_usage": "1.289",
+            "ac_mode": "ON",
+            "timestamp": "2026-03-29T14:36:56.580Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 31,
+        "fields": {
+            "agency": 1,
+            "temperature": "24.03",
+            "clients_count": 15,
+            "energy_usage": "2.670",
+            "ac_mode": "ECO",
+            "timestamp": "2026-03-29T14:41:56.605Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 32,
+        "fields": {
+            "agency": 2,
+            "temperature": "27.82",
+            "clients_count": 12,
+            "energy_usage": "1.810",
+            "ac_mode": "ECO",
+            "timestamp": "2026-03-29T14:41:56.631Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 33,
+        "fields": {
+            "agency": 3,
+            "temperature": "23.62",
+            "clients_count": 20,
+            "energy_usage": "0.690",
+            "ac_mode": "OFF",
+            "timestamp": "2026-03-29T14:41:56.653Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 34,
+        "fields": {
+            "agency": 1,
+            "temperature": "26.19",
+            "clients_count": 14,
+            "energy_usage": "1.313",
+            "ac_mode": "ECO",
+            "timestamp": "2026-04-11T19:44:24.253Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 35,
+        "fields": {
+            "agency": 2,
+            "temperature": "34.37",
+            "clients_count": 17,
+            "energy_usage": "1.372",
+            "ac_mode": "ON",
+            "timestamp": "2026-04-11T19:44:24.279Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 36,
+        "fields": {
+            "agency": 3,
+            "temperature": "33.33",
+            "clients_count": 7,
+            "energy_usage": "2.393",
+            "ac_mode": "ON",
+            "timestamp": "2026-04-11T19:44:24.296Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 37,
+        "fields": {
+            "agency": 1,
+            "temperature": "22.28",
+            "clients_count": 1,
+            "energy_usage": "1.989",
+            "ac_mode": "OFF",
+            "timestamp": "2026-04-11T19:49:24.312Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 38,
+        "fields": {
+            "agency": 2,
+            "temperature": "28.74",
+            "clients_count": 17,
+            "energy_usage": "1.553",
+            "ac_mode": "ECO",
+            "timestamp": "2026-04-11T19:49:24.343Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 39,
+        "fields": {
+            "agency": 3,
+            "temperature": "31.19",
+            "clients_count": 2,
+            "energy_usage": "2.714",
+            "ac_mode": "ON",
+            "timestamp": "2026-04-11T19:49:24.365Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 40,
+        "fields": {
+            "agency": 1,
+            "temperature": "25.42",
+            "clients_count": 6,
+            "energy_usage": "2.450",
+            "ac_mode": "ECO",
+            "timestamp": "2026-04-18T09:32:58.960Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 41,
+        "fields": {
+            "agency": 2,
+            "temperature": "26.08",
+            "clients_count": 1,
+            "energy_usage": "2.924",
+            "ac_mode": "ECO",
+            "timestamp": "2026-04-18T09:32:58.987Z"
+        }
+    },
+    {
+        "model": "monitoring.sensordata",
+        "pk": 42,
+        "fields": {
+            "agency": 3,
+            "temperature": "30.95",
+            "clients_count": 9,
+            "energy_usage": "2.104",
+            "ac_mode": "ON",
+            "timestamp": "2026-04-18T09:32:59.002Z"
+        }
+    }
 ]
