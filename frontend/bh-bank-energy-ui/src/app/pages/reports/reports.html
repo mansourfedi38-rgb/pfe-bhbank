@@ -21,7 +21,6 @@
         <div class="mini-brand">BH BANK</div>
         <h1>{{ 'reports.title' | translate }}</h1>
         <p>{{ 'reports.subtitle' | translate }}</p>
-
         <div class="status-lines">
           <p class="kpi-status">{{ backendStatus }}</p>
         </div>
@@ -29,47 +28,80 @@
 
       <div class="hero-badge">
         <div class="badge-card">
-          <span class="badge-title">{{ 'reports.badgeTitle' | translate }}</span>
-          <span class="badge-value">{{ 'reports.badgeValue' | translate }}</span>
+          <span class="badge-title">{{ 'reports.reportYear' | translate }}</span>
+          <span class="badge-value">{{ selectedYear || ('common.noDataShort' | translate) }}</span>
         </div>
       </div>
     </section>
 
+    <section class="report-filters" *ngIf="!isLoading && !hasError">
+      <label for="year-select">{{ 'reports.year' | translate }}</label>
+      <select id="year-select" [(ngModel)]="selectedYear" (change)="applyYearFilter()">
+        <option *ngFor="let year of availableYears" [ngValue]="year">{{ year }}</option>
+      </select>
+    </section>
+
     <section class="cards">
-      <!-- Loading State -->
       <div *ngIf="isLoading" class="loading-indicator">
         <p>{{ 'reports.status.loading' | translate }}</p>
       </div>
 
-      <!-- Error State -->
       <div *ngIf="hasError && !isLoading" class="error-indicator">
-        <p>{{ 'reports.status.failed' | translate }}</p>
-      </div>
-
-      <!-- Data Cards -->
-      <div *ngIf="!isLoading" class="card">
-        <div class="card-top red-line"></div>
-        <h3>{{ 'reports.dailyReport' | translate }}</h3>
-        <p>{{ cards.dailyReport }}</p>
-      </div>
-
-      <div *ngIf="!isLoading" class="card">
-        <div class="card-top blue-line"></div>
-        <h3>{{ 'reports.totalEnergyTracked' | translate }}</h3>
-        <p>{{ cards.totalEnergyTracked }}</p>
+        <p>{{ backendStatus }}</p>
       </div>
 
       <div *ngIf="!isLoading" class="card">
         <div class="card-top red-line"></div>
-        <h3>{{ 'reports.agenciesCount' | translate }}</h3>
-        <p>{{ cards.agenciesCount }}</p>
+        <h3>{{ 'reports.totalEnergy' | translate }}</h3>
+        <p>{{ cards.totalEnergy }}</p>
       </div>
 
       <div *ngIf="!isLoading" class="card">
         <div class="card-top blue-line"></div>
-        <h3>{{ 'reports.dataPointsCount' | translate }}</h3>
-        <p>{{ cards.dataPointsCount }}</p>
+        <h3>{{ 'reports.averageMonthlyEnergy' | translate }}</h3>
+        <p>{{ cards.averageMonthlyEnergy }}</p>
       </div>
+
+      <div *ngIf="!isLoading" class="card">
+        <div class="card-top red-line"></div>
+        <h3>{{ 'reports.peakMonth' | translate }}</h3>
+        <p>{{ cards.peakMonth }}</p>
+      </div>
+
+      <div *ngIf="!isLoading" class="card">
+        <div class="card-top blue-line"></div>
+        <h3>{{ 'reports.highestConsumingAgency' | translate }}</h3>
+        <p>{{ cards.peakAgency }}</p>
+      </div>
+
+      <div *ngIf="!isLoading" class="card">
+        <div class="card-top red-line"></div>
+        <h3>{{ 'reports.numberOfReadings' | translate }}</h3>
+        <p>{{ cards.totalReadings }}</p>
+      </div>
+    </section>
+
+    <section class="report-list" *ngIf="!isLoading && !hasError && filteredReportCards.length > 0">
+      <div *ngFor="let report of filteredReportCards" class="report-card" [class.high]="report.status === 'High'" [class.low]="report.status === 'Low'">
+        <div class="report-heading">
+          <h3>{{ report.month }}</h3>
+          <span>{{ ('reports.levels.' + report.status) | translate }}</span>
+        </div>
+        <div class="report-metrics">
+          <span>{{ 'reports.totalEnergyLabel' | translate }}</span>
+          <strong>{{ report.totalEnergy.toFixed(2) }} kWh</strong>
+          <span>{{ 'reports.averageTemperature' | translate }}</span>
+          <strong>{{ report.averageTemperature.toFixed(1) }}°C</strong>
+          <span>{{ 'reports.highestConsumingAgency' | translate }}</span>
+          <strong>{{ report.highestAgency }}</strong>
+          <span>{{ 'reports.numberOfReadings' | translate }}</span>
+          <strong>{{ report.readingsCount }}</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="empty-panel" *ngIf="!isLoading && !hasError && filteredReportCards.length === 0">
+      <p>{{ 'reports.noReports' | translate }}</p>
     </section>
   </main>
 </div>

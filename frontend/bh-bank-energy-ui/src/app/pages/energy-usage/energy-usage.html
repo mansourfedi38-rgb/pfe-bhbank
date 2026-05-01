@@ -21,32 +21,27 @@
         <div class="mini-brand">BH BANK</div>
         <h1>{{ 'energyUsage.title' | translate }}</h1>
         <p>{{ 'energyUsage.subtitle' | translate }}</p>
-
         <div class="status-lines">
           <p class="kpi-status">{{ backendStatus }}</p>
         </div>
       </div>
+    </section>
 
-      <div class="hero-badge">
-        <div class="badge-card">
-          <span class="badge-title">{{ 'energyUsage.badgeTitle' | translate }}</span>
-          <span class="badge-value">{{ 'energyUsage.badgeValue' | translate }}</span>
-        </div>
-      </div>
+    <section class="range-actions">
+      <button [class.active]="selectedRange === 'month'" (click)="applyRange('month')">{{ 'energyUsage.thisMonth' | translate }}</button>
+      <button [class.active]="selectedRange === 'quarter'" (click)="applyRange('quarter')">{{ 'energyUsage.last3Months' | translate }}</button>
+      <button [class.active]="selectedRange === 'year'" (click)="applyRange('year')">{{ 'energyUsage.fullYear' | translate }}</button>
     </section>
 
     <section class="cards">
-      <!-- Loading State -->
       <div *ngIf="isLoading" class="loading-indicator">
         <p>{{ 'energyUsage.status.loading' | translate }}</p>
       </div>
 
-      <!-- Error State -->
       <div *ngIf="hasError && !isLoading" class="error-indicator">
-        <p>{{ 'energyUsage.status.failed' | translate }}</p>
+        <p>{{ backendStatus }}</p>
       </div>
 
-      <!-- Data Cards -->
       <div *ngIf="!isLoading" class="card">
         <div class="card-top red-line"></div>
         <h3>{{ 'energyUsage.totalEnergy' | translate }}</h3>
@@ -55,20 +50,47 @@
 
       <div *ngIf="!isLoading" class="card">
         <div class="card-top blue-line"></div>
-        <h3>{{ 'energyUsage.averageEnergyPerDay' | translate }}</h3>
-        <p>{{ cards.averageEnergyPerDay }}</p>
+        <h3>{{ 'energyUsage.averageEnergyPerMonth' | translate }}</h3>
+        <p>{{ cards.averageEnergyPerMonth }}</p>
       </div>
 
       <div *ngIf="!isLoading" class="card">
         <div class="card-top red-line"></div>
-        <h3>{{ 'energyUsage.totalAgenciesTracked' | translate }}</h3>
-        <p>{{ cards.totalAgenciesTracked }}</p>
+        <h3>{{ 'energyUsage.peakMonth' | translate }}</h3>
+        <p>{{ cards.peakMonth }}</p>
       </div>
 
       <div *ngIf="!isLoading" class="card">
         <div class="card-top blue-line"></div>
-        <h3>{{ 'energyUsage.latestReading' | translate }}</h3>
-        <p>{{ cards.latestReading }}</p>
+        <h3>{{ 'energyUsage.peakAgency' | translate }}</h3>
+        <p>{{ cards.peakAgency }}</p>
+      </div>
+    </section>
+
+    <section class="summary-grid" *ngIf="!isLoading && !hasError">
+      <div class="summary-panel">
+        <h3>{{ 'energyUsage.energyTrendByMonth' | translate }}</h3>
+        <div class="chart-wrapper">
+          <canvas id="energyTrendChart"></canvas>
+        </div>
+      </div>
+
+      <div class="summary-panel">
+        <h3>{{ 'energyUsage.agencyComparison' | translate }}</h3>
+        <table class="summary-table">
+          <thead>
+            <tr>
+              <th>{{ 'energyUsage.agency' | translate }}</th>
+              <th>{{ 'energyUsage.totalEnergy' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of agencyTotals">
+              <td>{{ row.agency }}</td>
+              <td>{{ row.total.toFixed(2) }} kWh</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </section>
   </main>

@@ -185,6 +185,36 @@ class DailyEnergyKpiTests(BaseAPITestCase):
         self.assertEqual(Decimal(response.data[0]["total_energy"]), Decimal("3.000"))
 
 
+class MonthlyEnergyKpiTests(BaseAPITestCase):
+    def test_monthly_aggregation(self):
+        from datetime import datetime
+        SensorData.objects.create(
+            agency=self.agency1,
+            temperature="20.00",
+            clients_count=10,
+            energy_usage="10.000",
+            ac_mode=ACMode.ECO,
+            timestamp=datetime(2025, 1, 10, 10, 0),
+        )
+        SensorData.objects.create(
+            agency=self.agency1,
+            temperature="22.00",
+            clients_count=20,
+            energy_usage="15.000",
+            ac_mode=ACMode.ON,
+            timestamp=datetime(2025, 1, 12, 12, 0),
+        )
+
+        response = self.client.get("/api/kpis/energy/monthly/")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["month"], "2025-01")
+        self.assertEqual(Decimal(str(response.data[0]["total_energy"])), Decimal("25.0"))
+        self.assertEqual(response.data[0]["avg_temperature"], 21.0)
+        self.assertEqual(response.data[0]["avg_clients"], 15.0)
+
+
 class CompareAgenciesTests(BaseAPITestCase):
     def test_compare_valid_agencies(self):
         SensorData.objects.create(
@@ -256,6 +286,7 @@ class ApiSubjectsTests(BaseAPITestCase):
             "agencies",
             "sensor-data",
             "kpis/energy/daily",
+            "kpis/energy/monthly",
             "kpis/energy/compare",
         ]
         self.assertEqual(response.data["subjects"], expected)

@@ -6,20 +6,20 @@
       <img src="assets/images/logo-footer.png" alt="BH Bank Logo" style="height: 50px; width: auto;" />
     </div>
 
-        <div class="brand-badge">BH BANK ENERGY PLATFORM</div>
+        <div class="brand-badge">{{ 'login.badge' | translate }}</div>
 
         <h1>{{ 'login.title' | translate }}</h1>
         <p>{{ 'login.subtitle' | translate }}</p>
 
         <div class="brand-features">
           <div class="feature-card">
-            <span class="feature-title">Monitoring</span>
-            <span class="feature-value">Sensors & Agencies</span>
+            <span class="feature-title">{{ 'login.features.monitoringTitle' | translate }}</span>
+            <span class="feature-value">{{ 'login.features.monitoringValue' | translate }}</span>
           </div>
 
           <div class="feature-card">
-            <span class="feature-title">Analytics</span>
-            <span class="feature-value">Energy & Reports</span>
+            <span class="feature-title">{{ 'login.features.analyticsTitle' | translate }}</span>
+            <span class="feature-value">{{ 'login.features.analyticsValue' | translate }}</span>
           </div>
         </div>
       </div>
@@ -72,7 +72,7 @@
           </div>
 
           <button type="submit" class="login-btn" [disabled]="isLoading">
-            {{ isLoading ? 'Signing in...' : ('login.signIn' | translate) }}
+            {{ isLoading ? ('login.signingIn' | translate) : ('login.signIn' | translate) }}
           </button>
         </form>
       </div>

@@ -1,11 +1,12 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../services/auth.service';
 import { NgIf } from '@angular/common';
+import { timeout } from 'rxjs';
 
-const LOGIN_ERROR_MESSAGE = 'Wrong email address or password.';
+const LOGIN_TIMEOUT_MS = 8000;
 
 @Component({
   selector: 'app-login',
@@ -22,21 +23,27 @@ export class LoginComponent {
 
   constructor(
     private router: Router,
-    private auth: AuthService
+    private auth: AuthService,
+    private translate: TranslateService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   onSubmit(): void {
     this.errorMessage = '';
     this.isLoading = true;
 
-    this.auth.login(this.email, this.password).subscribe({
+    this.auth.login(this.email, this.password).pipe(
+      timeout(LOGIN_TIMEOUT_MS)
+    ).subscribe({
       next: () => {
         this.isLoading = false;
+        this.cdr.detectChanges();
         this.router.navigate(['/dashboard']);
       },
       error: () => {
         this.isLoading = false;
-        this.errorMessage = LOGIN_ERROR_MESSAGE;
+        this.errorMessage = this.translate.instant('login.error');
+        this.cdr.detectChanges();
       }
     });
   }

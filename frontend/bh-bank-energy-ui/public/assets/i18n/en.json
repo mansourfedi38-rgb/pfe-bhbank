@@ -3,8 +3,7 @@
     "label": "Language",
     "english": "English",
     "french": "French",
-    "arabic": "Arabic",
-    "german": "German"
+    "arabic": "Arabic"
   },
   "navigation": {
     "brand": "BH Bank",
@@ -17,8 +16,15 @@
     "logout": "Logout"
   },
   "login": {
+    "badge": "BH Bank Energy Platform",
     "title": "BH Bank Energy Platform",
     "subtitle": "Sign in to access the smart energy management dashboard.",
+    "features": {
+      "monitoringTitle": "Monitoring",
+      "monitoringValue": "Sensors & Agencies",
+      "analyticsTitle": "Analytics",
+      "analyticsValue": "Energy & Reports"
+    },
     "emailLabel": "Email Address",
     "emailPlaceholder": "Enter your email address",
     "passwordLabel": "Password",
@@ -26,44 +32,32 @@
     "rememberMe": "Remember me",
     "forgotPassword": "Forgot password?",
     "signIn": "Sign In",
-    "footer": "Secure access for authorized users only."
+    "signingIn": "Signing in...",
+    "footer": "Secure access for authorized users only.",
+    "error": "Wrong email address or password."
   },
   "dashboard": {
     "title": "Energy Management Dashboard",
     "subtitle": "Welcome to the BH Bank smart monitoring platform.",
-    "totalAgencies": "Total Agencies",
-    "activeSensors": "Active Sensors",
-    "avgTemperature": "Average Temperature",
-    "energyStatus": "Energy Status",
-    "badgeTitle": "Smart Monitoring",
-    "badgeValue": "Energy Platform",
+    "selectedMonth": "Selected Month",
+    "month": "Month",
+    "totalEnergyThisMonth": "Total Energy This Month",
+    "averageTemperatureThisMonth": "Average Temperature This Month",
+    "peakAgencyThisMonth": "Peak Agency This Month",
+    "latestReadingTime": "Latest Reading Time",
+    "monthlyEnergyByAgency": "Monthly Energy Usage by Agency",
+    "loadingChart": "Loading chart...",
+    "noMonthlyData": "No monthly data available.",
     "status": {
-      "loading": "Loading daily KPI...",
-      "loaded": "Dashboard loaded from backend ({{count}} KPI rows).",
-      "failed": "Dashboard backend load failed: {{error}}",
-      "tracked": "Tracked",
-      "idle": "Idle"
+      "loadingMonthly": "Loading monthly KPI...",
+      "loadedMonthly": "Loaded {{count}} monthly KPI rows.",
+      "failed": "Dashboard backend load failed: {{error}}"
     },
     "compatibility": {
       "checking": "Checking backend/frontend subjects compatibility...",
-      "ok": "Subjects compatibility: OK (backend/frontend are 100% aligned).",
-      "frontendOnly": "frontend only: {{values}}",
-      "backendOnly": "backend only: {{values}}",
-      "mismatch": "Subjects compatibility mismatch ({{details}}).",
-      "failed": "Subjects compatibility check failed: {{error}}"
-    },
-    "kpiTable": {
-      "title": "Daily Energy KPI by Agency",
-      "agency": "Agency",
-      "date": "Date",
-      "totalEnergy": "Total Energy"
-    },
-    "charts": {
-      "energyByAgency": "Energy Consumption by Agency",
-      "energyOverTime": "Energy Consumption Over Time",
-      "loading": "Loading charts...",
-      "noData": "No chart data available",
-      "error": "Failed to load charts"
+      "ok": "Subjects compatibility: OK",
+      "mismatch": "Subjects compatibility mismatch",
+      "failed": "Subjects compatibility check failed"
     }
   },
   "settings": {
@@ -92,19 +86,33 @@
     "temperatureSensor": "Temperature",
     "clientsCount": "Clients Count",
     "activeAC": "Active AC Units",
-    "airQualityNormal": "Normal",
     "systemStatus": "System Status",
     "systemOnline": "Online",
     "systemOffline": "Offline",
     "badgeTitle": "Real-Time Monitoring",
     "badgeValue": "Sensors Overview",
+    "lastUpdated": "Last updated",
+    "agency": "Agency",
+    "allAgencies": "All agencies",
+    "acMode": "AC mode",
+    "allModes": "All modes",
+    "from": "From",
+    "to": "To",
+    "apply": "Apply",
+    "clear": "Clear",
+    "latestReadings": "Latest Sensor Readings",
+    "tableSubtitle": "Showing the latest 20 matching readings. Updates every 5 seconds.",
+    "temperature": "Temperature",
+    "clients": "Clients",
+    "energyUsage": "Energy Usage",
+    "timestamp": "Timestamp",
     "metrics": {
       "clients": "{{count}} clients",
       "activeAc": "{{active}}/{{total}} active AC"
     },
     "status": {
       "loading": "Loading sensors from backend...",
-      "loaded": "Loaded {{count}} backend sensor rows.",
+      "loaded": "Showing latest 20 of {{count}} matching readings.",
       "noDataBackend": "No sensor data in backend.",
       "failed": "Sensor backend load failed: {{error}}"
     }
@@ -112,58 +120,83 @@
   "energyUsage": {
     "title": "Energy Usage Overview",
     "subtitle": "Monitor energy consumption and optimization across BH Bank agencies.",
+    "thisMonth": "This Month",
+    "last3Months": "Last 3 Months",
+    "fullYear": "Full Year",
     "totalEnergy": "Total Energy",
-    "averageEnergyPerDay": "Average Energy/Day",
-    "totalAgenciesTracked": "Agencies Tracked",
-    "latestReading": "Latest Reading",
-    "badgeTitle": "Energy Analytics",
-    "badgeValue": "Usage Tracking",
+    "averageEnergyPerMonth": "Average Energy / Month",
+    "peakMonth": "Peak Month",
+    "peakAgency": "Peak Agency",
+    "energyTrendByMonth": "Energy Trend by Month",
+    "agencyComparison": "Agency Comparison",
+    "agency": "Agency",
     "status": {
-      "loading": "Loading energy usage from backend...",
-      "loaded": "Loaded {{count}} KPI rows from backend.",
-      "noDataBackend": "No KPI data in backend.",
+      "loading": "Loading monthly energy summaries...",
+      "loaded": "Showing {{count}} monthly KPI rows.",
+      "noData": "No monthly energy data available.",
       "failed": "Energy usage backend load failed: {{error}}"
     }
   },
   "reports": {
     "title": "Reports & Analytics",
     "subtitle": "Review operational summaries and energy performance reports for BH Bank agencies.",
-    "dailyReport": "Daily Report",
-    "totalEnergyTracked": "Total Energy Tracked",
-    "agenciesCount": "Agencies Count",
-    "dataPointsCount": "Data Points",
-    "entries": "{{count}} entries",
-    "available": "Available",
-    "generated": "Generated",
-    "updated": "Updated",
-    "badgeTitle": "Reporting Center",
-    "badgeValue": "Smart Reports",
+    "reportYear": "Report Year",
+    "year": "Year",
+    "totalEnergy": "Total Energy",
+    "averageMonthlyEnergy": "Average Monthly Energy",
+    "peakMonth": "Peak Month",
+    "highestConsumingAgency": "Highest Consuming Agency",
+    "numberOfReadings": "Number of Readings",
+    "totalEnergyLabel": "Total energy",
+    "averageTemperature": "Average temperature",
+    "noReports": "No reports found for this year.",
     "status": {
-      "loading": "Loading reports from backend...",
-      "loaded": "Reports loaded from {{count}} backend KPI rows.",
-      "noDataBackend": "No KPI data in backend.",
+      "loading": "Loading monthly reports...",
+      "loaded": "Showing {{count}} monthly reports for {{year}}.",
+      "noData": "No monthly reports available for {{year}}.",
       "failed": "Reports backend load failed: {{error}}"
+    },
+    "levels": {
+      "High": "High",
+      "Normal": "Normal",
+      "Low": "Low"
     }
   },
   "compareAgencies": {
-    "title": "Company Energy Comparison",
-    "subtitle": "Compare energy consumption between two agencies in the same region",
+    "title": "Agency Energy Comparison",
+    "subtitle": "Compare energy consumption between two agencies in the same region.",
     "badgeTitle": "Comparison Center",
     "badgeValue": "Smart Agency Analysis",
     "selectTitle": "Select Agencies to Compare",
     "region": "Region",
+    "period": "Period",
+    "selectedMonth": "Selected month",
+    "fullYear": "Full year",
+    "month": "Month",
+    "year": "Year",
     "agency1": "Agency 1",
     "agency2": "Agency 2",
+    "mainReason": "Main reason",
+    "energyDifference": "Energy Difference",
+    "efficiencyWinner": "Efficiency Winner",
+    "temperatureGap": "Temperature Gap",
+    "clientGap": "Client Gap",
+    "rankedCauses": "Ranked Cause Analysis",
+    "noDominantCause": "No dominant cause detected for the selected period.",
+    "recommendations": "Recommendations",
     "metricsTitle": "Energy Metrics Comparison",
-    "insightsTitle": "Why {{agency}} Consumes More Energy",
-    "noInsights": "No insights available for this comparison.",
+    "supportingInsights": "Supporting Insights",
     "dailyComparisonTitle": "Daily Energy Comparison",
+    "showDetails": "Show details",
+    "hideDetails": "Hide details",
     "equal": "Equal",
+    "noInsights": "No insights available for this comparison.",
     "actions": {
       "compare": "Compare",
       "comparing": "Comparing agencies..."
     },
     "errors": {
+      "loadPeriods": "Failed to load comparison periods.",
       "loadRegions": "Failed to load regions",
       "loadAgencies": "Failed to load agencies",
       "selectBoth": "Please select both agencies",
@@ -180,17 +213,69 @@
       "avgTemperature": "Avg Temperature",
       "totalClients": "Total Clients",
       "avgClients": "Avg Clients",
+      "readings": "Readings",
+      "mostUsedAcMode": "Most Used AC Mode",
       "energyPerClient": "Energy per Client",
-      "acModes": "AC Modes"
+      "energyPerReading": "Energy / Reading",
+      "acOnPercentage": "AC ON Percentage",
+      "businessHoursEnergy": "Business-hours Energy",
+      "afterHoursEnergy": "After-hours Energy",
+      "peakReading": "Peak Reading",
+      "highestTemperature": "Highest Temperature"
     },
     "table": {
       "date": "Date",
       "difference": "Difference"
+    },
+    "severity": {
+      "high": "HIGH",
+      "medium": "MEDIUM",
+      "low": "LOW"
+    },
+    "factors": {
+      "AC usage": "AC usage",
+      "Client traffic": "Client traffic",
+      "Temperature": "Temperature",
+      "Energy efficiency": "Energy efficiency",
+      "After-hours usage": "After-hours usage",
+      "Peak load": "Peak load",
+      "Overall load": "Overall load",
+      "Energy balance": "Energy balance"
+    },
+    "causeMessages": {
+      "AC usage": "The higher-consuming agency used AC in ON mode more frequently, increasing cooling demand.",
+      "Client traffic": "The higher-consuming agency had more client traffic, increasing cooling, lighting, and equipment usage.",
+      "Temperature": "The higher-consuming agency recorded higher temperatures, causing stronger or more frequent AC operation.",
+      "Energy efficiency": "The higher-consuming agency used more energy per client, suggesting lower operational efficiency.",
+      "After-hours usage": "The higher-consuming agency used more energy outside business hours, which may indicate unnecessary equipment or AC operation after closing.",
+      "Peak load": "The higher-consuming agency had stronger short-term load peaks.",
+      "Overall load": "The energy difference appears to come from several small combined operational factors.",
+      "Energy balance": "Both agencies have very similar total energy consumption for the selected period."
+    },
+    "recommendationText": {
+      "acSchedule": "Review AC scheduling during business hours and avoid unnecessary ON mode usage.",
+      "afterHours": "Check whether AC, lighting, or office equipment remains ON after closing.",
+      "insulation": "Inspect insulation, sun exposure, and cooling efficiency for the higher-consuming agency.",
+      "efficiency": "Monitor energy per client ratio over the next month and compare operating procedures.",
+      "traffic": "Adjust cooling schedules to match peak client traffic periods instead of running at full load all day.",
+      "peakLoad": "Investigate peak-load hours and stagger high-consumption equipment when possible.",
+      "policies": "Compare equipment usage policies between agencies and document operational differences.",
+      "generateData": "Generate or select a period with sensor readings before comparing agencies.",
+      "monitor": "Continue monitoring energy per client and AC usage to detect future deviations."
     }
+  },
+  "footer": {
+    "description": "BH Bank, your financial partner for tailored solutions and quality service. Toward new perspectives.",
+    "contact": "Contact us",
+    "mediator": "Mediator",
+    "follow": "Follow us"
   },
   "common": {
     "notAvailable": "N/A",
-    "noData": "No data"
+    "noData": "No data",
+    "noDataShort": "No data",
+    "loading": "Loading...",
+    "agencyNumber": "Agency #{{id}}",
+    "clientsUnit": "clients"
   }
 }
-

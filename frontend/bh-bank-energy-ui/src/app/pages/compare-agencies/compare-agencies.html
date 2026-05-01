@@ -35,39 +35,48 @@
 
         <div class="form-group">
           <label for="region-select">{{ 'compareAgencies.region' | translate }}:</label>
-          <select
-            id="region-select"
-            [(ngModel)]="selectedRegionId"
-            (change)="onRegionChange()">
+          <select id="region-select" [(ngModel)]="selectedRegionId" (change)="onRegionChange()">
             <option [ngValue]="null">{{ 'compareAgencies.placeholders.selectRegion' | translate }}</option>
-            <option *ngFor="let region of regions" [ngValue]="region.id">
-              {{ region.name }}
-            </option>
+            <option *ngFor="let region of regions" [ngValue]="region.id">{{ region.name }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="period-select">{{ 'compareAgencies.period' | translate }}:</label>
+          <select id="period-select" [(ngModel)]="selectedPeriod" (change)="onPeriodChange()">
+            <option value="month">{{ 'compareAgencies.selectedMonth' | translate }}</option>
+            <option value="year">{{ 'compareAgencies.fullYear' | translate }}</option>
+          </select>
+        </div>
+
+        <div class="form-group" *ngIf="selectedPeriod === 'month'">
+          <label for="month-select">{{ 'compareAgencies.month' | translate }}:</label>
+          <select id="month-select" [(ngModel)]="selectedMonth" (change)="onPeriodChange()">
+            <option *ngFor="let month of availableMonths" [ngValue]="month">{{ month }}</option>
+          </select>
+        </div>
+
+        <div class="form-group" *ngIf="selectedPeriod === 'year'">
+          <label for="year-select">{{ 'compareAgencies.year' | translate }}:</label>
+          <select id="year-select" [(ngModel)]="selectedYear" (change)="onPeriodChange()">
+            <option *ngFor="let year of availableYears" [ngValue]="year">{{ year }}</option>
           </select>
         </div>
 
         <div class="agency-row" *ngIf="selectedRegionId">
           <div class="form-group">
             <label for="agency1-select">{{ 'compareAgencies.agency1' | translate }}:</label>
-            <select
-              id="agency1-select"
-              [(ngModel)]="selectedAgency1Id">
+            <select id="agency1-select" [(ngModel)]="selectedAgency1Id">
               <option [ngValue]="null">{{ 'compareAgencies.placeholders.selectAgency1' | translate }}</option>
-              <option *ngFor="let agency of agencies" [ngValue]="agency.id">
-                {{ agency.name }}
-              </option>
+              <option *ngFor="let agency of agencies" [ngValue]="agency.id">{{ agency.name }}</option>
             </select>
           </div>
 
           <div class="form-group">
             <label for="agency2-select">{{ 'compareAgencies.agency2' | translate }}:</label>
-            <select
-              id="agency2-select"
-              [(ngModel)]="selectedAgency2Id">
+            <select id="agency2-select" [(ngModel)]="selectedAgency2Id">
               <option [ngValue]="null">{{ 'compareAgencies.placeholders.selectAgency2' | translate }}</option>
-              <option *ngFor="let agency of agencies" [ngValue]="agency.id">
-                {{ agency.name }}
-              </option>
+              <option *ngFor="let agency of agencies" [ngValue]="agency.id">{{ agency.name }}</option>
             </select>
           </div>
         </div>
@@ -79,12 +88,69 @@
           {{ isLoading ? loadingMessage : ('compareAgencies.actions.compare' | translate) }}
         </button>
 
-        <div *ngIf="errorMessage" class="error-message">
-          {{ errorMessage }}
-        </div>
+        <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
       </div>
 
       <div *ngIf="comparisonResult" class="results-panel">
+        <div class="main-reason-card">
+          <span>{{ 'compareAgencies.mainReason' | translate }}</span>
+          <p>{{ getMainReasonText() }}</p>
+        </div>
+
+        <div class="comparison-summary-cards">
+          <div class="summary-card">
+            <span>{{ 'compareAgencies.energyDifference' | translate }}</span>
+            <strong>{{ comparisonCards.energyDifference }}</strong>
+          </div>
+          <div class="summary-card">
+            <span>{{ 'compareAgencies.efficiencyWinner' | translate }}</span>
+            <strong>{{ comparisonCards.efficiencyWinner }}</strong>
+          </div>
+          <div class="summary-card">
+            <span>{{ 'compareAgencies.temperatureGap' | translate }}</span>
+            <strong>{{ comparisonCards.temperatureGap }}</strong>
+          </div>
+          <div class="summary-card">
+            <span>{{ 'compareAgencies.clientGap' | translate }}</span>
+            <strong>{{ comparisonCards.clientGap }}</strong>
+          </div>
+        </div>
+
+        <div class="cause-analysis-section">
+          <h2>{{ 'compareAgencies.rankedCauses' | translate }}</h2>
+          <div *ngIf="comparisonResult.causes.length > 0; else noCauses" class="cause-list">
+            <div
+              *ngFor="let cause of comparisonResult.causes"
+              class="cause-card"
+              [class.high]="cause.severity === 'high'"
+              [class.medium]="cause.severity === 'medium'"
+              [class.low]="cause.severity === 'low'">
+              <div class="cause-topline">
+                <strong>{{ getCauseFactor(cause.factor) }}</strong>
+                <span
+                  class="severity-badge"
+                  [class.high]="cause.severity === 'high'"
+                  [class.medium]="cause.severity === 'medium'"
+                  [class.low]="cause.severity === 'low'">
+                  {{ ('compareAgencies.severity.' + cause.severity) | translate }}
+                </span>
+              </div>
+              <span class="impact">{{ cause.impact }}</span>
+              <p>{{ getCauseMessage(cause.factor) }}</p>
+            </div>
+          </div>
+          <ng-template #noCauses>
+            <p class="muted-text">{{ 'compareAgencies.noDominantCause' | translate }}</p>
+          </ng-template>
+        </div>
+
+        <div class="recommendations-section" *ngIf="comparisonResult.recommendations.length > 0">
+          <h2>{{ 'compareAgencies.recommendations' | translate }}</h2>
+          <ul>
+            <li *ngFor="let recommendation of comparisonResult.recommendations">{{ getRecommendationText(recommendation) }}</li>
+          </ul>
+        </div>
+
         <div class="metrics-comparison">
           <h2>{{ 'compareAgencies.metricsTitle' | translate }}</h2>
 
@@ -94,44 +160,55 @@
 
               <div class="metric-row">
                 <span class="label">{{ 'compareAgencies.labels.totalEnergy' | translate }}:</span>
-                <span class="value">
-                  {{ comparisonResult.agency_1.total_energy | number:'1.2-2' }} kWh
-                </span>
+                <span class="value">{{ comparisonResult.agency_1.total_energy | number:'1.2-2' }} kWh</span>
               </div>
-
               <div class="metric-row">
                 <span class="label">{{ 'compareAgencies.labels.avgTemperature' | translate }}:</span>
-                <span class="value">
-                  {{ comparisonResult.agency_1.average_temperature | number:'1.1-1' }}°C
-                </span>
+                <span class="value">{{ comparisonResult.agency_1.average_temperature | number:'1.1-1' }}°C</span>
               </div>
-
               <div class="metric-row">
                 <span class="label">{{ 'compareAgencies.labels.totalClients' | translate }}:</span>
                 <span class="value">{{ comparisonResult.agency_1.total_clients }}</span>
               </div>
-
               <div class="metric-row">
                 <span class="label">{{ 'compareAgencies.labels.avgClients' | translate }}:</span>
-                <span class="value">
-                  {{ comparisonResult.agency_1.average_clients | number:'1.1-1' }}
-                </span>
+                <span class="value">{{ comparisonResult.agency_1.average_clients | number:'1.1-1' }}</span>
               </div>
-
+              <div class="metric-row">
+                <span class="label">{{ 'compareAgencies.labels.readings' | translate }}:</span>
+                <span class="value">{{ comparisonResult.agency_1.number_of_readings }}</span>
+              </div>
+              <div class="metric-row">
+                <span class="label">{{ 'compareAgencies.labels.mostUsedAcMode' | translate }}:</span>
+                <span class="value">{{ comparisonResult.agency_1.most_used_ac_mode }}</span>
+              </div>
               <div class="metric-row">
                 <span class="label">{{ 'compareAgencies.labels.energyPerClient' | translate }}:</span>
-                <span class="value">
-                  {{ comparisonResult.agency_1.energy_per_client | number:'1.2-2' }} kWh
-                </span>
+                <span class="value">{{ comparisonResult.agency_1.energy_per_client | number:'1.3-3' }} kWh</span>
               </div>
-
-              <div class="ac-modes">
-                <span class="label">{{ 'compareAgencies.labels.acModes' | translate }}:</span>
-                <div class="modes">
-                  <span class="mode off">OFF: {{ comparisonResult.agency_1.ac_mode_counts.OFF }}</span>
-                  <span class="mode eco">ECO: {{ comparisonResult.agency_1.ac_mode_counts.ECO }}</span>
-                  <span class="mode on">ON: {{ comparisonResult.agency_1.ac_mode_counts.ON }}</span>
-                </div>
+              <div class="metric-row">
+                <span class="label">{{ 'compareAgencies.labels.energyPerReading' | translate }}:</span>
+                <span class="value">{{ comparisonResult.agency_1.average_energy_per_reading | number:'1.2-2' }} kWh</span>
+              </div>
+              <div class="metric-row">
+                <span class="label">{{ 'compareAgencies.labels.acOnPercentage' | translate }}:</span>
+                <span class="value">{{ comparisonResult.agency_1.on_percentage | number:'1.0-1' }}%</span>
+              </div>
+              <div class="metric-row">
+                <span class="label">{{ 'compareAgencies.labels.businessHoursEnergy' | translate }}:</span>
+                <span class="value">{{ comparisonResult.agency_1.business_hours_energy | number:'1.2-2' }} kWh</span>
+              </div>
+              <div class="metric-row">
+                <span class="label">{{ 'compareAgencies.labels.afterHoursEnergy' | translate }}:</span>
+                <span class="value">{{ comparisonResult.agency_1.non_business_hours_energy | number:'1.2-2' }} kWh</span>
+              </div>
+              <div class="metric-row">
+                <span class="label">{{ 'compareAgencies.labels.peakReading' | translate }}:</span>
+                <span class="value">{{ comparisonResult.agency_1.peak_energy_reading | number:'1.2-2' }} kWh</span>
+              </div>
+              <div class="metric-row">
+                <span class="label">{{ 'compareAgencies.labels.highestTemperature' | translate }}:</span>
+                <span class="value">{{ comparisonResult.agency_1.highest_temperature_reading | number:'1.1-1' }}°C</span>
               </div>
             </div>
 
@@ -140,52 +217,62 @@
 
               <div class="metric-row">
                 <span class="label">{{ 'compareAgencies.labels.totalEnergy' | translate }}:</span>
-                <span class="value">
-                  {{ comparisonResult.agency_2.total_energy | number:'1.2-2' }} kWh
-                </span>
+                <span class="value">{{ comparisonResult.agency_2.total_energy | number:'1.2-2' }} kWh</span>
               </div>
-
               <div class="metric-row">
                 <span class="label">{{ 'compareAgencies.labels.avgTemperature' | translate }}:</span>
-                <span class="value">
-                  {{ comparisonResult.agency_2.average_temperature | number:'1.1-1' }}°C
-                </span>
+                <span class="value">{{ comparisonResult.agency_2.average_temperature | number:'1.1-1' }}°C</span>
               </div>
-
               <div class="metric-row">
                 <span class="label">{{ 'compareAgencies.labels.totalClients' | translate }}:</span>
                 <span class="value">{{ comparisonResult.agency_2.total_clients }}</span>
               </div>
-
               <div class="metric-row">
                 <span class="label">{{ 'compareAgencies.labels.avgClients' | translate }}:</span>
-                <span class="value">
-                  {{ comparisonResult.agency_2.average_clients | number:'1.1-1' }}
-                </span>
+                <span class="value">{{ comparisonResult.agency_2.average_clients | number:'1.1-1' }}</span>
               </div>
-
+              <div class="metric-row">
+                <span class="label">{{ 'compareAgencies.labels.readings' | translate }}:</span>
+                <span class="value">{{ comparisonResult.agency_2.number_of_readings }}</span>
+              </div>
+              <div class="metric-row">
+                <span class="label">{{ 'compareAgencies.labels.mostUsedAcMode' | translate }}:</span>
+                <span class="value">{{ comparisonResult.agency_2.most_used_ac_mode }}</span>
+              </div>
               <div class="metric-row">
                 <span class="label">{{ 'compareAgencies.labels.energyPerClient' | translate }}:</span>
-                <span class="value">
-                  {{ comparisonResult.agency_2.energy_per_client | number:'1.2-2' }} kWh
-                </span>
+                <span class="value">{{ comparisonResult.agency_2.energy_per_client | number:'1.3-3' }} kWh</span>
               </div>
-
-              <div class="ac-modes">
-                <span class="label">{{ 'compareAgencies.labels.acModes' | translate }}:</span>
-                <div class="modes">
-                  <span class="mode off">OFF: {{ comparisonResult.agency_2.ac_mode_counts.OFF }}</span>
-                  <span class="mode eco">ECO: {{ comparisonResult.agency_2.ac_mode_counts.ECO }}</span>
-                  <span class="mode on">ON: {{ comparisonResult.agency_2.ac_mode_counts.ON }}</span>
-                </div>
+              <div class="metric-row">
+                <span class="label">{{ 'compareAgencies.labels.energyPerReading' | translate }}:</span>
+                <span class="value">{{ comparisonResult.agency_2.average_energy_per_reading | number:'1.2-2' }} kWh</span>
+              </div>
+              <div class="metric-row">
+                <span class="label">{{ 'compareAgencies.labels.acOnPercentage' | translate }}:</span>
+                <span class="value">{{ comparisonResult.agency_2.on_percentage | number:'1.0-1' }}%</span>
+              </div>
+              <div class="metric-row">
+                <span class="label">{{ 'compareAgencies.labels.businessHoursEnergy' | translate }}:</span>
+                <span class="value">{{ comparisonResult.agency_2.business_hours_energy | number:'1.2-2' }} kWh</span>
+              </div>
+              <div class="metric-row">
+                <span class="label">{{ 'compareAgencies.labels.afterHoursEnergy' | translate }}:</span>
+                <span class="value">{{ comparisonResult.agency_2.non_business_hours_energy | number:'1.2-2' }} kWh</span>
+              </div>
+              <div class="metric-row">
+                <span class="label">{{ 'compareAgencies.labels.peakReading' | translate }}:</span>
+                <span class="value">{{ comparisonResult.agency_2.peak_energy_reading | number:'1.2-2' }} kWh</span>
+              </div>
+              <div class="metric-row">
+                <span class="label">{{ 'compareAgencies.labels.highestTemperature' | translate }}:</span>
+                <span class="value">{{ comparisonResult.agency_2.highest_temperature_reading | number:'1.1-1' }}°C</span>
               </div>
             </div>
           </div>
         </div>
 
         <div class="insights-section">
-          <h2>{{ 'compareAgencies.insightsTitle' | translate:{ agency: getHigherEnergyAgency() } }}</h2>
-
+          <h2>{{ 'compareAgencies.supportingInsights' | translate }}</h2>
           <div *ngIf="comparisonResult.insights.length > 0; else noInsights" class="insights-list">
             <div *ngFor="let insight of comparisonResult.insights" class="insight-card">
               <div class="insight-header">
@@ -195,7 +282,6 @@
               <p class="insight-text">{{ insight.text }}</p>
             </div>
           </div>
-
           <ng-template #noInsights>
             <p>{{ 'compareAgencies.noInsights' | translate }}</p>
           </ng-template>
@@ -203,8 +289,11 @@
 
         <div class="chart-data-section">
           <h2>{{ 'compareAgencies.dailyComparisonTitle' | translate }}</h2>
+          <button class="compare-btn" type="button" (click)="toggleDetails()">
+            {{ showDetails ? ('compareAgencies.hideDetails' | translate) : ('compareAgencies.showDetails' | translate) }}
+          </button>
 
-          <div class="chart-table-wrapper">
+          <div class="chart-table-wrapper" *ngIf="showDetails">
             <table class="chart-table">
               <thead>
                 <tr>
@@ -219,15 +308,8 @@
                   *ngFor="let row of comparisonResult.chart_data"
                   [class.no-data]="row.agency1.energy == null || row.agency2.energy == null">
                   <td>{{ row.date }}</td>
-
-                  <td>
-                    {{ row.agency1.energy != null ? (row.agency1.energy | number:'1.2-2') : ('common.notAvailable' | translate) }}
-                  </td>
-
-                  <td>
-                    {{ row.agency2.energy != null ? (row.agency2.energy | number:'1.2-2') : ('common.notAvailable' | translate) }}
-                  </td>
-
+                  <td>{{ row.agency1.energy != null ? (row.agency1.energy | number:'1.2-2') : ('common.notAvailable' | translate) }}</td>
+                  <td>{{ row.agency2.energy != null ? (row.agency2.energy | number:'1.2-2') : ('common.notAvailable' | translate) }}</td>
                   <td>
                     <span *ngIf="row.agency1.energy != null && row.agency2.energy != null">
                       {{ (row.agency1.energy - row.agency2.energy) | number:'1.2-2' }}

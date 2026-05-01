@@ -339,6 +339,58 @@
   color: #e30613;
 }
 
+.sensor-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  align-items: end;
+  background: #ffffff;
+  border: 1px solid #edf1f5;
+  border-radius: 18px;
+  padding: 18px;
+  margin-bottom: 22px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filter-field label {
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.filter-field select,
+.filter-field input {
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: #0a2342;
+}
+
+.filter-btn,
+.clear-btn {
+  border: none;
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.filter-btn {
+  background: #e30613;
+  color: #ffffff;
+}
+
+.clear-btn {
+  background: #e5e7eb;
+  color: #0a2342;
+}
+
 /* SENSOR TABLE */
 .sensor-table-section {
   margin-top: 30px;

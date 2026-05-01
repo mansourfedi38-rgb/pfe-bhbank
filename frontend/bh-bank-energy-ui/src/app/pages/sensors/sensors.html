@@ -24,6 +24,7 @@
 
         <div class="status-lines">
           <p class="kpi-status">{{ backendStatus }}</p>
+          <p class="kpi-status">{{ 'sensors.lastUpdated' | translate }}: {{ lastUpdated }}</p>
         </div>
       </div>
 
@@ -33,6 +34,39 @@
           <span class="badge-value">{{ 'sensors.badgeValue' | translate }}</span>
         </div>
       </div>
+    </section>
+
+    <section class="sensor-filters">
+      <div class="filter-field">
+        <label>{{ 'sensors.agency' | translate }}</label>
+        <select [(ngModel)]="selectedAgencyId">
+          <option [ngValue]="null">{{ 'sensors.allAgencies' | translate }}</option>
+          <option *ngFor="let agency of agencies" [ngValue]="agency.id">{{ agency.name }}</option>
+        </select>
+      </div>
+
+      <div class="filter-field">
+        <label>{{ 'sensors.acMode' | translate }}</label>
+        <select [(ngModel)]="selectedAcMode">
+          <option value="">{{ 'sensors.allModes' | translate }}</option>
+          <option value="OFF">OFF</option>
+          <option value="ECO">ECO</option>
+          <option value="ON">ON</option>
+        </select>
+      </div>
+
+      <div class="filter-field">
+        <label>{{ 'sensors.from' | translate }}</label>
+        <input type="date" [(ngModel)]="dateFrom" />
+      </div>
+
+      <div class="filter-field">
+        <label>{{ 'sensors.to' | translate }}</label>
+        <input type="date" [(ngModel)]="dateTo" />
+      </div>
+
+      <button class="filter-btn" (click)="applyFilters()">{{ 'sensors.apply' | translate }}</button>
+      <button class="clear-btn" (click)="clearFilters()">{{ 'sensors.clear' | translate }}</button>
     </section>
 
     <section class="cards">
@@ -76,8 +110,8 @@
     <section class="sensor-table-section" *ngIf="!isLoading && !hasError">
       <div class="card">
         <div class="card-top red-line"></div>
-        <h3>Live Sensor Data</h3>
-        <p class="table-subtitle">Updates every 5 seconds</p>
+        <h3>{{ 'sensors.latestReadings' | translate }}</h3>
+        <p class="table-subtitle">{{ 'sensors.tableSubtitle' | translate }}</p>
 
         <div *ngIf="sensorRows.length === 0" class="table-empty">
           <p>{{ 'common.noData' | translate }}</p>
@@ -87,16 +121,16 @@
           <table class="sensor-table">
             <thead>
               <tr>
-                <th>Agency</th>
-                <th>Temperature</th>
-                <th>Clients</th>
-                <th>Energy Usage</th>
-                <th>AC Mode</th>
-                <th>Timestamp</th>
+                <th>{{ 'sensors.agency' | translate }}</th>
+                <th>{{ 'sensors.temperature' | translate }}</th>
+                <th>{{ 'sensors.clients' | translate }}</th>
+                <th>{{ 'sensors.energyUsage' | translate }}</th>
+                <th>{{ 'sensors.acMode' | translate }}</th>
+                <th>{{ 'sensors.timestamp' | translate }}</th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let row of sensorRows">
+              <tr *ngFor="let row of visibleRows">
                 <td>{{ getAgencyName(row.agency) }}</td>
                 <td>{{ formatTemperature(row.temperature) }}</td>
                 <td>{{ row.clients_count }}</td>

@@ -3,8 +3,7 @@
     "label": "Langue",
     "english": "Anglais",
     "french": "Français",
-    "arabic": "Arabe",
-    "german": "Allemand"
+    "arabic": "Arabe"
   },
   "navigation": {
     "brand": "BH Bank",
@@ -17,8 +16,15 @@
     "logout": "Déconnexion"
   },
   "login": {
-    "title": "Plateforme d'énergie BH Bank",
+    "badge": "Plateforme énergétique BH Bank",
+    "title": "Plateforme énergétique BH Bank",
     "subtitle": "Connectez-vous pour accéder au tableau de bord de gestion énergétique.",
+    "features": {
+      "monitoringTitle": "Surveillance",
+      "monitoringValue": "Capteurs et agences",
+      "analyticsTitle": "Analytique",
+      "analyticsValue": "Énergie et rapports"
+    },
     "emailLabel": "Adresse e-mail",
     "emailPlaceholder": "Entrez votre adresse e-mail",
     "passwordLabel": "Mot de passe",
@@ -26,44 +32,32 @@
     "rememberMe": "Se souvenir de moi",
     "forgotPassword": "Mot de passe oublié ?",
     "signIn": "Se connecter",
-    "footer": "Accès sécurisé réservé aux utilisateurs autorisés."
+    "signingIn": "Connexion...",
+    "footer": "Accès sécurisé réservé aux utilisateurs autorisés.",
+    "error": "Adresse e-mail ou mot de passe incorrect."
   },
   "dashboard": {
     "title": "Tableau de bord de gestion énergétique",
     "subtitle": "Bienvenue sur la plateforme intelligente de surveillance BH Bank.",
-    "totalAgencies": "Nombre total d’agences",
-    "activeSensors": "Capteurs actifs",
-    "avgTemperature": "Température moyenne",
-    "energyStatus": "Statut énergétique",
-    "badgeTitle": "Surveillance intelligente",
-    "badgeValue": "Plateforme énergétique",
+    "selectedMonth": "Mois sélectionné",
+    "month": "Mois",
+    "totalEnergyThisMonth": "Énergie totale ce mois-ci",
+    "averageTemperatureThisMonth": "Température moyenne ce mois-ci",
+    "peakAgencyThisMonth": "Agence la plus consommatrice ce mois-ci",
+    "latestReadingTime": "Heure de la dernière lecture",
+    "monthlyEnergyByAgency": "Consommation mensuelle par agence",
+    "loadingChart": "Chargement du graphique...",
+    "noMonthlyData": "Aucune donnée mensuelle disponible.",
     "status": {
-      "loading": "Chargement des KPI quotidiens...",
-      "loaded": "Tableau de bord chargé depuis le backend ({{count}} lignes KPI).",
-      "failed": "Échec du chargement du tableau de bord depuis le backend : {{error}}",
-      "tracked": "Suivi",
-      "idle": "Inactif"
+      "loadingMonthly": "Chargement des KPI mensuels...",
+      "loadedMonthly": "{{count}} lignes KPI mensuelles chargées.",
+      "failed": "Échec du chargement du tableau de bord : {{error}}"
     },
     "compatibility": {
-      "checking": "Vérification de la compatibilité des sujets backend/frontend...",
-      "ok": "Compatibilité des sujets : OK (backend/frontend alignés à 100 %).",
-      "frontendOnly": "frontend uniquement : {{values}}",
-      "backendOnly": "backend uniquement : {{values}}",
-      "mismatch": "Incompatibilité des sujets ({{details}}).",
-      "failed": "Échec de la vérification de compatibilité des sujets : {{error}}"
-    },
-    "kpiTable": {
-      "title": "KPI Énergétique Quotidien par Agence",
-      "agency": "Agence",
-      "date": "Date",
-      "totalEnergy": "Énergie Totale"
-    },
-    "charts": {
-      "energyByAgency": "Consommation d'Énergie par Agence",
-      "energyOverTime": "Consommation d'Énergie dans le Temps",
-      "loading": "Chargement des graphiques...",
-      "noData": "Aucune donnée disponible pour les graphiques",
-      "error": "Échec du chargement des graphiques"
+      "checking": "Vérification de la compatibilité backend/frontend...",
+      "ok": "Compatibilité backend/frontend : OK",
+      "mismatch": "Incompatibilité backend/frontend",
+      "failed": "Échec de la vérification de compatibilité"
     }
   },
   "settings": {
@@ -76,7 +70,7 @@
     "enabled": "Activé",
     "disabled": "Désactivé",
     "theme": "Thème",
-    "themeHelp": "Apparence actuelle de l’interface pour le tableau de bord de la plateforme.",
+    "themeHelp": "Apparence actuelle de l’interface du tableau de bord.",
     "defaultTheme": "Par défaut",
     "lightTheme": "Clair",
     "darkTheme": "Sombre",
@@ -88,82 +82,121 @@
   },
   "sensors": {
     "title": "Surveillance des capteurs",
-    "subtitle": "Suivez la température, le nombre de clients et le mode AC dans les agences BH Bank.",
+    "subtitle": "Suivez la température, le nombre de clients et le mode de climatisation dans les agences BH Bank.",
     "temperatureSensor": "Température",
-    "clientsCount": "Nombre de Clients",
-    "activeAC": "Climatisations Actives",
-    "airQualityNormal": "Normale",
+    "clientsCount": "Nombre de clients",
+    "activeAC": "Climatisations actives",
     "systemStatus": "État du système",
     "systemOnline": "En ligne",
     "systemOffline": "Hors ligne",
     "badgeTitle": "Surveillance en temps réel",
-    "badgeValue": "Aperçu des capteurs",
+    "badgeValue": "Vue des capteurs",
+    "lastUpdated": "Dernière mise à jour",
+    "agency": "Agence",
+    "allAgencies": "Toutes les agences",
+    "acMode": "Mode AC",
+    "allModes": "Tous les modes",
+    "from": "De",
+    "to": "À",
+    "apply": "Appliquer",
+    "clear": "Réinitialiser",
+    "latestReadings": "Dernières lectures des capteurs",
+    "tableSubtitle": "Affichage des 20 dernières lectures correspondantes. Mise à jour toutes les 5 secondes.",
+    "temperature": "Température",
+    "clients": "Clients",
+    "energyUsage": "Consommation énergétique",
+    "timestamp": "Horodatage",
     "metrics": {
       "clients": "{{count}} clients",
       "activeAc": "{{active}}/{{total}} climatisations actives"
     },
     "status": {
       "loading": "Chargement des capteurs depuis le backend...",
-      "loaded": "{{count}} lignes de capteurs backend chargées.",
+      "loaded": "Affichage des 20 dernières lectures sur {{count}} résultats.",
       "noDataBackend": "Aucune donnée capteur dans le backend.",
-      "failed": "Échec du chargement des capteurs backend : {{error}}"
+      "failed": "Échec du chargement des capteurs : {{error}}"
     }
   },
   "energyUsage": {
-    "title": "Vue d'ensemble de la consommation énergétique",
-    "subtitle": "Surveillez la consommation d'énergie et l'optimisation dans les agences BH Bank.",
-    "totalEnergy": "Énergie Totale",
-    "averageEnergyPerDay": "Moyenne/Jour",
-    "totalAgenciesTracked": "Agences Suivies",
-    "latestReading": "Dernière Lecture",
-    "badgeTitle": "Analytique énergétique",
-    "badgeValue": "Suivi de consommation",
+    "title": "Vue de la consommation énergétique",
+    "subtitle": "Surveillez la consommation et l’optimisation énergétique dans les agences BH Bank.",
+    "thisMonth": "Ce mois-ci",
+    "last3Months": "3 derniers mois",
+    "fullYear": "Année complète",
+    "totalEnergy": "Énergie totale",
+    "averageEnergyPerMonth": "Énergie moyenne / mois",
+    "peakMonth": "Mois de pointe",
+    "peakAgency": "Agence de pointe",
+    "energyTrendByMonth": "Tendance énergétique par mois",
+    "agencyComparison": "Comparaison des agences",
+    "agency": "Agence",
     "status": {
-      "loading": "Chargement de la consommation énergétique depuis le backend...",
-      "loaded": "{{count}} lignes KPI chargées depuis le backend.",
-      "noDataBackend": "Aucune donnée KPI dans le backend.",
-      "failed": "Échec du chargement de la consommation énergétique backend : {{error}}"
+      "loading": "Chargement des résumés énergétiques mensuels...",
+      "loaded": "Affichage de {{count}} lignes KPI mensuelles.",
+      "noData": "Aucune donnée énergétique mensuelle disponible.",
+      "failed": "Échec du chargement de la consommation énergétique : {{error}}"
     }
   },
   "reports": {
     "title": "Rapports et analyses",
     "subtitle": "Consultez les résumés opérationnels et les rapports de performance énergétique des agences BH Bank.",
-    "dailyReport": "Rapport quotidien",
-    "totalEnergyTracked": "Énergie Totale Suivie",
-    "agenciesCount": "Nombre d'Agences",
-    "dataPointsCount": "Points de Données",
-    "entries": "{{count}} entrées",
-    "available": "Disponible",
-    "generated": "Généré",
-    "updated": "Mis à jour",
-    "badgeTitle": "Centre de reporting",
-    "badgeValue": "Rapports intelligents",
+    "reportYear": "Année du rapport",
+    "year": "Année",
+    "totalEnergy": "Énergie totale",
+    "averageMonthlyEnergy": "Énergie mensuelle moyenne",
+    "peakMonth": "Mois de pointe",
+    "highestConsumingAgency": "Agence la plus consommatrice",
+    "numberOfReadings": "Nombre de lectures",
+    "totalEnergyLabel": "Énergie totale",
+    "averageTemperature": "Température moyenne",
+    "noReports": "Aucun rapport trouvé pour cette année.",
     "status": {
-      "loading": "Chargement des rapports depuis le backend...",
-      "loaded": "Rapports chargés depuis {{count}} lignes KPI backend.",
-      "noDataBackend": "Aucune donnée KPI dans le backend.",
-      "failed": "Échec du chargement des rapports backend : {{error}}"
+      "loading": "Chargement des rapports mensuels...",
+      "loaded": "Affichage de {{count}} rapports mensuels pour {{year}}.",
+      "noData": "Aucun rapport mensuel disponible pour {{year}}.",
+      "failed": "Échec du chargement des rapports : {{error}}"
+    },
+    "levels": {
+      "High": "Élevé",
+      "Normal": "Normal",
+      "Low": "Faible"
     }
   },
   "compareAgencies": {
     "title": "Comparaison énergétique des agences",
-    "subtitle": "Comparez la consommation d’énergie entre deux agences dans la même région",
+    "subtitle": "Comparez la consommation énergétique entre deux agences de la même région.",
     "badgeTitle": "Centre de comparaison",
     "badgeValue": "Analyse intelligente des agences",
     "selectTitle": "Sélectionner les agences à comparer",
     "region": "Région",
+    "period": "Période",
+    "selectedMonth": "Mois sélectionné",
+    "fullYear": "Année complète",
+    "month": "Mois",
+    "year": "Année",
     "agency1": "Agence 1",
     "agency2": "Agence 2",
+    "mainReason": "Raison principale",
+    "energyDifference": "Différence d’énergie",
+    "efficiencyWinner": "Agence la plus efficace",
+    "temperatureGap": "Écart de température",
+    "clientGap": "Écart de clients",
+    "rankedCauses": "Analyse des causes classées",
+    "noDominantCause": "Aucune cause dominante détectée pour la période sélectionnée.",
+    "recommendations": "Recommandations",
     "metricsTitle": "Comparaison des métriques énergétiques",
-    "insightsTitle": "Pourquoi {{agency}} consomme plus d’énergie",
-    "noInsights": "Aucun insight disponible pour cette comparaison.",
+    "supportingInsights": "Observations complémentaires",
     "dailyComparisonTitle": "Comparaison énergétique quotidienne",
+    "showDetails": "Afficher les détails",
+    "hideDetails": "Masquer les détails",
     "equal": "Égal",
+    "noInsights": "Aucune observation disponible pour cette comparaison.",
     "actions": {
       "compare": "Comparer",
       "comparing": "Comparaison des agences..."
     },
     "errors": {
+      "loadPeriods": "Échec du chargement des périodes de comparaison.",
       "loadRegions": "Échec du chargement des régions",
       "loadAgencies": "Échec du chargement des agences",
       "selectBoth": "Veuillez sélectionner les deux agences",
@@ -171,26 +204,78 @@
       "comparisonFailed": "Échec de la comparaison"
     },
     "placeholders": {
-      "selectRegion": "-- Sélectionnez une région --",
-      "selectAgency1": "-- Sélectionnez l’agence 1 --",
-      "selectAgency2": "-- Sélectionnez l’agence 2 --"
+      "selectRegion": "-- Sélectionner une région --",
+      "selectAgency1": "-- Sélectionner l’agence 1 --",
+      "selectAgency2": "-- Sélectionner l’agence 2 --"
     },
     "labels": {
       "totalEnergy": "Énergie totale",
       "avgTemperature": "Température moyenne",
-      "totalClients": "Nombre total de clients",
+      "totalClients": "Total des clients",
       "avgClients": "Clients moyens",
+      "readings": "Lectures",
+      "mostUsedAcMode": "Mode AC le plus utilisé",
       "energyPerClient": "Énergie par client",
-      "acModes": "Modes de climatisation"
+      "energyPerReading": "Énergie / lecture",
+      "acOnPercentage": "Pourcentage AC ON",
+      "businessHoursEnergy": "Énergie en heures ouvrables",
+      "afterHoursEnergy": "Énergie hors horaires",
+      "peakReading": "Lecture de pointe",
+      "highestTemperature": "Température maximale"
     },
     "table": {
       "date": "Date",
       "difference": "Différence"
+    },
+    "severity": {
+      "high": "ÉLEVÉ",
+      "medium": "MOYEN",
+      "low": "FAIBLE"
+    },
+    "factors": {
+      "AC usage": "Utilisation de la climatisation",
+      "Client traffic": "Trafic clients",
+      "Temperature": "Température",
+      "Energy efficiency": "Efficacité énergétique",
+      "After-hours usage": "Consommation hors horaires",
+      "Peak load": "Charge de pointe",
+      "Overall load": "Charge globale",
+      "Energy balance": "Équilibre énergétique"
+    },
+    "causeMessages": {
+      "AC usage": "L’agence la plus consommatrice a utilisé plus souvent la climatisation en mode ON, ce qui augmente la demande de refroidissement.",
+      "Client traffic": "L’agence la plus consommatrice a reçu plus de clients, ce qui augmente la climatisation, l’éclairage et l’utilisation des équipements.",
+      "Temperature": "L’agence la plus consommatrice a enregistré des températures plus élevées, entraînant un usage plus fréquent ou plus intense de la climatisation.",
+      "Energy efficiency": "L’agence la plus consommatrice utilise plus d’énergie par client, ce qui suggère une efficacité opérationnelle plus faible.",
+      "After-hours usage": "L’agence la plus consommatrice utilise davantage d’énergie hors horaires, ce qui peut indiquer des équipements ou une climatisation actifs après la fermeture.",
+      "Peak load": "L’agence la plus consommatrice présente des pics de charge plus importants.",
+      "Overall load": "L’écart énergétique semble provenir de plusieurs petits facteurs opérationnels combinés.",
+      "Energy balance": "Les deux agences ont une consommation totale très proche pour la période sélectionnée."
+    },
+    "recommendationText": {
+      "acSchedule": "Réviser la planification de la climatisation pendant les heures ouvrables et éviter le mode ON inutile.",
+      "afterHours": "Vérifier si la climatisation, l’éclairage ou les équipements restent actifs après la fermeture.",
+      "insulation": "Inspecter l’isolation, l’exposition au soleil et l’efficacité du refroidissement de l’agence la plus consommatrice.",
+      "efficiency": "Suivre le ratio énergie par client le mois prochain et comparer les procédures d’exploitation.",
+      "traffic": "Adapter la climatisation aux périodes de forte fréquentation au lieu de fonctionner à pleine charge toute la journée.",
+      "peakLoad": "Analyser les heures de pointe et décaler les équipements fortement consommateurs lorsque c’est possible.",
+      "policies": "Comparer les politiques d’utilisation des équipements entre agences et documenter les différences opérationnelles.",
+      "generateData": "Générer ou sélectionner une période contenant des lectures de capteurs avant de comparer les agences.",
+      "monitor": "Continuer à suivre l’énergie par client et l’usage de la climatisation pour détecter les écarts futurs."
     }
+  },
+  "footer": {
+    "description": "BH Bank, votre partenaire financier pour des solutions sur mesure et un service de qualité. Vers de nouvelles perspectives.",
+    "contact": "Nous contacter",
+    "mediator": "Médiateur",
+    "follow": "Nous suivre"
   },
   "common": {
     "notAvailable": "N/D",
-    "noData": "Pas de données"
+    "noData": "Pas de données",
+    "noDataShort": "Pas de données",
+    "loading": "Chargement...",
+    "agencyNumber": "Agence n°{{id}}",
+    "clientsUnit": "clients"
   }
 }
-

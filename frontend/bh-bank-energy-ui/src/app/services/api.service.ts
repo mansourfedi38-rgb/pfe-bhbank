@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
-export type ApiSubject = 'subjects' | 'regions' | 'agencies' | 'sensor-data' | 'kpis/energy/daily' | 'kpis/energy/compare';
+export type ApiSubject = 'subjects' | 'regions' | 'agencies' | 'sensor-data' | 'kpis/energy/daily' | 'kpis/energy/monthly' | 'kpis/energy/compare';
 
 export const FRONTEND_API_SUBJECTS: readonly ApiSubject[] = [
   'subjects',
@@ -10,6 +10,7 @@ export const FRONTEND_API_SUBJECTS: readonly ApiSubject[] = [
   'agencies',
   'sensor-data',
   'kpis/energy/daily',
+  'kpis/energy/monthly',
   'kpis/energy/compare'
 ];
 
@@ -41,6 +42,16 @@ export interface DailyEnergyKpi {
   total_energy: number;
 }
 
+export interface MonthlyEnergyKpi {
+  agency: number;
+  agency_name: string;
+  month: string;
+  total_energy: number;
+  avg_temperature: number;
+  avg_clients: number;
+  readings_count: number;
+}
+
 export interface AgencyMetrics {
   id: number;
   name: string;
@@ -48,13 +59,29 @@ export interface AgencyMetrics {
   total_energy: number;
   average_temperature: number;
   total_clients: number;
+  number_of_readings: number;
   average_clients: number;
+  average_energy_per_reading: number;
   energy_per_client: number;
+  most_used_ac_mode: 'OFF' | 'ECO' | 'ON';
+  business_hours_energy: number;
+  non_business_hours_energy: number;
+  peak_energy_reading: number;
+  highest_temperature_reading: number;
   ac_mode_counts: {
     OFF: number;
     ECO: number;
     ON: number;
   };
+  ac_mode_distribution: {
+    OFF: number;
+    ECO: number;
+    ON: number;
+    ON_percentage: number;
+    ECO_percentage: number;
+  };
+  on_percentage: number;
+  eco_percentage: number;
 }
 
 export interface ComparisonChartData {
@@ -75,11 +102,25 @@ export interface Insight {
   factor: string;
 }
 
+export interface ComparisonCause {
+  factor: string;
+  severity: 'high' | 'medium' | 'low';
+  impact: string;
+  message: string;
+}
+
 export interface ComparisonResponse {
   agency_1: AgencyMetrics;
   agency_2: AgencyMetrics;
   chart_data: ComparisonChartData[];
   insights: Insight[];
+  main_reason: string;
+  causes: ComparisonCause[];
+  recommendations: string[];
+  higher_energy_agency: {
+    id: number;
+    name: string;
+  } | null;
   region: {
     id: number;
     name: string;
@@ -118,13 +159,28 @@ export class ApiService {
     return this.http.get<Agency[]>('/api/agencies/', { params });
   }
 
-  getSensorData(filters?: { agency?: number; ac_mode?: 'OFF' | 'ECO' | 'ON' }): Observable<SensorData[]> {
+  getSensorData(filters?: {
+    agency?: number;
+    ac_mode?: 'OFF' | 'ECO' | 'ON';
+    date_from?: string;
+    date_to?: string;
+    ordering?: string;
+  }): Observable<SensorData[]> {
     let params = new HttpParams();
     if (filters?.agency !== undefined) {
       params = params.set('agency', filters.agency);
     }
     if (filters?.ac_mode !== undefined) {
       params = params.set('ac_mode', filters.ac_mode);
+    }
+    if (filters?.date_from) {
+      params = params.set('date_from', filters.date_from);
+    }
+    if (filters?.date_to) {
+      params = params.set('date_to', filters.date_to);
+    }
+    if (filters?.ordering) {
+      params = params.set('ordering', filters.ordering);
     }
     return this.http.get<SensorData[]>('/api/sensor-data/', { params });
   }
@@ -133,10 +189,33 @@ export class ApiService {
     return this.http.get<DailyEnergyKpi[]>('/api/kpis/energy/daily/');
   }
 
-  compareAgencies(agency1Id: number, agency2Id: number): Observable<ComparisonResponse> {
-    const params = new HttpParams()
+  getMonthlyEnergyKpi(filters?: { month?: string; date_from?: string; date_to?: string }): Observable<MonthlyEnergyKpi[]> {
+    let params = new HttpParams();
+    if (filters?.month) {
+      params = params.set('month', filters.month);
+    }
+    if (filters?.date_from) {
+      params = params.set('date_from', filters.date_from);
+    }
+    if (filters?.date_to) {
+      params = params.set('date_to', filters.date_to);
+    }
+    return this.http.get<MonthlyEnergyKpi[]>('/api/kpis/energy/monthly/', { params });
+  }
+
+  compareAgencies(agency1Id: number, agency2Id: number, filters?: { month?: string; date_from?: string; date_to?: string }): Observable<ComparisonResponse> {
+    let params = new HttpParams()
       .set('agency1', agency1Id)
       .set('agency2', agency2Id);
+    if (filters?.month) {
+      params = params.set('month', filters.month);
+    }
+    if (filters?.date_from) {
+      params = params.set('date_from', filters.date_from);
+    }
+    if (filters?.date_to) {
+      params = params.set('date_to', filters.date_to);
+    }
     return this.http.get<ComparisonResponse>('/api/kpis/energy/compare/', { params });
   }
 

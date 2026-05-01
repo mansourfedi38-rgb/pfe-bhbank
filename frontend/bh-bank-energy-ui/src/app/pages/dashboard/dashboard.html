@@ -30,114 +30,65 @@
 
       <div class="hero-badge">
         <div class="badge-card">
-          <span class="badge-title">{{ 'dashboard.badgeTitle' | translate }}</span>
-          <span class="badge-value">{{ 'dashboard.badgeValue' | translate }}</span>
+          <span class="badge-title">{{ 'dashboard.selectedMonth' | translate }}</span>
+          <span class="badge-value">{{ selectedMonth || ('common.noDataShort' | translate) }}</span>
         </div>
       </div>
+    </section>
+
+    <section class="filter-section">
+      <label for="month-select">{{ 'dashboard.month' | translate }}</label>
+      <select id="month-select" [(ngModel)]="selectedMonth" (change)="onMonthChange()">
+        <option *ngFor="let month of availableMonths" [ngValue]="month">{{ month }}</option>
+      </select>
     </section>
 
     <section class="cards">
       <div class="card">
         <div class="card-top red-line"></div>
-        <h3>{{ 'dashboard.totalAgencies' | translate }}</h3>
-        <p>{{ dashboardMetrics.total_agencies }}</p>
+        <h3>{{ 'dashboard.totalEnergyThisMonth' | translate }}</h3>
+        <p>{{ dashboardMetrics.totalEnergyThisMonth }}</p>
       </div>
 
       <div class="card">
         <div class="card-top blue-line"></div>
-        <h3>{{ 'dashboard.activeSensors' | translate }}</h3>
-        <p>{{ dashboardMetrics.active_sensors }}</p>
+        <h3>{{ 'dashboard.averageTemperatureThisMonth' | translate }}</h3>
+        <p>{{ dashboardMetrics.averageTemperatureThisMonth }}</p>
       </div>
 
       <div class="card">
         <div class="card-top red-line"></div>
-        <h3>{{ 'dashboard.avgTemperature' | translate }}</h3>
-        <p>{{ dashboardMetrics.average_temperature }}</p>
+        <h3>{{ 'dashboard.peakAgencyThisMonth' | translate }}</h3>
+        <p>{{ dashboardMetrics.peakAgencyThisMonth }}</p>
       </div>
 
       <div class="card">
         <div class="card-top blue-line"></div>
-        <h3>{{ 'dashboard.energyStatus' | translate }}</h3>
-        <p>{{ dashboardMetrics.energy_status }}</p>
+        <h3>{{ 'dashboard.latestReadingTime' | translate }}</h3>
+        <p>{{ dashboardMetrics.latestReadingTime }}</p>
       </div>
     </section>
 
-    <section class="kpi-table-section" *ngIf="dailyKpiRows.length > 0">
-      <div class="card">
-        <div class="card-top red-line"></div>
-        <h3>{{ 'dashboard.kpiTable.title' | translate }}</h3>
-
-        <table class="kpi-table">
-          <thead>
-            <tr>
-              <th>{{ 'dashboard.kpiTable.agency' | translate }}</th>
-              <th>{{ 'dashboard.kpiTable.date' | translate }}</th>
-              <th>{{ 'dashboard.kpiTable.totalEnergy' | translate }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let row of dailyKpiRows">
-              <td>{{ row.agency_name }}</td>
-              <td>{{ row.date }}</td>
-              <td>{{ row.total_energy }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- Charts Section -->
     <section class="charts-section">
-      <div class="chart-container">
+      <div class="chart-container single-chart">
         <div class="card">
           <div class="card-top red-line"></div>
-          <h3>{{ 'dashboard.charts.energyByAgency' | translate }}</h3>
-          
-          <!-- Loading State -->
+          <h3>{{ 'dashboard.monthlyEnergyByAgency' | translate }}</h3>
+
           <div *ngIf="chartsLoading" class="chart-loading">
-            <p>{{ 'dashboard.charts.loading' | translate }}</p>
+            <p>{{ 'dashboard.loadingChart' | translate }}</p>
           </div>
-          
-          <!-- Error State -->
+
           <div *ngIf="!chartsLoading && chartError" class="chart-empty">
-            <p>{{ 'dashboard.charts.error' | translate }}</p>
+            <p>{{ chartError }}</p>
           </div>
-          
-          <!-- Empty State -->
+
           <div *ngIf="!chartsLoading && !chartError && chartsEmpty" class="chart-empty">
-            <p>{{ 'dashboard.charts.noData' | translate }}</p>
+            <p>{{ 'dashboard.noMonthlyData' | translate }}</p>
           </div>
-          
-          <!-- Chart -->
+
           <div *ngIf="!chartsLoading && !chartError && !chartsEmpty" class="chart-wrapper">
             <canvas id="agencyChart"></canvas>
-          </div>
-        </div>
-      </div>
-
-      <div class="chart-container">
-        <div class="card">
-          <div class="card-top blue-line"></div>
-          <h3>{{ 'dashboard.charts.energyOverTime' | translate }}</h3>
-          
-          <!-- Loading State -->
-          <div *ngIf="chartsLoading" class="chart-loading">
-            <p>{{ 'dashboard.charts.loading' | translate }}</p>
-          </div>
-          
-          <!-- Error State -->
-          <div *ngIf="!chartsLoading && chartError" class="chart-empty">
-            <p>{{ 'dashboard.charts.error' | translate }}</p>
-          </div>
-          
-          <!-- Empty State -->
-          <div *ngIf="!chartsLoading && !chartError && chartsEmpty" class="chart-empty">
-            <p>{{ 'dashboard.charts.noData' | translate }}</p>
-          </div>
-          
-          <!-- Chart -->
-          <div *ngIf="!chartsLoading && !chartError && !chartsEmpty" class="chart-wrapper">
-            <canvas id="timeChart"></canvas>
           </div>
         </div>
       </div>

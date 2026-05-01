@@ -1,14 +1,24 @@
-import { NgIf } from '@angular/common';
+import { NgFor, NgIf } from '@angular/common';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { ApiService } from '../../services/api.service';
+import { ApiService, MonthlyEnergyKpi } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
+
+interface MonthlyReportCard {
+  month: string;
+  totalEnergy: number;
+  averageTemperature: number;
+  highestAgency: string;
+  readingsCount: number;
+  status: 'High' | 'Normal' | 'Low';
+}
 
 @Component({
   selector: 'app-reports',
   standalone: true,
-  imports: [NgIf, RouterLink, RouterLinkActive, TranslateModule],
+  imports: [NgIf, NgFor, FormsModule, RouterLink, RouterLinkActive, TranslateModule],
   templateUrl: './reports.html',
   styleUrl: './reports.scss'
 })
@@ -16,15 +26,21 @@ export class ReportsComponent implements OnInit {
   backendStatus = '';
   isLoading = true;
   hasError = false;
+  rawRows: MonthlyEnergyKpi[] = [];
+  reportCards: MonthlyReportCard[] = [];
+  filteredReportCards: MonthlyReportCard[] = [];
+  availableYears: string[] = [];
+  selectedYear = '';
+
   cards = {
-    dailyReport: 'N/A',
-    totalEnergyTracked: 'N/A',
-    agenciesCount: 'N/A',
-    dataPointsCount: 'N/A'
+    totalEnergy: '',
+    averageMonthlyEnergy: '',
+    peakMonth: '',
+    peakAgency: '',
+    totalReadings: ''
   };
 
   constructor(
-    private router: Router,
     private api: ApiService,
     private translate: TranslateService,
     private cdr: ChangeDetectorRef,
@@ -33,37 +49,18 @@ export class ReportsComponent implements OnInit {
 
   ngOnInit(): void {
     this.setLoadingState();
-    this.translate.onLangChange.subscribe(() => {
-      if (this.isLoading) {
-        this.setLoadingState();
-      }
-    });
-
-    this.api.getDailyEnergyKpi().subscribe({
+    this.api.getMonthlyEnergyKpi().subscribe({
       next: (rows) => {
+        this.rawRows = rows;
+        this.reportCards = this.buildReportCards(rows);
+        this.availableYears = Array.from(new Set(this.reportCards.map((report) => report.month.slice(0, 4)))).sort();
+        this.selectedYear = this.availableYears.includes('2025')
+          ? '2025'
+          : this.availableYears[this.availableYears.length - 1] || '';
+
         this.isLoading = false;
         this.hasError = false;
-        
-        if (rows.length === 0) {
-          this.backendStatus = this.translate.instant('reports.status.noDataBackend');
-          this.cdr.detectChanges();
-          return;
-        }
-
-        // Calculate real metrics from backend data
-        const totalEnergy = rows.reduce((sum, item) => sum + Number(item.total_energy), 0);
-        const uniqueAgencies = new Set(rows.map((item) => item.agency)).size;
-        const totalDataPoints = rows.length;
-
-        this.cards.dailyReport = this.translate.instant('reports.entries', { count: rows.length });
-        this.cards.totalEnergyTracked = `${totalEnergy.toFixed(2)} kWh`;
-        this.cards.agenciesCount = `${uniqueAgencies} agencies`;
-        this.cards.dataPointsCount = `${totalDataPoints} records`;
-
-        this.backendStatus = this.translate.instant('reports.status.loaded', { count: rows.length });
-        
-        // Force change detection
-        this.cdr.detectChanges();
+        this.applyYearFilter();
       },
       error: (err) => {
         this.isLoading = false;
@@ -71,8 +68,6 @@ export class ReportsComponent implements OnInit {
         this.backendStatus = this.translate.instant('reports.status.failed', {
           error: String(err?.message ?? err)
         });
-        
-        // Force change detection
         this.cdr.detectChanges();
       }
     });
@@ -82,12 +77,100 @@ export class ReportsComponent implements OnInit {
     this.auth.logout();
   }
 
+  applyYearFilter(): void {
+    this.filteredReportCards = this.reportCards.filter((report) => report.month.startsWith(this.selectedYear));
+    this.updateSummary();
+    this.backendStatus = this.filteredReportCards.length > 0
+      ? this.translate.instant('reports.status.loaded', {
+          count: this.filteredReportCards.length,
+          year: this.selectedYear
+        })
+      : this.translate.instant('reports.status.noData', { year: this.selectedYear });
+    this.cdr.detectChanges();
+  }
+
+  private buildReportCards(rows: MonthlyEnergyKpi[]): MonthlyReportCard[] {
+    const monthMap = new Map<string, MonthlyEnergyKpi[]>();
+    rows.forEach((row) => {
+      monthMap.set(row.month, [...(monthMap.get(row.month) || []), row]);
+    });
+
+    const cards = Array.from(monthMap.entries()).map(([month, monthRows]) => {
+      const totalEnergy = monthRows.reduce((sum, row) => sum + Number(row.total_energy), 0);
+      const averageTemperature =
+        monthRows.reduce((sum, row) => sum + Number(row.avg_temperature), 0) / monthRows.length;
+      const highestAgency = [...monthRows].sort((a, b) => Number(b.total_energy) - Number(a.total_energy))[0];
+      const readingsCount = monthRows.reduce((sum, row) => sum + Number(row.readings_count), 0);
+
+      return {
+        month,
+        totalEnergy,
+        averageTemperature,
+        highestAgency: highestAgency?.agency_name || this.notAvailable(),
+        readingsCount,
+        status: 'Normal' as const
+      };
+    });
+
+    const averageEnergy =
+      cards.reduce((sum, report) => sum + report.totalEnergy, 0) / Math.max(1, cards.length);
+
+    return cards
+      .map((report) => ({
+        ...report,
+        status: this.getEnergyStatus(report.totalEnergy, averageEnergy)
+      }))
+      .sort((a, b) => b.month.localeCompare(a.month));
+  }
+
+  private updateSummary(): void {
+    if (this.filteredReportCards.length === 0) {
+      this.setCardsNotAvailable();
+      return;
+    }
+
+    const totalEnergy = this.filteredReportCards.reduce((sum, report) => sum + report.totalEnergy, 0);
+    const peakMonth = [...this.filteredReportCards].sort((a, b) => b.totalEnergy - a.totalEnergy)[0];
+    const agencyMap = new Map<string, number>();
+
+    this.rawRows
+      .filter((row) => row.month.startsWith(this.selectedYear))
+      .forEach((row) => {
+        agencyMap.set(row.agency_name, (agencyMap.get(row.agency_name) || 0) + Number(row.total_energy));
+      });
+
+    const peakAgency = Array.from(agencyMap.entries()).sort((a, b) => b[1] - a[1])[0];
+    const readings = this.filteredReportCards.reduce((sum, report) => sum + report.readingsCount, 0);
+
+    this.cards.totalEnergy = `${totalEnergy.toFixed(2)} kWh`;
+    this.cards.averageMonthlyEnergy = `${(totalEnergy / this.filteredReportCards.length).toFixed(2)} kWh`;
+    this.cards.peakMonth = peakMonth?.month || this.notAvailable();
+    this.cards.peakAgency = peakAgency?.[0] || this.notAvailable();
+    this.cards.totalReadings = `${readings}`;
+  }
+
+  private getEnergyStatus(totalEnergy: number, averageEnergy: number): 'High' | 'Normal' | 'Low' {
+    if (totalEnergy >= averageEnergy * 1.15) return 'High';
+    if (totalEnergy <= averageEnergy * 0.85) return 'Low';
+    return 'Normal';
+  }
+
   private setLoadingState(): void {
     this.isLoading = true;
     this.hasError = false;
     this.backendStatus = this.translate.instant('reports.status.loading');
-    this.cards.totalEnergyTracked = this.translate.instant('common.notAvailable');
-    this.cards.agenciesCount = this.translate.instant('common.notAvailable');
-    this.cards.dataPointsCount = this.translate.instant('common.notAvailable');
+    this.setCardsNotAvailable();
+  }
+
+  private setCardsNotAvailable(): void {
+    this.cards.totalEnergy = this.notAvailable();
+    this.cards.averageMonthlyEnergy = this.notAvailable();
+    this.cards.peakMonth = this.notAvailable();
+    this.cards.peakAgency = this.notAvailable();
+    this.cards.totalReadings = this.notAvailable();
+  }
+
+  private notAvailable(): string {
+    return this.translate.instant('common.notAvailable');
   }
 }

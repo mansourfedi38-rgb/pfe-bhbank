@@ -292,6 +292,160 @@
   animation: fadeIn 0.3s ease;
 }
 
+.comparison-summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 16px;
+}
+
+.summary-card {
+  background: #ffffff;
+  border: 1px solid #edf1f5;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+}
+
+.summary-card span {
+  display: block;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.summary-card strong {
+  color: #0a2342;
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+.main-reason-card,
+.cause-analysis-section,
+.recommendations-section {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 26px 30px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+}
+
+.main-reason-card {
+  border-left: 5px solid #e30613;
+}
+
+.main-reason-card span {
+  display: block;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.main-reason-card p {
+  color: #0a2342;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.cause-analysis-section h2,
+.recommendations-section h2 {
+  font-size: 26px;
+  color: #0a2342;
+  margin-bottom: 18px;
+}
+
+.cause-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.cause-card {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-left: 5px solid #9ca3af;
+  border-radius: 18px;
+  padding: 18px;
+}
+
+.cause-card.high {
+  border-left-color: #e30613;
+}
+
+.cause-card.medium {
+  border-left-color: #f59e0b;
+}
+
+.cause-card.low {
+  border-left-color: #10b981;
+}
+
+.cause-topline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.cause-topline strong {
+  color: #0a2342;
+  font-size: 16px;
+}
+
+.severity-badge {
+  border-radius: 999px;
+  padding: 5px 10px;
+  color: #ffffff;
+  background: #6b7280;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.severity-badge.high {
+  background: #e30613;
+}
+
+.severity-badge.medium {
+  background: #f59e0b;
+}
+
+.severity-badge.low {
+  background: #10b981;
+}
+
+.impact {
+  display: inline-block;
+  color: #08264d;
+  background: #e8eef7;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.cause-card p,
+.muted-text {
+  color: #415266;
+  line-height: 1.55;
+  font-size: 14px;
+}
+
+.recommendations-section ul {
+  display: grid;
+  gap: 10px;
+  padding-left: 20px;
+}
+
+.recommendations-section li {
+  color: #0a2342;
+  line-height: 1.5;
+  font-weight: 700;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
