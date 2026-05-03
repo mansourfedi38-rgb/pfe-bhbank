@@ -342,6 +342,7 @@
 .report-filters {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
   background: #ffffff;
   border: 1px solid #edf1f5;
@@ -349,6 +350,14 @@
   padding: 16px 18px;
   margin-bottom: 22px;
   box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05);
+  flex-wrap: wrap;
+}
+
+.year-filter,
+.export-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .report-filters label {
@@ -364,6 +373,35 @@
   padding: 10px 12px;
   color: #0a2342;
   background: #ffffff;
+  font-weight: 700;
+}
+
+.export-btn {
+  border: none;
+  background: #e30613;
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 11px 18px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.export-btn:hover:not(:disabled) {
+  background: #c70511;
+  transform: translateY(-1px);
+}
+
+.export-btn:disabled {
+  background: #cbd5e1;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+.export-hint {
+  color: #6b7280;
+  font-size: 13px;
   font-weight: 700;
 }
 

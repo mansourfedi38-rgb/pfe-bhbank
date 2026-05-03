@@ -89,6 +89,42 @@ export class ReportsComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  exportCsv(): void {
+    if (this.filteredReportCards.length === 0 || !this.selectedYear) {
+      this.backendStatus = this.translate.instant('reports.exportNoData', { year: this.selectedYear });
+      this.cdr.detectChanges();
+      return;
+    }
+
+    const headers = [
+      'Month',
+      'Total Energy',
+      'Average Temperature',
+      'Highest Consuming Agency',
+      'Number of Readings',
+      'Status'
+    ];
+    const rows = this.filteredReportCards.map((report) => [
+      report.month,
+      report.totalEnergy.toFixed(2),
+      report.averageTemperature.toFixed(1),
+      report.highestAgency,
+      String(report.readingsCount),
+      report.status
+    ]);
+    const csv = [headers, ...rows]
+      .map((row) => row.map((value) => this.escapeCsvValue(value)).join(','))
+      .join('\r\n');
+    const blob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    link.href = url;
+    link.download = `energy-report-${this.selectedYear}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
   private buildReportCards(rows: MonthlyEnergyKpi[]): MonthlyReportCard[] {
     const monthMap = new Map<string, MonthlyEnergyKpi[]>();
     rows.forEach((row) => {
@@ -172,5 +208,9 @@ export class ReportsComponent implements OnInit {
 
   private notAvailable(): string {
     return this.translate.instant('common.notAvailable');
+  }
+
+  private escapeCsvValue(value: string): string {
+    return `"${value.replace(/"/g, '""')}"`;
   }
 }

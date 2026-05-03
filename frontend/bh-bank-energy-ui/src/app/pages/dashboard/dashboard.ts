@@ -5,7 +5,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { forkJoin } from 'rxjs';
 import Chart from 'chart.js/auto';
-import { ApiService, MonthlyEnergyKpi, SensorData } from '../../services/api.service';
+import { ApiService, MonthlyEnergyKpi, RecentAlert, SensorData } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -17,9 +17,10 @@ import { AuthService } from '../../services/auth.service';
 })
 export class DashboardComponent implements OnInit {
   kpiStatus = '';
-  compatibilityStatus = '';
   monthlyRows: MonthlyEnergyKpi[] = [];
+  recentAlerts: RecentAlert[] = [];
   selectedMonth = '';
+  selectedAlertMonth = '';
   availableMonths: string[] = [];
   latestReadingTime = '';
 
@@ -27,7 +28,8 @@ export class DashboardComponent implements OnInit {
     totalEnergyThisMonth: '',
     averageTemperatureThisMonth: '',
     peakAgencyThisMonth: '',
-    latestReadingTime: ''
+    latestReadingTime: '',
+    activeAlerts: ''
   };
 
   private agencyChart: Chart | null = null;
@@ -61,6 +63,14 @@ export class DashboardComponent implements OnInit {
     this.createMonthlyAgencyChart();
   }
 
+  onAlertMonthChange(): void {
+    this.loadRecentAlerts();
+  }
+
+  formatAlertTimestamp(value: string): string {
+    return new Date(value).toLocaleString();
+  }
+
   private loadDashboardData(): void {
     forkJoin({
       monthlyKpi: this.api.getMonthlyEnergyKpi(),
@@ -70,28 +80,36 @@ export class DashboardComponent implements OnInit {
         this.monthlyRows = monthlyKpi;
         this.availableMonths = Array.from(new Set(monthlyKpi.map((row) => row.month))).sort();
         this.selectedMonth = this.availableMonths[this.availableMonths.length - 1] || '';
+        this.selectedAlertMonth = this.selectedMonth;
         this.latestReadingTime = this.formatLatestReading(latestReadings[0]);
 
         this.kpiStatus = this.translate.instant('dashboard.status.loadedMonthly', { count: monthlyKpi.length });
         this.updateSelectedMonthSummary();
         this.createMonthlyAgencyChart();
+        this.loadRecentAlerts();
       },
       error: (err) => {
         this.kpiStatus = this.translate.instant('dashboard.status.failed', { error: String(err?.message ?? err) });
         this.chartsLoading = false;
         this.chartError = err?.message || this.translate.instant('dashboard.status.failed', { error: '' });
+        this.loadRecentAlerts();
         this.cdr.detectChanges();
       }
     });
 
-    this.api.checkSubjectsCompatibility().subscribe({
-      next: (result) => {
-        this.compatibilityStatus = result.isCompatible
-          ? this.translate.instant('dashboard.compatibility.ok')
-          : this.translate.instant('dashboard.compatibility.mismatch');
+  }
+
+  private loadRecentAlerts(): void {
+    this.api.getRecentAlerts(this.selectedAlertMonth).subscribe({
+      next: (alerts) => {
+        this.recentAlerts = alerts.slice(0, 5);
+        this.dashboardMetrics.activeAlerts = String(this.recentAlerts.length);
+        this.cdr.detectChanges();
       },
       error: () => {
-        this.compatibilityStatus = this.translate.instant('dashboard.compatibility.failed');
+        this.recentAlerts = [];
+        this.dashboardMetrics.activeAlerts = this.notAvailable();
+        this.cdr.detectChanges();
       }
     });
   }
@@ -185,7 +203,6 @@ export class DashboardComponent implements OnInit {
 
   private setLoadingState(): void {
     this.kpiStatus = this.translate.instant('dashboard.status.loadingMonthly');
-    this.compatibilityStatus = this.translate.instant('dashboard.compatibility.checking');
     this.chartsLoading = true;
     this.chartsEmpty = false;
     this.chartError = null;
@@ -194,6 +211,7 @@ export class DashboardComponent implements OnInit {
     this.dashboardMetrics.averageTemperatureThisMonth = this.notAvailable();
     this.dashboardMetrics.peakAgencyThisMonth = this.notAvailable();
     this.dashboardMetrics.latestReadingTime = this.notAvailable();
+    this.dashboardMetrics.activeAlerts = this.notAvailable();
   }
 
   private notAvailable(): string {

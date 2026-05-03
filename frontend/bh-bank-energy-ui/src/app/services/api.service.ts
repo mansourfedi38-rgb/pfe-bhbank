@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
-export type ApiSubject = 'subjects' | 'regions' | 'agencies' | 'sensor-data' | 'kpis/energy/daily' | 'kpis/energy/monthly' | 'kpis/energy/compare';
+export type ApiSubject = 'subjects' | 'regions' | 'agencies' | 'sensor-data' | 'alerts/recent' | 'kpis/energy/daily' | 'kpis/energy/monthly' | 'kpis/energy/compare';
 
 export const FRONTEND_API_SUBJECTS: readonly ApiSubject[] = [
   'subjects',
   'regions',
   'agencies',
   'sensor-data',
+  'alerts/recent',
   'kpis/energy/daily',
   'kpis/energy/monthly',
   'kpis/energy/compare'
@@ -32,6 +33,14 @@ export interface SensorData {
   clients_count: number;
   energy_usage: string;
   ac_mode: 'OFF' | 'ECO' | 'ON';
+  timestamp: string;
+}
+
+export interface RecentAlert {
+  agency_name: string;
+  type: 'High temperature' | 'High energy usage' | 'After-hours energy waste';
+  severity: 'critical' | 'warning';
+  message: string;
   timestamp: string;
 }
 
@@ -183,6 +192,14 @@ export class ApiService {
       params = params.set('ordering', filters.ordering);
     }
     return this.http.get<SensorData[]>('/api/sensor-data/', { params });
+  }
+
+  getRecentAlerts(month?: string): Observable<RecentAlert[]> {
+    let params = new HttpParams();
+    if (month) {
+      params = params.set('month', month);
+    }
+    return this.http.get<RecentAlert[]>('/api/alerts/recent/', { params });
   }
 
   getDailyEnergyKpi(): Observable<DailyEnergyKpi[]> {

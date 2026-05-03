@@ -24,7 +24,6 @@
 
         <div class="status-lines">
           <p class="kpi-status">{{ kpiStatus }}</p>
-          <p class="kpi-status">{{ compatibilityStatus }}</p>
         </div>
       </div>
 
@@ -66,6 +65,46 @@
         <div class="card-top blue-line"></div>
         <h3>{{ 'dashboard.latestReadingTime' | translate }}</h3>
         <p>{{ dashboardMetrics.latestReadingTime }}</p>
+      </div>
+
+      <div class="card">
+        <div class="card-top red-line"></div>
+        <h3>{{ 'dashboard.activeAlerts' | translate }}</h3>
+        <p>{{ dashboardMetrics.activeAlerts }}</p>
+      </div>
+    </section>
+
+    <section class="alerts-section">
+      <div class="card alerts-card">
+        <div class="card-top red-line"></div>
+        <div class="alerts-header">
+          <h3>{{ 'dashboard.recentAlerts' | translate }}</h3>
+          <div class="alert-month-filter">
+            <label for="alert-month-select">{{ 'dashboard.month' | translate }}</label>
+            <select id="alert-month-select" [(ngModel)]="selectedAlertMonth" (change)="onAlertMonthChange()">
+              <option *ngFor="let month of availableMonths" [ngValue]="month">{{ month }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div *ngIf="recentAlerts.length === 0" class="alerts-empty">
+          {{ selectedAlertMonth ? ('dashboard.noAlertsForMonth' | translate) : ('dashboard.noActiveAlerts' | translate) }}
+        </div>
+
+        <div *ngIf="recentAlerts.length > 0" class="alerts-list">
+          <div
+            *ngFor="let alert of recentAlerts"
+            class="alert-item"
+            [class.critical]="alert.severity === 'critical'"
+            [class.warning]="alert.severity === 'warning'">
+            <div class="alert-main">
+              <span class="alert-type">{{ alert.type }}</span>
+              <span class="alert-agency">{{ alert.agency_name }}</span>
+            </div>
+            <p>{{ alert.message }}</p>
+            <time>{{ formatAlertTimestamp(alert.timestamp) }}</time>
+          </div>
+        </div>
       </div>
     </section>
 

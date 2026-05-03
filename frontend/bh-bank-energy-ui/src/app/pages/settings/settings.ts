@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../services/auth.service';
@@ -24,7 +24,6 @@ export class SettingsComponent implements OnInit {
   readonly supported = supportedLanguages;
 
   constructor(
-    private router: Router,
     private translate: TranslateService,
     private auth: AuthService
   ) {}
@@ -59,11 +58,6 @@ export class SettingsComponent implements OnInit {
 
   logout() {
     this.auth.logout();
-  }
-
-  manageSecurity() {
-    // Placeholder: security settings is not implemented yet.
-    console.warn('Security settings page is not implemented yet.');
   }
 
   onLanguageChange(lang: SupportedLanguageCode | string) {
