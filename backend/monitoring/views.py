@@ -56,11 +56,135 @@ def api_subjects(request):
         'regions',
         'agencies',
         'sensor-data',
+        'alerts/recent',
         'kpis/energy/daily',
         'kpis/energy/monthly',
         'kpis/energy/compare',
     ]
     return Response({'subjects': subjects})
+
+
+@api_view(['GET'])
+def recent_alerts(request):
+    month = request.query_params.get('month')
+    queryset = (
+        SensorData.objects
+        .select_related('agency')
+        .filter(
+            Q(temperature__gt=30)
+            | Q(energy_usage__gt=4)
+            | (
+                Q(energy_usage__gt=1)
+                & (
+                    Q(timestamp__week_day__in=[1, 7])
+                    | Q(timestamp__hour__lt=8)
+                    | Q(timestamp__hour__gte=17)
+                )
+            )
+        )
+    )
+
+    if month:
+        try:
+            year, month_number = month.split('-')
+            year = int(year)
+            month_number = int(month_number)
+        except ValueError:
+            return Response(
+                {'error': 'month must use YYYY-MM format'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        queryset = queryset.filter(
+            timestamp__year=year,
+            timestamp__month=month_number,
+        )
+
+    queryset = queryset.order_by('-timestamp')[:200]
+
+    candidates = []
+    for reading in queryset:
+        candidates.extend(_build_alerts_for_reading(reading))
+        if len(candidates) >= 50:
+            break
+
+    return Response(_select_diverse_recent_alerts(candidates))
+
+
+def _build_alerts_for_reading(reading):
+    alerts = []
+    temperature = float(reading.temperature)
+    energy_usage = float(reading.energy_usage)
+
+    if temperature > 30:
+        alerts.append({
+            'agency_name': reading.agency.name,
+            'type': 'High temperature',
+            'severity': 'critical',
+            'message': f'{reading.agency.name} recorded {temperature:.1f}°C, above the 30°C comfort threshold.',
+            'timestamp': reading.timestamp,
+        })
+
+    if energy_usage > 4:
+        alerts.append({
+            'agency_name': reading.agency.name,
+            'type': 'High energy usage',
+            'severity': 'critical',
+            'message': f'{reading.agency.name} consumed {energy_usage:.2f} kWh in one reading.',
+            'timestamp': reading.timestamp,
+        })
+
+    if energy_usage > 1 and _is_outside_business_hours(reading.timestamp):
+        alerts.append({
+            'agency_name': reading.agency.name,
+            'type': 'After-hours energy waste',
+            'severity': 'warning',
+            'message': f'{reading.agency.name} used {energy_usage:.2f} kWh outside business hours.',
+            'timestamp': reading.timestamp,
+        })
+
+    return alerts
+
+
+def _is_outside_business_hours(value):
+    return value.weekday() >= 5 or value.hour < 8 or value.hour >= 17
+
+
+def _select_diverse_recent_alerts(candidates, limit=5):
+    selected = []
+    remaining = list(candidates)
+    used_agencies = set()
+    used_types = set()
+    used_months = set()
+
+    while remaining and len(selected) < limit:
+        best_index = 0
+        best_score = -1
+
+        for index, alert in enumerate(remaining):
+            month = _alert_month(alert)
+            score = 0
+            if alert['agency_name'] not in used_agencies:
+                score += 3
+            if alert['type'] not in used_types:
+                score += 3
+            if month not in used_months:
+                score += 2
+
+            if score > best_score:
+                best_score = score
+                best_index = index
+
+        alert = remaining.pop(best_index)
+        selected.append(alert)
+        used_agencies.add(alert['agency_name'])
+        used_types.add(alert['type'])
+        used_months.add(_alert_month(alert))
+
+    return selected
+
+
+def _alert_month(alert):
+    return alert['timestamp'].strftime('%Y-%m')
 
 
 @api_view(['GET'])

@@ -1,4 +1,5 @@
 from decimal import Decimal
+from datetime import datetime, timezone as dt_timezone
 
 from django.contrib.auth import get_user_model
 from django.urls import reverse
@@ -215,6 +216,135 @@ class MonthlyEnergyKpiTests(BaseAPITestCase):
         self.assertEqual(response.data[0]["avg_clients"], 15.0)
 
 
+class RecentAlertsTests(BaseAPITestCase):
+    def test_recent_alerts_returns_threshold_alerts(self):
+        SensorData.objects.create(
+            agency=self.agency1,
+            temperature="31.50",
+            clients_count=12,
+            energy_usage="4.500",
+            ac_mode=ACMode.ON,
+            timestamp=datetime(2025, 7, 7, 10, 0, tzinfo=dt_timezone.utc),
+        )
+        SensorData.objects.create(
+            agency=self.agency2,
+            temperature="22.00",
+            clients_count=0,
+            energy_usage="1.500",
+            ac_mode=ACMode.OFF,
+            timestamp=datetime(2025, 7, 7, 20, 0, tzinfo=dt_timezone.utc),
+        )
+
+        response = self.client.get("/api/alerts/recent/")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        alert_types = {alert["type"] for alert in response.data}
+        self.assertIn("High temperature", alert_types)
+        self.assertIn("High energy usage", alert_types)
+        self.assertIn("After-hours energy waste", alert_types)
+
+    def test_recent_alerts_returns_empty_list_when_no_alerts(self):
+        SensorData.objects.create(
+            agency=self.agency1,
+            temperature="24.00",
+            clients_count=8,
+            energy_usage="0.900",
+            ac_mode=ACMode.ECO,
+            timestamp=datetime(2025, 7, 7, 10, 0, tzinfo=dt_timezone.utc),
+        )
+
+        response = self.client.get("/api/alerts/recent/")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, [])
+
+    def test_recent_alerts_prefers_diverse_agencies_types_and_months(self):
+        agency3 = Agency.objects.create(name="BH Bank Dar Chaaben", region=self.region)
+
+        for day in range(27, 32):
+            SensorData.objects.create(
+                agency=self.agency1,
+                temperature="22.00",
+                clients_count=10,
+                energy_usage="4.500",
+                ac_mode=ACMode.ON,
+                timestamp=datetime(2025, 12, day, 10, 0, tzinfo=dt_timezone.utc),
+            )
+
+        SensorData.objects.create(
+            agency=self.agency2,
+            temperature="22.00",
+            clients_count=11,
+            energy_usage="4.600",
+            ac_mode=ACMode.ON,
+            timestamp=datetime(2025, 10, 15, 10, 0, tzinfo=dt_timezone.utc),
+        )
+        SensorData.objects.create(
+            agency=self.agency2,
+            temperature="31.50",
+            clients_count=8,
+            energy_usage="0.900",
+            ac_mode=ACMode.ECO,
+            timestamp=datetime(2025, 8, 15, 10, 0, tzinfo=dt_timezone.utc),
+        )
+        SensorData.objects.create(
+            agency=agency3,
+            temperature="23.00",
+            clients_count=0,
+            energy_usage="1.500",
+            ac_mode=ACMode.OFF,
+            timestamp=datetime(2025, 7, 15, 20, 0, tzinfo=dt_timezone.utc),
+        )
+
+        response = self.client.get("/api/alerts/recent/")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertLessEqual(len(response.data), 5)
+        self.assertGreaterEqual(len({alert["agency_name"] for alert in response.data}), 3)
+        self.assertGreaterEqual(len({alert["type"] for alert in response.data}), 3)
+        self.assertGreaterEqual(len({alert["timestamp"].strftime("%Y-%m") for alert in response.data}), 4)
+
+    def test_recent_alerts_filters_by_month(self):
+        SensorData.objects.create(
+            agency=self.agency1,
+            temperature="31.50",
+            clients_count=10,
+            energy_usage="0.900",
+            ac_mode=ACMode.ECO,
+            timestamp=datetime(2025, 10, 15, 10, 0, tzinfo=dt_timezone.utc),
+        )
+        SensorData.objects.create(
+            agency=self.agency2,
+            temperature="22.00",
+            clients_count=9,
+            energy_usage="4.500",
+            ac_mode=ACMode.ON,
+            timestamp=datetime(2025, 11, 15, 10, 0, tzinfo=dt_timezone.utc),
+        )
+
+        response = self.client.get("/api/alerts/recent/", {"month": "2025-10"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertGreaterEqual(len(response.data), 1)
+        self.assertTrue(all(alert["timestamp"].strftime("%Y-%m") == "2025-10" for alert in response.data))
+        self.assertEqual(response.data[0]["type"], "High temperature")
+
+    def test_recent_alerts_month_with_no_alerts_returns_empty_list(self):
+        SensorData.objects.create(
+            agency=self.agency1,
+            temperature="31.50",
+            clients_count=10,
+            energy_usage="0.900",
+            ac_mode=ACMode.ECO,
+            timestamp=datetime(2025, 10, 15, 10, 0, tzinfo=dt_timezone.utc),
+        )
+
+        response = self.client.get("/api/alerts/recent/", {"month": "2025-06"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, [])
+
+
 class CompareAgenciesTests(BaseAPITestCase):
     def test_compare_valid_agencies(self):
         SensorData.objects.create(
@@ -285,6 +415,7 @@ class ApiSubjectsTests(BaseAPITestCase):
             "regions",
             "agencies",
             "sensor-data",
+            "alerts/recent",
             "kpis/energy/daily",
             "kpis/energy/monthly",
             "kpis/energy/compare",
