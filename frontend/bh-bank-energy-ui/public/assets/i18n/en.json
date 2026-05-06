@@ -36,6 +36,33 @@
     "footer": "Secure access for authorized users only.",
     "error": "Wrong email address or password."
   },
+  "forgotPassword": {
+    "badge": "BH Bank Energy Platform",
+    "title": "Reset Your Password",
+    "subtitle": "Securely recover access to your BH Bank energy management account.",
+    "heading": "Forgot Password",
+    "instruction": "Enter your details below to reset your password.",
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "Enter your email address",
+    "newPasswordLabel": "New Password",
+    "newPasswordPlaceholder": "Enter your new password",
+    "confirmPasswordLabel": "Confirm Password",
+    "confirmPasswordPlaceholder": "Re-enter your new password",
+    "captchaLabel": "Security Check",
+    "captchaPlaceholder": "Enter the answer",
+    "refreshCaptcha": "Refresh captcha",
+    "submit": "Reset Password",
+    "submitting": "Resetting...",
+    "backToLogin": "Back to Sign In",
+    "success": "Your password has been reset successfully.",
+    "error": {
+      "allFieldsRequired": "Please fill in all fields.",
+      "invalidCaptcha": "Incorrect captcha answer. Please try again.",
+      "passwordTooShort": "Password must be at least 6 characters.",
+      "passwordsDoNotMatch": "Passwords do not match.",
+      "generic": "Password reset failed. Please try again later."
+    }
+  },
   "dashboard": {
     "title": "Energy Management Dashboard",
     "subtitle": "Welcome to the BH Bank smart monitoring platform.",

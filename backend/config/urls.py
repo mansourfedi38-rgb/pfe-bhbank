@@ -17,11 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenRefreshView
-from monitoring.views import EmailTokenObtainPairView
+from monitoring.views import EmailTokenObtainPairView, reset_password
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/auth/login/', EmailTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/auth/reset-password/', reset_password, name='reset_password'),
     path('api/', include('monitoring.urls')),
 ]

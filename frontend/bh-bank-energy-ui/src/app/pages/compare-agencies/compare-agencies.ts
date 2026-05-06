@@ -3,6 +3,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { LanguageSwitcherComponent } from '../../components/language-switcher/language-switcher';
 import { ApiService, Region, Agency, ComparisonResponse, MonthlyEnergyKpi } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 
@@ -19,7 +20,8 @@ type ComparisonPeriod = 'month' | 'year';
     RouterLinkActive,
     TranslateModule,
     DecimalPipe,
-    FormsModule
+    FormsModule,
+    LanguageSwitcherComponent
   ],
   templateUrl: './compare-agencies.html',
   styleUrl: './compare-agencies.scss'

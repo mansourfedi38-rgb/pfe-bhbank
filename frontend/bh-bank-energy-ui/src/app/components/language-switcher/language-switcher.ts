@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
@@ -17,6 +17,8 @@ const LANGUAGE_STORAGE_KEY = 'language';
   styleUrl: './language-switcher.scss'
 })
 export class LanguageSwitcherComponent implements OnInit {
+  @Input() compact = false;
+
   supported = supportedLanguages;
   selectedLanguage: SupportedLanguageCode = 'en';
 

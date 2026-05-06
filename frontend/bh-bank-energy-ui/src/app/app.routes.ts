@@ -6,6 +6,7 @@ import { EnergyUsageComponent } from './pages/energy-usage/energy-usage';
 import { ReportsComponent } from './pages/reports/reports';
 import { CompareAgenciesComponent } from './pages/compare-agencies/compare-agencies';
 import { SettingsComponent } from './pages/settings/settings';
+import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -16,5 +17,6 @@ export const routes: Routes = [
   { path: 'energy-usage', component: EnergyUsageComponent, canActivate: [authGuard] },
   { path: 'reports', component: ReportsComponent, canActivate: [authGuard] },
   { path: 'compare-agencies', component: CompareAgenciesComponent, canActivate: [authGuard] },
-  { path: 'settings', component: SettingsComponent, canActivate: [authGuard] }
+  { path: 'settings', component: SettingsComponent, canActivate: [authGuard] },
+  { path: 'forgot-password', component: ForgotPasswordComponent }
 ];

@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../services/auth.service';
@@ -11,7 +11,7 @@ const LOGIN_TIMEOUT_MS = 8000;
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, TranslateModule, NgIf],
+  imports: [FormsModule, TranslateModule, NgIf, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.scss'
 })

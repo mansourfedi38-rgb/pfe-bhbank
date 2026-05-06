@@ -3,13 +3,14 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { LanguageSwitcherComponent } from '../../components/language-switcher/language-switcher';
 import { Agency, ApiService, SensorData } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-sensors',
   standalone: true,
-  imports: [NgIf, NgFor, FormsModule, RouterLink, RouterLinkActive, TranslateModule],
+  imports: [NgIf, NgFor, FormsModule, RouterLink, RouterLinkActive, TranslateModule, LanguageSwitcherComponent],
   templateUrl: './sensors.html',
   styleUrl: './sensors.scss'
 })

@@ -36,6 +36,33 @@
     "footer": "Accès sécurisé réservé aux utilisateurs autorisés.",
     "error": "Adresse e-mail ou mot de passe incorrect."
   },
+  "forgotPassword": {
+    "badge": "Plateforme énergétique BH Bank",
+    "title": "Réinitialiser votre mot de passe",
+    "subtitle": "Récupérez l'accès sécurisé à votre compte de gestion énergétique BH Bank.",
+    "heading": "Mot de passe oublié",
+    "instruction": "Saisissez vos informations ci-dessous pour réinitialiser votre mot de passe.",
+    "emailLabel": "Adresse e-mail",
+    "emailPlaceholder": "Entrez votre adresse e-mail",
+    "newPasswordLabel": "Nouveau mot de passe",
+    "newPasswordPlaceholder": "Entrez votre nouveau mot de passe",
+    "confirmPasswordLabel": "Confirmer le mot de passe",
+    "confirmPasswordPlaceholder": "Resaisissez votre nouveau mot de passe",
+    "captchaLabel": "Vérification de sécurité",
+    "captchaPlaceholder": "Entrez la réponse",
+    "refreshCaptcha": "Actualiser le captcha",
+    "submit": "Réinitialiser le mot de passe",
+    "submitting": "Réinitialisation...",
+    "backToLogin": "Retour à la connexion",
+    "success": "Votre mot de passe a été réinitialisé avec succès.",
+    "error": {
+      "allFieldsRequired": "Veuillez remplir tous les champs.",
+      "invalidCaptcha": "Réponse captcha incorrecte. Veuillez réessayer.",
+      "passwordTooShort": "Le mot de passe doit contenir au moins 6 caractères.",
+      "passwordsDoNotMatch": "Les mots de passe ne correspondent pas.",
+      "generic": "La réinitialisation du mot de passe a échoué. Veuillez réessayer plus tard."
+    }
+  },
   "dashboard": {
     "title": "Tableau de bord de gestion énergétique",
     "subtitle": "Bienvenue sur la plateforme intelligente de surveillance BH Bank.",

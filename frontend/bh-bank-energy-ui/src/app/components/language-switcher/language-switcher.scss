@@ -18,3 +18,34 @@
   padding: 0.25rem 0.5rem;
 }
 
+/* Compact mode for navbar */
+.language-switcher.compact {
+  position: static;
+  background: transparent;
+  border: none;
+  padding: 0;
+  z-index: auto;
+}
+
+.language-switcher.compact select {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.language-switcher.compact select:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.language-switcher.compact select:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.9);
+}
+

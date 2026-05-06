@@ -3,10 +3,12 @@ from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Sum, Avg, Count, Q, Max
 from django.db.models.functions import TruncDate, TruncMonth
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from decimal import Decimal
+from django.contrib.auth import get_user_model
 
 from rest_framework_simplejwt.views import TokenObtainPairView
 
@@ -728,6 +730,38 @@ def _generate_insights(agency1_metrics: dict, agency2_metrics: dict) -> list:
             'factor': 'No significant differences detected'
         }
     ]
+
+
+User = get_user_model()
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def reset_password(request):
+    email = request.data.get('email')
+    new_password = request.data.get('new_password')
+
+    if not email or not new_password:
+        return Response(
+            {'error': 'Email and new password are required.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    try:
+        user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        return Response(
+            {'error': 'No account found with this email address.'},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+    user.set_password(new_password)
+    user.save()
+
+    return Response(
+        {'message': 'Password has been reset successfully.'},
+        status=status.HTTP_200_OK
+    )
 
 
 class EmailTokenObtainPairView(TokenObtainPairView):

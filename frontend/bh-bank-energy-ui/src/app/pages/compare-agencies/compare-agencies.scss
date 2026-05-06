@@ -96,8 +96,15 @@
   background: #e30613;
 }
 
-.logout-btn {
+.nav-actions {
   margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logout-btn {
+  margin-left: 0;
   background: #e30613;
   color: #ffffff;
   border: none;

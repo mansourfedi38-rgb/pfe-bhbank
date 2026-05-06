@@ -2,6 +2,7 @@ import { NgFor, NgIf } from '@angular/common';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { LanguageSwitcherComponent } from '../../components/language-switcher/language-switcher';
 import Chart from 'chart.js/auto';
 import { ApiService, MonthlyEnergyKpi } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
@@ -11,7 +12,7 @@ type EnergyRange = 'month' | 'quarter' | 'year';
 @Component({
   selector: 'app-energy-usage',
   standalone: true,
-  imports: [NgIf, NgFor, RouterLink, RouterLinkActive, TranslateModule],
+  imports: [NgIf, NgFor, RouterLink, RouterLinkActive, TranslateModule, LanguageSwitcherComponent],
   templateUrl: './energy-usage.html',
   styleUrl: './energy-usage.scss'
 })

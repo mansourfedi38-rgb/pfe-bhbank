@@ -3,6 +3,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../services/auth.service';
+import { LanguageSwitcherComponent } from '../../components/language-switcher/language-switcher';
 
 import type { SupportedLanguageCode } from '../../language/supported-languages';
 import { supportedLanguages } from '../../language/supported-languages';
@@ -10,7 +11,7 @@ import { supportedLanguages } from '../../language/supported-languages';
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, FormsModule, TranslateModule],
+  imports: [RouterLink, RouterLinkActive, FormsModule, TranslateModule, LanguageSwitcherComponent],
   templateUrl: './settings.html',
   styleUrl: './settings.scss'
 })

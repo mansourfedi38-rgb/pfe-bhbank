@@ -1,5 +1,7 @@
-<div class="language-switcher" [attr.dir]="selectedLanguage === 'ar' ? 'rtl' : 'ltr'">
-  <label for="languageSelect">{{ 'languageSelector.label' | translate }}</label>
+<div class="language-switcher" [class.compact]="compact" [attr.dir]="selectedLanguage === 'ar' ? 'rtl' : 'ltr'">
+  @if (!compact) {
+    <label for="languageSelect">{{ 'languageSelector.label' | translate }}</label>
+  }
 
   <select
     id="languageSelect"

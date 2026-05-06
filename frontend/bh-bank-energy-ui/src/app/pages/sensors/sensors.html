@@ -12,7 +12,10 @@
     <a routerLink="/reports" routerLinkActive="active">{{ 'navigation.reports' | translate }}</a>
     <a routerLink="/compare-agencies" routerLinkActive="active">{{ 'navigation.compareAgencies' | translate }}</a>
     <a routerLink="/settings" routerLinkActive="active">{{ 'navigation.settings' | translate }}</a>
-    <button class="logout-btn" (click)="logout()">{{ 'navigation.logout' | translate }}</button>
+    <div class="nav-actions">
+      <app-language-switcher [compact]="true"></app-language-switcher>
+      <button class="logout-btn" (click)="logout()">{{ 'navigation.logout' | translate }}</button>
+    </div>
   </nav>
 
   <main class="main-content">
