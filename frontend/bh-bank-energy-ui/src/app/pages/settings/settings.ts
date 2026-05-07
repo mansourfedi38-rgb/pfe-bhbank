@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { AuthService } from '../../services/auth.service';
-import { LanguageSwitcherComponent } from '../../components/language-switcher/language-switcher';
+import { NavbarComponent } from '../../components/navbar/navbar';
 
 import type { SupportedLanguageCode } from '../../language/supported-languages';
 import { supportedLanguages } from '../../language/supported-languages';
@@ -11,7 +10,7 @@ import { supportedLanguages } from '../../language/supported-languages';
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, FormsModule, TranslateModule, LanguageSwitcherComponent],
+  imports: [FormsModule, TranslateModule, NavbarComponent],
   templateUrl: './settings.html',
   styleUrl: './settings.scss'
 })
@@ -25,8 +24,7 @@ export class SettingsComponent implements OnInit {
   readonly supported = supportedLanguages;
 
   constructor(
-    private translate: TranslateService,
-    private auth: AuthService
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -55,10 +53,6 @@ export class SettingsComponent implements OnInit {
       this.theme = storedTheme;
       this.applyTheme(storedTheme);
     }
-  }
-
-  logout() {
-    this.auth.logout();
   }
 
   onLanguageChange(lang: SupportedLanguageCode | string) {

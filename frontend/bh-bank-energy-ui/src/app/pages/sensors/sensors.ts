@@ -1,16 +1,15 @@
 import { NgFor, NgIf } from '@angular/common';
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { LanguageSwitcherComponent } from '../../components/language-switcher/language-switcher';
+import { NavbarComponent } from '../../components/navbar/navbar';
 import { Agency, ApiService, SensorData } from '../../services/api.service';
-import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-sensors',
   standalone: true,
-  imports: [NgIf, NgFor, FormsModule, RouterLink, RouterLinkActive, TranslateModule, LanguageSwitcherComponent],
+  imports: [NgIf, NgFor, FormsModule, TranslateModule, NavbarComponent],
   templateUrl: './sensors.html',
   styleUrl: './sensors.scss'
 })
@@ -39,8 +38,7 @@ export class SensorsComponent implements OnInit, OnDestroy {
   constructor(
     private api: ApiService,
     private translate: TranslateService,
-    private cdr: ChangeDetectorRef,
-    private auth: AuthService
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -119,10 +117,6 @@ export class SensorsComponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       }
     });
-  }
-
-  logout() {
-    this.auth.logout();
   }
 
   applyFilters(): void {

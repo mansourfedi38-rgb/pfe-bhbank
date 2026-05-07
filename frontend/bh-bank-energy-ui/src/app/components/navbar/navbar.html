@@ -1,0 +1,24 @@
+<header class="bank-header">
+  <div class="logo-area">
+    <img src="assets/images/BH-Bank.png" alt="BH Bank Logo" style="height: 80px; width: auto;" />
+  </div>
+  <div class="header-actions">
+    <a routerLink="/notre-reseau" class="header-link">
+      <i class="fa-solid fa-location-dot"></i>
+      <span>{{ 'navigation.notreReseau' | translate }}</span>
+    </a>
+  </div>
+</header>
+
+<nav class="top-nav">
+  <a routerLink="/dashboard" routerLinkActive="active">{{ 'navigation.dashboard' | translate }}</a>
+  <a routerLink="/sensors" routerLinkActive="active">{{ 'navigation.sensors' | translate }}</a>
+  <a routerLink="/energy-usage" routerLinkActive="active">{{ 'navigation.energyUsage' | translate }}</a>
+  <a routerLink="/reports" routerLinkActive="active">{{ 'navigation.reports' | translate }}</a>
+  <a routerLink="/compare-agencies" routerLinkActive="active">{{ 'navigation.compareAgencies' | translate }}</a>
+  <a routerLink="/settings" routerLinkActive="active">{{ 'navigation.settings' | translate }}</a>
+  <div class="nav-actions">
+    <app-language-switcher [compact]="true"></app-language-switcher>
+    <button class="logout-btn" (click)="logout()">{{ 'navigation.logout' | translate }}</button>
+  </div>
+</nav>

@@ -1,0 +1,112 @@
+<div class="notre-reseau-page">
+  <app-navbar></app-navbar>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1>{{ 'notreReseau.heroTitle' | translate }}</h1>
+        <p>{{ 'notreReseau.heroDescription' | translate }}</p>
+      </div>
+      <div class="hero-map">
+        <svg viewBox="0 0 400 600" class="tunisia-svg">
+          <path class="tunisia-shape"
+            d="M180,20 C200,25 220,30 240,35 C260,40 280,50 300,60 C320,70 340,85 350,100 C360,115 365,130 360,145 C355,160 345,175 340,190 C335,205 340,220 350,235 C360,250 370,265 375,280 C380,295 375,310 365,325 C355,340 345,355 340,370 C335,385 340,400 350,415 C360,430 370,445 375,460 C380,475 375,490 365,505 C355,520 345,535 340,550 C335,565 340,580 350,595 L180,595 C170,580 160,565 150,550 C140,535 130,520 120,505 C110,490 100,475 90,460 C80,445 75,430 80,415 C85,400 95,385 100,370 C105,355 100,340 90,325 C80,310 70,295 65,280 C60,265 65,250 75,235 C85,220 95,205 100,190 C105,175 100,160 90,145 C80,130 70,115 65,100 C60,85 65,70 75,60 C85,50 100,40 120,35 C140,30 160,25 180,20 Z" />
+        </svg>
+        <div class="hero-stats">
+          <div class="stats-line dark">PLUS DE</div>
+          <div class="stats-number">150</div>
+          <div class="stats-line red">AGENCES</div>
+          <div class="stats-line dark small">A VOTRE SERVICE</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Agency Finder Section -->
+  <section class="finder-section">
+    <div class="finder-header">
+      <h2>{{ 'notreReseau.finderTitle' | translate }}</h2>
+      <p>{{ 'notreReseau.finderSubtitle' | translate }}</p>
+    </div>
+
+    <div class="finder-body">
+      <!-- Left Panel -->
+      <div class="finder-left">
+        <div class="search-row">
+          <div class="search-field">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input
+              type="text"
+              [(ngModel)]="searchKeyword"
+              (keyup.enter)="onSearch()"
+              [attr.placeholder]="'notreReseau.searchPlaceholder' | translate"
+            />
+          </div>
+          <div class="region-field">
+            <select [(ngModel)]="selectedRegionId" (change)="applyFilters()">
+              <option [ngValue]="null">{{ 'notreReseau.allRegions' | translate }}</option>
+              <option *ngFor="let region of regions" [ngValue]="region.id">{{ region.name }}</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="search-btn" (click)="onSearch()">
+          <i class="fa-solid fa-location-dot"></i>
+          {{ 'notreReseau.searchButton' | translate }}
+        </button>
+
+        <div class="type-filters">
+          <button
+            *ngFor="let type of agencyTypes"
+            class="type-chip"
+            [class.active]="selectedType === type.key"
+            (click)="selectType(type.key)">
+            <i *ngIf="type.key" class="fa-solid fa-location-dot"></i>
+            <span *ngIf="!type.key">{{ 'notreReseau.allTypes' | translate }}</span>
+            <span *ngIf="type.key">{{ type.label }}</span>
+          </button>
+        </div>
+
+        <div *ngIf="isLoading" class="loading-state">
+          <p>{{ 'common.loading' | translate }}</p>
+        </div>
+
+        <div *ngIf="!isLoading && filteredAgencies.length === 0" class="empty-state">
+          <p>{{ 'notreReseau.noAgencies' | translate }}</p>
+        </div>
+
+        <div *ngIf="!isLoading" class="agencies-list">
+          <div
+            *ngFor="let agency of filteredAgencies"
+            class="agency-card"
+            (click)="focusOnMap(agency)">
+            <div class="agency-header">
+              <i class="fa-solid fa-building-columns"></i>
+              <h3>{{ agency.name }}</h3>
+            </div>
+            <div class="agency-details">
+              <p *ngIf="agency.address" class="detail-row">
+                <i class="fa-solid fa-location-dot"></i>
+                <span>{{ agency.address }}</span>
+              </p>
+              <p *ngIf="agency.phone" class="detail-row">
+                <i class="fa-solid fa-phone"></i>
+                <span>{{ 'notreReseau.contact' | translate }} : {{ agency.phone }}</span>
+              </p>
+              <p *ngIf="agency.email" class="detail-row">
+                <i class="fa-solid fa-envelope"></i>
+                <span>{{ agency.email }}</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Panel: Map -->
+      <div class="finder-right">
+        <div id="agencyMap" class="map-container"></div>
+      </div>
+    </div>
+  </section>
+</div>

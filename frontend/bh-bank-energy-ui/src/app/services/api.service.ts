@@ -24,6 +24,12 @@ export interface Agency {
   id: number;
   name: string;
   region: number;
+  address?: string;
+  phone?: string;
+  email?: string;
+  latitude?: string | number;
+  longitude?: string | number;
+  agency_type?: string;
 }
 
 export interface SensorData {

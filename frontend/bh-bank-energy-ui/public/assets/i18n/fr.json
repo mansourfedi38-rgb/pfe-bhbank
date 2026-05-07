@@ -12,6 +12,7 @@
     "energyUsage": "Consommation énergétique",
     "reports": "Rapports",
     "compareAgencies": "Comparer les agences",
+    "notreReseau": "Notre réseau",
     "settings": "Paramètres",
     "logout": "Déconnexion"
   },
@@ -295,6 +296,23 @@
       "policies": "Comparer les politiques d’utilisation des équipements entre agences et documenter les différences opérationnelles.",
       "generateData": "Générer ou sélectionner une période contenant des lectures de capteurs avant de comparer les agences.",
       "monitor": "Continuer à suivre l’énergie par client et l’usage de la climatisation pour détecter les écarts futurs."
+    }
+  },
+  "notreReseau": {
+    "heroTitle": "Notre réseau",
+    "heroDescription": "Chez BH Bank, chaque agence incarne notre engagement envers le service client, tout en offrant un environnement dynamique et en constante évolution.",
+    "finderTitle": "Je Trouve mon agence",
+    "finderSubtitle": "Sélectionnez votre région, pour affiner votre recherche",
+    "searchPlaceholder": "Mots clés...",
+    "allRegions": "Gouvernorat",
+    "searchButton": "Rechercher",
+    "allTypes": "Tous",
+    "noAgencies": "Aucune agence trouvée.",
+    "contact": "Contact",
+    "status": {
+      "loading": "Chargement des agences...",
+      "loaded": "{{count}} agences chargées.",
+      "failed": "Échec du chargement des agences."
     }
   },
   "footer": {

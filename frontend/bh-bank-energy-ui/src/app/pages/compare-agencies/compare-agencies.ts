@@ -1,11 +1,10 @@
 import { NgFor, NgIf, DecimalPipe, UpperCasePipe } from '@angular/common';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { LanguageSwitcherComponent } from '../../components/language-switcher/language-switcher';
+import { NavbarComponent } from '../../components/navbar/navbar';
 import { ApiService, Region, Agency, ComparisonResponse, MonthlyEnergyKpi } from '../../services/api.service';
-import { AuthService } from '../../services/auth.service';
 
 type ComparisonPeriod = 'month' | 'year';
 
@@ -16,12 +15,10 @@ type ComparisonPeriod = 'month' | 'year';
     NgIf,
     NgFor,
     UpperCasePipe,
-    RouterLink,
-    RouterLinkActive,
     TranslateModule,
     DecimalPipe,
     FormsModule,
-    LanguageSwitcherComponent
+    NavbarComponent
   ],
   templateUrl: './compare-agencies.html',
   styleUrl: './compare-agencies.scss'
@@ -57,8 +54,7 @@ export class CompareAgenciesComponent implements OnInit {
   constructor(
     private api: ApiService,
     private translate: TranslateService,
-    private cdr: ChangeDetectorRef,
-    private auth: AuthService
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -180,10 +176,6 @@ export class CompareAgenciesComponent implements OnInit {
     return energy1 > energy2
       ? this.comparisonResult.agency_1.name
       : this.comparisonResult.agency_2.name;
-  }
-
-  logout(): void {
-    this.auth.logout();
   }
 
   toggleDetails(): void {

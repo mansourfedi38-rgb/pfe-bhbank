@@ -1,18 +1,17 @@
 import { NgFor, NgIf } from '@angular/common';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { LanguageSwitcherComponent } from '../../components/language-switcher/language-switcher';
+import { NavbarComponent } from '../../components/navbar/navbar';
 import Chart from 'chart.js/auto';
 import { ApiService, MonthlyEnergyKpi } from '../../services/api.service';
-import { AuthService } from '../../services/auth.service';
 
 type EnergyRange = 'month' | 'quarter' | 'year';
 
 @Component({
   selector: 'app-energy-usage',
   standalone: true,
-  imports: [NgIf, NgFor, RouterLink, RouterLinkActive, TranslateModule, LanguageSwitcherComponent],
+  imports: [NgIf, NgFor, TranslateModule, NavbarComponent],
   templateUrl: './energy-usage.html',
   styleUrl: './energy-usage.scss'
 })
@@ -38,8 +37,7 @@ export class EnergyUsageComponent implements OnInit {
   constructor(
     private api: ApiService,
     private translate: TranslateService,
-    private cdr: ChangeDetectorRef,
-    private auth: AuthService
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -71,10 +69,6 @@ export class EnergyUsageComponent implements OnInit {
     this.filteredRows = this.monthlyRows.filter((row) => selectedMonths.includes(row.month));
     this.recalculateSummaries();
     this.createTrendChart();
-  }
-
-  logout() {
-    this.auth.logout();
   }
 
   private recalculateSummaries(): void {

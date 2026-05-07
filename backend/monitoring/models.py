@@ -18,9 +18,28 @@ class Region(models.Model):
 # -------------------------
 # Agency Model
 # -------------------------
+class AgencyType(models.TextChoices):
+    AGENCE = "AGENCE", "Agence"
+    CENTRE_AFFAIRES = "CENTRE_AFFAIRES", "Centre d'affaires"
+    DIRECTION_REGIONALE = "DIRECTION_REGIONALE", "Direction régionale"
+    SIEGE = "SIEGE", "Siège"
+    SUCCURSALE = "SUCCURSALE", "Succursale"
+    GAB = "GAB", "GAB"
+
+
 class Agency(models.Model):
     name = models.CharField(max_length=120)
     region = models.ForeignKey(Region, on_delete=models.PROTECT, related_name="agencies")
+    address = models.TextField(blank=True, default="")
+    phone = models.CharField(max_length=60, blank=True, default="")
+    email = models.EmailField(blank=True, default="")
+    latitude = models.DecimalField(max_digits=10, decimal_places=7, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=10, decimal_places=7, null=True, blank=True)
+    agency_type = models.CharField(
+        max_length=30,
+        choices=AgencyType.choices,
+        default=AgencyType.AGENCE,
+    )
 
     class Meta:
         unique_together = ("name", "region")

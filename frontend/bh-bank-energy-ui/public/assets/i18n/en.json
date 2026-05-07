@@ -12,6 +12,7 @@
     "energyUsage": "Energy Usage",
     "reports": "Reports",
     "compareAgencies": "Compare Agencies",
+    "notreReseau": "Our Network",
     "settings": "Settings",
     "logout": "Logout"
   },
@@ -295,6 +296,23 @@
       "policies": "Compare equipment usage policies between agencies and document operational differences.",
       "generateData": "Generate or select a period with sensor readings before comparing agencies.",
       "monitor": "Continue monitoring energy per client and AC usage to detect future deviations."
+    }
+  },
+  "notreReseau": {
+    "heroTitle": "Our Network",
+    "heroDescription": "At BH Bank, each agency embodies our commitment to customer service, while offering a dynamic and constantly evolving environment.",
+    "finderTitle": "Find My Agency",
+    "finderSubtitle": "Select your region to refine your search",
+    "searchPlaceholder": "Keywords...",
+    "allRegions": "Governorate",
+    "searchButton": "Search",
+    "allTypes": "All",
+    "noAgencies": "No agencies found.",
+    "contact": "Contact",
+    "status": {
+      "loading": "Loading agencies...",
+      "loaded": "{{count}} agencies loaded.",
+      "failed": "Failed to load agencies."
     }
   },
   "footer": {

@@ -1,18 +1,17 @@
 import { NgFor, NgIf } from '@angular/common';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { LanguageSwitcherComponent } from '../../components/language-switcher/language-switcher';
+import { NavbarComponent } from '../../components/navbar/navbar';
 import { forkJoin } from 'rxjs';
 import Chart from 'chart.js/auto';
 import { ApiService, MonthlyEnergyKpi, RecentAlert, SensorData } from '../../services/api.service';
-import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [NgIf, NgFor, FormsModule, RouterLink, RouterLinkActive, TranslateModule, LanguageSwitcherComponent],
+  imports: [NgIf, NgFor, FormsModule, TranslateModule, NavbarComponent],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })
@@ -42,8 +41,7 @@ export class DashboardComponent implements OnInit {
   constructor(
     private api: ApiService,
     private translate: TranslateService,
-    private cdr: ChangeDetectorRef,
-    private auth: AuthService
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -53,10 +51,6 @@ export class DashboardComponent implements OnInit {
     this.translate.onLangChange.subscribe(() => {
       this.updateSelectedMonthSummary();
     });
-  }
-
-  logout(): void {
-    this.auth.logout();
   }
 
   onMonthChange(): void {
