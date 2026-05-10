@@ -18,6 +18,11 @@
   padding: 0.25rem 0.5rem;
 }
 
+.language-switcher select option {
+  background: #ffffff;
+  color: #0a2342;
+}
+
 /* Compact mode for navbar */
 .language-switcher.compact {
   position: static;
@@ -37,6 +42,17 @@
   font-weight: 600;
   cursor: pointer;
   transition: 0.2s ease;
+}
+
+.language-switcher.compact select option {
+  background: #08264d;
+  color: #ffffff;
+}
+
+.language-switcher.compact select option:checked,
+.language-switcher.compact select option:hover {
+  background: #0f5fc6;
+  color: #ffffff;
 }
 
 .language-switcher.compact select:hover {

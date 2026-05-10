@@ -2,13 +2,16 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
-export type ApiSubject = 'subjects' | 'regions' | 'agencies' | 'sensor-data' | 'alerts/recent' | 'kpis/energy/daily' | 'kpis/energy/monthly' | 'kpis/energy/compare';
+export type ApiSubject = 'subjects' | 'regions' | 'agencies' | 'sensor-data' | 'ai-detector/demo' | 'ai-detector/daily' | 'ai-detector/monthly' | 'alerts/recent' | 'kpis/energy/daily' | 'kpis/energy/monthly' | 'kpis/energy/compare';
 
 export const FRONTEND_API_SUBJECTS: readonly ApiSubject[] = [
   'subjects',
   'regions',
   'agencies',
   'sensor-data',
+  'ai-detector/demo',
+  'ai-detector/daily',
+  'ai-detector/monthly',
   'alerts/recent',
   'kpis/energy/daily',
   'kpis/energy/monthly',
@@ -142,6 +145,87 @@ export interface ComparisonResponse {
   };
 }
 
+export interface AiDetectorDemoResponse {
+  image_url: string;
+  image_path?: string;
+  total_clients: number;
+  employees_count: number;
+  zones: {
+    zone_1: number;
+    zone_2: number;
+    zone_3: number;
+    zone_4: number;
+  };
+  message: string;
+}
+
+export interface AiDetectorCrowdedHour {
+  timestamp: string;
+  total_clients: number;
+  crowded_zone: 'zone_1' | 'zone_2' | 'zone_3' | 'zone_4';
+}
+
+export interface AiDetectorHourlyImage {
+  timestamp: string;
+  image_url: string;
+  total_clients: number;
+  employees_count: number;
+  zones: {
+    zone_1: number;
+    zone_2: number;
+    zone_3: number;
+    zone_4: number;
+  };
+}
+
+export interface AiDetectorRecommendation {
+  type: 'staffing' | 'ac_control' | 'zone_crowding' | 'energy_optimization';
+  severity: 'high' | 'medium' | 'low';
+  message: string;
+}
+
+export interface AiDetectorMonthlyResponse {
+  agency: number;
+  agency_name: string;
+  month: string;
+  business_days: number;
+  total_images_analyzed: number;
+  average_clients: number;
+  peak_clients: number;
+  peak_timestamp: string | null;
+  average_employees: number;
+  zone_summary: {
+    zone_1_avg: number;
+    zone_2_avg: number;
+    zone_3_avg: number;
+    zone_4_avg: number;
+  };
+  crowded_hours: AiDetectorCrowdedHour[];
+  sample_image_url?: string;
+  hourly_images: AiDetectorHourlyImage[];
+  message: string;
+}
+
+export interface AiDetectorDailyResponse {
+  agency: number;
+  agency_name: string;
+  day: string;
+  total_images: number;
+  average_clients: number;
+  peak_clients: number;
+  peak_timestamp: string | null;
+  average_employees: number;
+  zone_summary: {
+    zone_1_avg: number;
+    zone_2_avg: number;
+    zone_3_avg: number;
+    zone_4_avg: number;
+  };
+  recommendations: AiDetectorRecommendation[];
+  hourly_images: AiDetectorHourlyImage[];
+  message: string;
+}
+
 interface BackendSubjectsResponse {
   subjects: string[];
 }
@@ -240,6 +324,24 @@ export class ApiService {
       params = params.set('date_to', filters.date_to);
     }
     return this.http.get<ComparisonResponse>('/api/kpis/energy/compare/', { params });
+  }
+
+  getAiDetectorDemo(): Observable<AiDetectorDemoResponse> {
+    return this.http.get<AiDetectorDemoResponse>('/api/ai-detector/demo/');
+  }
+
+  getAiDetectorDaily(agencyId: number, day: string): Observable<AiDetectorDailyResponse> {
+    const params = new HttpParams()
+      .set('agency', agencyId)
+      .set('day', day);
+    return this.http.get<AiDetectorDailyResponse>('/api/ai-detector/daily/', { params });
+  }
+
+  getAiDetectorMonthly(agencyId: number, month: string): Observable<AiDetectorMonthlyResponse> {
+    const params = new HttpParams()
+      .set('agency', agencyId)
+      .set('month', month);
+    return this.http.get<AiDetectorMonthlyResponse>('/api/ai-detector/monthly/', { params });
   }
 
   checkSubjectsCompatibility(): Observable<SubjectsCompatibilityResult> {

@@ -5,6 +5,7 @@ import { SensorsComponent } from './pages/sensors/sensors';
 import { EnergyUsageComponent } from './pages/energy-usage/energy-usage';
 import { ReportsComponent } from './pages/reports/reports';
 import { CompareAgenciesComponent } from './pages/compare-agencies/compare-agencies';
+import { AiDetectorComponent } from './pages/ai-detector/ai-detector';
 import { SettingsComponent } from './pages/settings/settings';
 import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password';
 import { NotreReseauComponent } from './pages/notre-reseau/notre-reseau';
@@ -18,6 +19,7 @@ export const routes: Routes = [
   { path: 'energy-usage', component: EnergyUsageComponent, canActivate: [authGuard] },
   { path: 'reports', component: ReportsComponent, canActivate: [authGuard] },
   { path: 'compare-agencies', component: CompareAgenciesComponent, canActivate: [authGuard] },
+  { path: 'ai-detector', component: AiDetectorComponent, canActivate: [authGuard] },
   { path: 'settings', component: SettingsComponent, canActivate: [authGuard] },
   { path: 'notre-reseau', component: NotreReseauComponent, canActivate: [authGuard] },
   { path: 'forgot-password', component: ForgotPasswordComponent }

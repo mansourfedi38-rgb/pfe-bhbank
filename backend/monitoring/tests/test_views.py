@@ -8,6 +8,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from monitoring.models import ACMode, Agency, Region, SensorData
+from monitoring.views import _build_daily_ai_recommendations
 
 User = get_user_model()
 
@@ -415,9 +416,171 @@ class ApiSubjectsTests(BaseAPITestCase):
             "regions",
             "agencies",
             "sensor-data",
+            "ai-detector/demo",
+            "ai-detector/daily",
+            "ai-detector/monthly",
             "alerts/recent",
             "kpis/energy/daily",
             "kpis/energy/monthly",
             "kpis/energy/compare",
         ]
         self.assertEqual(response.data["subjects"], expected)
+
+
+class AiDetectorDemoTests(BaseAPITestCase):
+    def test_ai_detector_demo_returns_detection_payload(self):
+        response = self.client.get("/api/ai-detector/demo/")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(response.data["image_url"].startswith("/media/ai_detector/demo/"))
+        self.assertEqual(response.data["message"], "AI detection completed successfully.")
+        self.assertGreaterEqual(response.data["total_clients"], 0)
+        self.assertGreaterEqual(response.data["employees_count"], 0)
+        self.assertEqual(
+            set(response.data["zones"].keys()),
+            {"zone_1", "zone_2", "zone_3", "zone_4"},
+        )
+
+
+class AiDetectorMonthlyTests(BaseAPITestCase):
+    def test_ai_detector_monthly_valid_month_returns_summary(self):
+        response = self.client.get(
+            "/api/ai-detector/monthly/",
+            {"agency": self.agency1.id, "month": "2025-07"},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["agency"], self.agency1.id)
+        self.assertEqual(response.data["agency_name"], self.agency1.name)
+        self.assertEqual(response.data["month"], "2025-07")
+        self.assertEqual(response.data["business_days"], 23)
+        self.assertEqual(response.data["total_images_analyzed"], 230)
+        self.assertIn("zone_1_avg", response.data["zone_summary"])
+        self.assertEqual(len(response.data["hourly_images"]), 230)
+        self.assertTrue(response.data["sample_image_url"].startswith("/media/ai_detector/2025-07/agency_"))
+        self.assertTrue(response.data["hourly_images"][0]["image_url"].startswith("/media/ai_detector/2025-07/agency_"))
+        self.assertIn("zones", response.data["hourly_images"][0])
+        self.assertEqual(
+            response.data["message"],
+            "Monthly AI occupancy analysis completed successfully.",
+        )
+
+    def test_ai_detector_monthly_invalid_month_format(self):
+        response = self.client.get(
+            "/api/ai-detector/monthly/",
+            {"agency": self.agency1.id, "month": "07-2025"},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data["error"], "month must use YYYY-MM format.")
+
+    def test_ai_detector_monthly_missing_agency(self):
+        response = self.client.get(
+            "/api/ai-detector/monthly/",
+            {"month": "2025-07"},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data["error"], "agency query parameter is required.")
+
+    def test_ai_detector_monthly_agency_not_found(self):
+        response = self.client.get(
+            "/api/ai-detector/monthly/",
+            {"agency": 99999, "month": "2025-07"},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data["error"], "Agency not found.")
+
+
+class AiDetectorDailyTests(BaseAPITestCase):
+    def test_ai_detector_daily_valid_business_day_returns_hourly_images(self):
+        response = self.client.get(
+            "/api/ai-detector/daily/",
+            {"agency": self.agency1.id, "day": "2025-07-15"},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["agency"], self.agency1.id)
+        self.assertEqual(response.data["day"], "2025-07-15")
+        self.assertEqual(response.data["total_images"], 10)
+        self.assertEqual(len(response.data["hourly_images"]), 10)
+        self.assertTrue(response.data["hourly_images"][0]["image_url"].startswith("/media/ai_detector/2025-07/agency_"))
+        self.assertIn("zone_1_avg", response.data["zone_summary"])
+        self.assertIn("recommendations", response.data)
+        self.assertGreater(len(response.data["recommendations"]), 0)
+
+    def test_ai_detector_daily_high_peak_generates_staffing_note(self):
+        response = self.client.get(
+            "/api/ai-detector/daily/",
+            {"agency": self.agency1.id, "day": "2025-07-15"},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        staffing_notes = [
+            item for item in response.data["recommendations"]
+            if item["type"] == "staffing"
+        ]
+        self.assertTrue(staffing_notes)
+
+    def test_ai_detector_daily_low_occupancy_generates_energy_note(self):
+        response = self.client.get(
+            "/api/ai-detector/daily/",
+            {"agency": self.agency1.id, "day": "2025-07-05"},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        recommendation = _build_daily_ai_recommendations(
+            rows=[
+                {
+                    "timestamp": "2025-07-15T15:00:00",
+                    "total_clients": 2,
+                    "employees_count": 4,
+                    "zone_1_clients": 1,
+                    "zone_2_clients": 1,
+                    "zone_3_clients": 0,
+                    "zone_4_clients": 0,
+                }
+            ],
+            peak_clients=2,
+            peak_timestamp="2025-07-15T15:00:00",
+            average_clients=2,
+            average_employees=4,
+            zone_summary={
+                "zone_1_avg": 1,
+                "zone_2_avg": 1,
+                "zone_3_avg": 0,
+                "zone_4_avg": 0,
+            },
+        )
+        self.assertTrue(
+            any(item["type"] == "energy_optimization" for item in recommendation)
+        )
+
+    def test_ai_detector_daily_invalid_day_format(self):
+        response = self.client.get(
+            "/api/ai-detector/daily/",
+            {"agency": self.agency1.id, "day": "15-07-2025"},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data["error"], "day must use YYYY-MM-DD format.")
+
+    def test_ai_detector_daily_missing_agency(self):
+        response = self.client.get(
+            "/api/ai-detector/daily/",
+            {"day": "2025-07-15"},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data["error"], "agency query parameter is required.")
+
+    def test_ai_detector_daily_weekend_rejected(self):
+        response = self.client.get(
+            "/api/ai-detector/daily/",
+            {"agency": self.agency1.id, "day": "2025-07-19"},
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data["error"], "day must be a business day.")

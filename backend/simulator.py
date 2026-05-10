@@ -1,6 +1,7 @@
 import random
 import time
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
 import requests
 
@@ -13,9 +14,11 @@ API_URL = f"{API_BASE_URL}/api/sensor-data/"
 AUTH_EMAIL = "admin@bhbank.tn"
 AUTH_PASSWORD = "adminpass123"
 
-MODE = "historical"  # Options: "live" or "historical"
+MODE = "live"  # Options: "live" or "historical"
+AI_MODE = True  # When True, clients_count comes from schematic image detection.
+AI_IMAGE_OUTPUT_DIR = Path(__file__).resolve().parent / "ai_vision" / "generated_images"
 
-INTERVAL_SECONDS = 300  # Live mode interval. Change to 10 while testing.
+INTERVAL_SECONDS = 10 # Live mode interval. Change to 10 while testing.
 
 HISTORICAL_START_DATE = "2025-01-01"
 HISTORICAL_END_DATE = "2025-12-31"
@@ -191,6 +194,43 @@ def get_clients_for_time(current_time, agency_profile):
     return int(min(35, max(0, clients_count)))
 
 
+def get_ai_clients_for_time(current_time, agency_id, agency_profile):
+    """Generate/analyze a schematic image and return detected occupancy.
+
+    The simulator still uses the realistic traffic model to draw the scene, but
+    the payload clients_count comes from the OpenCV detector when AI_MODE is on.
+    """
+    target_clients = get_clients_for_time(current_time, agency_profile)
+
+    try:
+        from ai_vision.detect_agency_occupancy import detect_agency_occupancy
+        from ai_vision.generate_agency_images import generate_agency_image
+
+        image_path = generate_agency_image(
+            timestamp=current_time,
+            clients_count=target_clients,
+            agency_id=agency_id,
+            output_dir=AI_IMAGE_OUTPUT_DIR,
+        )
+        occupancy = detect_agency_occupancy(image_path)
+    except Exception as exc:
+        print(f"[AI ERROR] Agency {agency_id} image analysis failed: {exc}")
+        print(f"[AI] Falling back to estimated clients_count={target_clients}")
+        return target_clients, None
+
+    display_time = current_time.strftime("%Y-%m-%d %H:%M")
+    print(f"[AI] Image analyzed: {display_time}")
+    print(
+        f"[AI] Total clients: {occupancy['clients_count']} | "
+        f"Zone 1: {occupancy['zone_1_clients']} | "
+        f"Zone 2: {occupancy['zone_2_clients']} | "
+        f"Zone 3: {occupancy['zone_3_clients']} | "
+        f"Zone 4: {occupancy['zone_4_clients']}"
+    )
+
+    return occupancy["clients_count"], occupancy
+
+
 def calculate_ac_mode(temperature, clients_count):
     """Choose AC mode from temperature and occupancy."""
     if clients_count == 0:
@@ -234,7 +274,10 @@ def build_historical_payload(agency_id, current_time):
     """Build a DRF-compatible historical sensor payload."""
     agency_profile = AGENCIES[agency_id]
     temperature = get_seasonal_temperature(current_time, agency_profile)
-    clients_count = get_clients_for_time(current_time, agency_profile)
+    if AI_MODE:
+        clients_count, _ = get_ai_clients_for_time(current_time, agency_id, agency_profile)
+    else:
+        clients_count = get_clients_for_time(current_time, agency_profile)
     ac_mode = calculate_ac_mode(temperature, clients_count)
     energy_usage = calculate_energy_usage(
         temperature=temperature,
@@ -280,12 +323,15 @@ def update_live_agency_state(agency_id, state):
     temperature_delta = min(0.4, max(-0.4, temperature_delta))
     temperature = state["temperature"] + temperature_delta
 
-    target_clients = get_clients_for_time(now, agency_profile)
-    client_delta = target_clients - state["clients_count"]
-    client_delta = min(3, max(-3, client_delta))
-    client_noise = random.choice([-1, 0, 0, 1]) if target_clients > 0 else 0
-    clients_count = state["clients_count"] + client_delta + client_noise
-    clients_count = min(35, max(0, clients_count))
+    if AI_MODE:
+        clients_count, _ = get_ai_clients_for_time(now, agency_id, agency_profile)
+    else:
+        target_clients = get_clients_for_time(now, agency_profile)
+        client_delta = target_clients - state["clients_count"]
+        client_delta = min(3, max(-3, client_delta))
+        client_noise = random.choice([-1, 0, 0, 1]) if target_clients > 0 else 0
+        clients_count = state["clients_count"] + client_delta + client_noise
+        clients_count = min(35, max(0, clients_count))
 
     ac_mode = calculate_ac_mode(temperature, clients_count)
     energy_usage = calculate_energy_usage(

@@ -1,13 +1,18 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
+from django.conf import settings
 from django.db.models import Sum, Avg, Count, Q, Max
 from django.db.models.functions import TruncDate, TruncMonth
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
+import base64
+import calendar
+from datetime import datetime
 from decimal import Decimal
+from pathlib import Path
 from django.contrib.auth import get_user_model
 
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -58,12 +63,481 @@ def api_subjects(request):
         'regions',
         'agencies',
         'sensor-data',
+        'ai-detector/demo',
+        'ai-detector/daily',
+        'ai-detector/monthly',
         'alerts/recent',
         'kpis/energy/daily',
         'kpis/energy/monthly',
         'kpis/energy/compare',
     ]
     return Response({'subjects': subjects})
+
+
+@api_view(['GET'])
+def ai_detector_demo(request):
+    """Generate a demo schematic image and return OpenCV occupancy detection."""
+    try:
+        from ai_vision.detect_agency_occupancy import detect_agency_occupancy
+        from ai_vision.generate_agency_images import generate_agency_image
+
+        now = datetime.now()
+        clients_for_demo = 18
+        output_dir = settings.MEDIA_ROOT / 'ai_detector' / 'demo'
+        image_path = generate_agency_image(
+            timestamp=now,
+            clients_count=clients_for_demo,
+            agency_id=1,
+            output_dir=output_dir,
+        )
+        detection = detect_agency_occupancy(image_path)
+
+        return Response({
+            'image_url': _media_url_for_path(image_path),
+            'image_path': str(image_path),
+            'total_clients': detection['clients_count'],
+            'employees_count': detection['employees_count'],
+            'zones': {
+                'zone_1': detection['zone_1_clients'],
+                'zone_2': detection['zone_2_clients'],
+                'zone_3': detection['zone_3_clients'],
+                'zone_4': detection['zone_4_clients'],
+            },
+            'message': 'AI detection completed successfully.',
+        })
+    except Exception as exc:
+        return Response(
+            {
+                'message': 'AI detection failed. Please try again.',
+                'error': str(exc),
+            },
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+@api_view(['GET'])
+def ai_detector_monthly(request):
+    """Run explainable CV occupancy analysis for each business hour in a month."""
+    agency_id = request.query_params.get('agency')
+    month_value = request.query_params.get('month')
+
+    if not agency_id:
+        return Response(
+            {'error': 'agency query parameter is required.'},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    try:
+        agency = Agency.objects.get(id=agency_id)
+    except (Agency.DoesNotExist, ValueError):
+        return Response(
+            {'error': 'Agency not found.'},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+
+    try:
+        month_start = datetime.strptime(month_value or '', '%Y-%m')
+    except ValueError:
+        return Response(
+            {'error': 'month must use YYYY-MM format.'},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    try:
+        summary = _run_monthly_ai_occupancy_analysis(agency, month_start)
+    except Exception as exc:
+        return Response(
+            {
+                'message': 'Monthly AI occupancy analysis failed.',
+                'error': str(exc),
+            },
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+    return Response(summary)
+
+
+@api_view(['GET'])
+def ai_detector_daily(request):
+    """Run explainable CV occupancy analysis for one selected business day."""
+    agency_id = request.query_params.get('agency')
+    day_value = request.query_params.get('day')
+
+    if not agency_id:
+        return Response(
+            {'error': 'agency query parameter is required.'},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    try:
+        agency = Agency.objects.get(id=agency_id)
+    except (Agency.DoesNotExist, ValueError):
+        return Response(
+            {'error': 'Agency not found.'},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+
+    try:
+        selected_day = datetime.strptime(day_value or '', '%Y-%m-%d')
+    except ValueError:
+        return Response(
+            {'error': 'day must use YYYY-MM-DD format.'},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    if selected_day.weekday() >= 5:
+        return Response(
+            {'error': 'day must be a business day.'},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    try:
+        summary = _run_daily_ai_occupancy_analysis(agency, selected_day)
+    except Exception as exc:
+        return Response(
+            {
+                'message': 'Daily AI occupancy analysis failed.',
+                'error': str(exc),
+            },
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+    return Response(summary)
+
+
+def _run_daily_ai_occupancy_analysis(agency, selected_day):
+    rows, hourly_images, peak_row = _analyze_ai_occupancy_for_timestamps(
+        agency=agency,
+        timestamps=[
+            datetime(selected_day.year, selected_day.month, selected_day.day, hour, 0)
+            for hour in range(8, 18)
+        ],
+    )
+    average_clients = _average(row['total_clients'] for row in rows)
+    average_employees = _average(row['employees_count'] for row in rows)
+    zone_summary = _build_zone_summary(rows)
+    peak_clients = peak_row['total_clients'] if peak_row else 0
+    peak_timestamp = peak_row['timestamp'] if peak_row else None
+
+    return {
+        'agency': agency.id,
+        'agency_name': agency.name,
+        'day': selected_day.strftime('%Y-%m-%d'),
+        'total_images': len(rows),
+        'average_clients': average_clients,
+        'peak_clients': peak_clients,
+        'peak_timestamp': peak_timestamp,
+        'average_employees': average_employees,
+        'zone_summary': zone_summary,
+        'recommendations': _build_daily_ai_recommendations(
+            rows=rows,
+            peak_clients=peak_clients,
+            peak_timestamp=peak_timestamp,
+            average_clients=average_clients,
+            average_employees=average_employees,
+            zone_summary=zone_summary,
+        ),
+        'hourly_images': hourly_images,
+        'message': 'Daily AI occupancy analysis completed successfully.',
+    }
+
+
+def _run_monthly_ai_occupancy_analysis(agency, month_start):
+    business_days = _business_days_for_month(month_start.year, month_start.month)
+    rows, hourly_images, peak_row = _analyze_ai_occupancy_for_timestamps(
+        agency=agency,
+        timestamps=[
+            datetime(month_start.year, month_start.month, day, hour, 0)
+            for day in business_days
+            for hour in range(8, 18)
+        ],
+    )
+
+    total_images = len(rows)
+    zone_summary = _build_zone_summary(rows)
+    crowded_hours = _build_crowded_hours(rows)
+
+    return {
+        'agency': agency.id,
+        'agency_name': agency.name,
+        'month': month_start.strftime('%Y-%m'),
+        'business_days': len(business_days),
+        'total_images_analyzed': total_images,
+        'average_clients': _average(row['total_clients'] for row in rows),
+        'peak_clients': peak_row['total_clients'] if peak_row else 0,
+        'peak_timestamp': peak_row['timestamp'] if peak_row else None,
+        'average_employees': _average(row['employees_count'] for row in rows),
+        'zone_summary': zone_summary,
+        'crowded_hours': crowded_hours,
+        'sample_image_url': peak_row['image_url'] if peak_row else '',
+        'hourly_images': hourly_images,
+        'message': 'Monthly AI occupancy analysis completed successfully.',
+    }
+
+
+def _analyze_ai_occupancy_for_timestamps(agency, timestamps):
+    from ai_vision.detect_agency_occupancy import detect_agency_occupancy
+    from ai_vision.generate_agency_images import generate_agency_image
+    from simulator import AGENCIES as SIMULATOR_AGENCIES
+    from simulator import get_clients_for_time
+
+    profile = SIMULATOR_AGENCIES.get(
+        agency.id,
+        {
+            'name': agency.name,
+            'base_temperature_adjustment': 0,
+            'load_factor': 1,
+            'traffic_factor': 1,
+        },
+    )
+
+    rows = []
+    hourly_images = []
+    peak_row = None
+    month_value = timestamps[0].strftime('%Y-%m') if timestamps else 'unknown'
+    output_dir = settings.MEDIA_ROOT / 'ai_detector' / month_value / f'agency_{agency.id}'
+    output_dir.mkdir(parents=True, exist_ok=True)
+    style_marker = output_dir / '.realistic_style_v2'
+    if not style_marker.exists():
+        for png_path in output_dir.glob('*.png'):
+            png_path.unlink(missing_ok=True)
+        style_marker.write_text('realistic_style_v2', encoding='utf-8')
+
+    for timestamp in timestamps:
+        image_path = output_dir / f'agency_{agency.id}_{timestamp.strftime("%Y%m%d_%H%M")}.png'
+
+        if not image_path.exists():
+            expected_clients = get_clients_for_time(timestamp, profile)
+            image_path = generate_agency_image(
+                timestamp=timestamp,
+                clients_count=expected_clients,
+                agency_id=agency.id,
+                output_dir=output_dir,
+            )
+
+        detection = detect_agency_occupancy(image_path)
+        image_url = _media_url_for_path(image_path)
+        row = {
+            'timestamp': timestamp.isoformat(),
+            'image_url': image_url,
+            'total_clients': detection['clients_count'],
+            'employees_count': detection['employees_count'],
+            'zone_1_clients': detection['zone_1_clients'],
+            'zone_2_clients': detection['zone_2_clients'],
+            'zone_3_clients': detection['zone_3_clients'],
+            'zone_4_clients': detection['zone_4_clients'],
+        }
+        rows.append(row)
+        hourly_images.append({
+            'timestamp': row['timestamp'],
+            'image_url': row['image_url'],
+            'total_clients': row['total_clients'],
+            'employees_count': row['employees_count'],
+            'zones': {
+                'zone_1': row['zone_1_clients'],
+                'zone_2': row['zone_2_clients'],
+                'zone_3': row['zone_3_clients'],
+                'zone_4': row['zone_4_clients'],
+            },
+        })
+
+        if peak_row is None or row['total_clients'] > peak_row['total_clients']:
+            peak_row = row
+
+    return rows, hourly_images, peak_row
+
+
+def _media_url_for_path(path):
+    relative = Path(path).relative_to(settings.MEDIA_ROOT).as_posix()
+    return f'{settings.MEDIA_URL}{relative}'
+
+
+def _business_days_for_month(year, month):
+    _, last_day = calendar.monthrange(year, month)
+    return [
+        day
+        for day in range(1, last_day + 1)
+        if datetime(year, month, day).weekday() < 5
+    ]
+
+
+def _average(values):
+    values = list(values)
+    if not values:
+        return 0
+    return round(sum(values) / len(values), 1)
+
+
+def _build_zone_summary(rows):
+    return {
+        'zone_1_avg': _average(row['zone_1_clients'] for row in rows),
+        'zone_2_avg': _average(row['zone_2_clients'] for row in rows),
+        'zone_3_avg': _average(row['zone_3_clients'] for row in rows),
+        'zone_4_avg': _average(row['zone_4_clients'] for row in rows),
+    }
+
+
+def _build_daily_ai_recommendations(
+    rows,
+    peak_clients,
+    peak_timestamp,
+    average_clients,
+    average_employees,
+    zone_summary,
+):
+    recommendations = []
+    peak_hour = _format_hour(peak_timestamp)
+
+    if peak_clients >= 25:
+        recommendations.append({
+            'type': 'staffing',
+            'severity': 'high',
+            'message': (
+                f'Peak client flow reached {peak_clients} clients around {peak_hour}. '
+                'Additional staff may reduce waiting time during this period.'
+            ),
+        })
+    elif peak_clients >= 18:
+        recommendations.append({
+            'type': 'staffing',
+            'severity': 'medium',
+            'message': (
+                f'Peak client flow reached {peak_clients} clients around {peak_hour}. '
+                'Consider reinforcing the front desk during the busiest hour.'
+            ),
+        })
+
+    if average_clients >= 15 or peak_clients >= 25:
+        recommendations.append({
+            'type': 'ac_control',
+            'severity': 'medium',
+            'message': (
+                'High occupancy increases cooling demand. AC ON mode is recommended '
+                f'during peak hours around {peak_hour}.'
+            ),
+        })
+    elif 8 <= average_clients <= 14:
+        recommendations.append({
+            'type': 'ac_control',
+            'severity': 'medium',
+            'message': (
+                'Moderate occupancy was detected through the day. ECO mode should keep '
+                'comfort stable while limiting energy usage.'
+            ),
+        })
+    else:
+        recommendations.append({
+            'type': 'ac_control',
+            'severity': 'low',
+            'message': (
+                'Low average occupancy was detected. Reducing AC intensity can help avoid '
+                'unnecessary energy consumption.'
+            ),
+        })
+
+    busiest_zone, busiest_zone_avg = _busiest_zone(zone_summary)
+    if busiest_zone_avg >= 8:
+        recommendations.append({
+            'type': 'zone_crowding',
+            'severity': 'high',
+            'message': (
+                f'{_zone_label(busiest_zone)} shows repeated crowding with an average of '
+                f'{busiest_zone_avg:.1f} clients. Consider improving queue distribution.'
+            ),
+        })
+    elif busiest_zone_avg >= 5:
+        recommendations.append({
+            'type': 'zone_crowding',
+            'severity': 'medium',
+            'message': (
+                f'{_zone_label(busiest_zone)} is the busiest area. Monitor waiting queues '
+                'and redistribute clients when possible.'
+            ),
+        })
+
+    afternoon_rows = [row for row in rows if datetime.fromisoformat(row['timestamp']).hour >= 15]
+    afternoon_average = _average(row['total_clients'] for row in afternoon_rows)
+    if afternoon_rows and afternoon_average < average_clients:
+        recommendations.append({
+            'type': 'energy_optimization',
+            'severity': 'low',
+            'message': (
+                'Low afternoon occupancy suggests ECO mode can reduce energy waste after 15:00.'
+            ),
+        })
+    elif average_clients < 8:
+        recommendations.append({
+            'type': 'energy_optimization',
+            'severity': 'low',
+            'message': (
+                'Low daily occupancy suggests ECO mode and reduced AC intensity can limit energy waste.'
+            ),
+        })
+    elif average_clients >= 15:
+        recommendations.append({
+            'type': 'energy_optimization',
+            'severity': 'medium',
+            'message': (
+                'Client presence stays high across the day. Maintain comfort mode while '
+                'watching for unnecessary cooling outside peak hours.'
+            ),
+        })
+
+    if average_employees > 0 and peak_clients / average_employees > 6:
+        recommendations.append({
+            'type': 'staffing',
+            'severity': 'high',
+            'message': (
+                'The peak client-to-employee ratio is high. Adding staff during peak flow '
+                'can improve service quality.'
+            ),
+        })
+
+    return recommendations[:5]
+
+
+def _format_hour(timestamp):
+    if not timestamp:
+        return 'the peak hour'
+    return datetime.fromisoformat(timestamp).strftime('%H:%M')
+
+
+def _busiest_zone(zone_summary):
+    mapping = {
+        'zone_1': zone_summary.get('zone_1_avg', 0),
+        'zone_2': zone_summary.get('zone_2_avg', 0),
+        'zone_3': zone_summary.get('zone_3_avg', 0),
+        'zone_4': zone_summary.get('zone_4_avg', 0),
+    }
+    return max(mapping.items(), key=lambda item: item[1])
+
+
+def _zone_label(zone):
+    return zone.replace('zone_', 'Zone ')
+
+
+def _build_crowded_hours(rows):
+    crowded = []
+    zone_keys = [
+        ('zone_1', 'zone_1_clients'),
+        ('zone_2', 'zone_2_clients'),
+        ('zone_3', 'zone_3_clients'),
+        ('zone_4', 'zone_4_clients'),
+    ]
+
+    for row in rows:
+        crowded_zone, crowded_count = max(
+            zone_keys,
+            key=lambda item: row[item[1]],
+        )
+        if row[crowded_count] >= 8:
+            crowded.append({
+                'timestamp': row['timestamp'],
+                'total_clients': row['total_clients'],
+                'crowded_zone': crowded_zone,
+            })
+
+    return crowded
 
 
 @api_view(['GET'])
