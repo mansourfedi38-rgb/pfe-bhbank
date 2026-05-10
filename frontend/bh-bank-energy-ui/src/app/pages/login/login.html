@@ -64,7 +64,11 @@
 
           <div class="form-options">
             <label class="remember-me">
-              <input type="checkbox" />
+              <input
+                type="checkbox"
+                name="rememberMe"
+                [(ngModel)]="rememberMe"
+              />
               <span>{{ 'login.rememberMe' | translate }}</span>
             </label>
 

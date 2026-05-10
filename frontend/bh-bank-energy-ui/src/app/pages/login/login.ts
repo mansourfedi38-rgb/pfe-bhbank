@@ -18,6 +18,7 @@ const LOGIN_TIMEOUT_MS = 8000;
 export class LoginComponent {
   email = '';
   password = '';
+  rememberMe = false;
   errorMessage = '';
   isLoading = false;
 
@@ -26,13 +27,15 @@ export class LoginComponent {
     private auth: AuthService,
     private translate: TranslateService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) {
+    this.rememberMe = this.auth.getRememberLogin();
+  }
 
   onSubmit(): void {
     this.errorMessage = '';
     this.isLoading = true;
 
-    this.auth.login(this.email, this.password).pipe(
+    this.auth.login(this.email, this.password, this.rememberMe).pipe(
       timeout(LOGIN_TIMEOUT_MS)
     ).subscribe({
       next: () => {

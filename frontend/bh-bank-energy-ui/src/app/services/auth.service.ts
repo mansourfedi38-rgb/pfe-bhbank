@@ -8,6 +8,10 @@ export interface LoginResponse {
   refresh: string;
 }
 
+const ACCESS_TOKEN_KEY = 'access_token';
+const REFRESH_TOKEN_KEY = 'refresh_token';
+const REMEMBER_LOGIN_KEY = 'remember_login';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -17,11 +21,15 @@ export class AuthService {
     private router: Router
   ) {}
 
-  login(email: string, password: string): Observable<LoginResponse> {
+  login(email: string, password: string, rememberMe = false): Observable<LoginResponse> {
     return this.http.post<LoginResponse>('/api/auth/login/', { email, password }).pipe(
       tap((res) => {
-        localStorage.setItem('access_token', res.access);
-        localStorage.setItem('refresh_token', res.refresh);
+        this.clearStoredTokens();
+
+        const storage = rememberMe ? localStorage : sessionStorage;
+        storage.setItem(ACCESS_TOKEN_KEY, res.access);
+        storage.setItem(REFRESH_TOKEN_KEY, res.refresh);
+        localStorage.setItem(REMEMBER_LOGIN_KEY, rememberMe ? 'true' : 'false');
       })
     );
   }
@@ -31,16 +39,27 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
+    this.clearStoredTokens();
+    localStorage.removeItem(REMEMBER_LOGIN_KEY);
     this.router.navigate(['/login']);
   }
 
   isLoggedIn(): boolean {
-    return !!localStorage.getItem('access_token');
+    return !!this.getAccessToken();
   }
 
   getAccessToken(): string | null {
-    return localStorage.getItem('access_token');
+    return localStorage.getItem(ACCESS_TOKEN_KEY) || sessionStorage.getItem(ACCESS_TOKEN_KEY);
+  }
+
+  getRememberLogin(): boolean {
+    return localStorage.getItem(REMEMBER_LOGIN_KEY) === 'true';
+  }
+
+  private clearStoredTokens(): void {
+    localStorage.removeItem(ACCESS_TOKEN_KEY);
+    localStorage.removeItem(REFRESH_TOKEN_KEY);
+    sessionStorage.removeItem(ACCESS_TOKEN_KEY);
+    sessionStorage.removeItem(REFRESH_TOKEN_KEY);
   }
 }
