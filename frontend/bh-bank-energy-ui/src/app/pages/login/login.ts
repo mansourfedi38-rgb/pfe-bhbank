@@ -29,6 +29,7 @@ export class LoginComponent {
     private cdr: ChangeDetectorRef
   ) {
     this.rememberMe = this.auth.getRememberLogin();
+    this.email = this.rememberMe ? this.auth.getRememberedEmail() : '';
   }
 
   onSubmit(): void {

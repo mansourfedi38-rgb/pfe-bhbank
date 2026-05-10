@@ -5,12 +5,13 @@ import { Observable, tap } from 'rxjs';
 
 export interface LoginResponse {
   access: string;
-  refresh: string;
+  refresh?: string;
 }
 
 const ACCESS_TOKEN_KEY = 'access_token';
 const REFRESH_TOKEN_KEY = 'refresh_token';
 const REMEMBER_LOGIN_KEY = 'remember_login';
+const REMEMBERED_EMAIL_KEY = 'remembered_email';
 
 @Injectable({
   providedIn: 'root'
@@ -27,10 +28,24 @@ export class AuthService {
         this.clearStoredTokens();
 
         const storage = rememberMe ? localStorage : sessionStorage;
-        storage.setItem(ACCESS_TOKEN_KEY, res.access);
-        storage.setItem(REFRESH_TOKEN_KEY, res.refresh);
+        this.storeTokens(res, storage);
         localStorage.setItem(REMEMBER_LOGIN_KEY, rememberMe ? 'true' : 'false');
+
+        if (rememberMe) {
+          localStorage.setItem(REMEMBERED_EMAIL_KEY, email);
+        } else {
+          localStorage.removeItem(REMEMBERED_EMAIL_KEY);
+        }
       })
+    );
+  }
+
+  refreshAccessToken(): Observable<LoginResponse> {
+    const refresh = this.getRefreshToken();
+    const storage = this.getTokenStorage();
+
+    return this.http.post<LoginResponse>('/api/auth/refresh/', { refresh }).pipe(
+      tap((res) => this.storeTokens(res, storage))
     );
   }
 
@@ -41,6 +56,7 @@ export class AuthService {
   logout(): void {
     this.clearStoredTokens();
     localStorage.removeItem(REMEMBER_LOGIN_KEY);
+    localStorage.removeItem(REMEMBERED_EMAIL_KEY);
     this.router.navigate(['/login']);
   }
 
@@ -52,8 +68,30 @@ export class AuthService {
     return localStorage.getItem(ACCESS_TOKEN_KEY) || sessionStorage.getItem(ACCESS_TOKEN_KEY);
   }
 
+  getRefreshToken(): string | null {
+    return localStorage.getItem(REFRESH_TOKEN_KEY) || sessionStorage.getItem(REFRESH_TOKEN_KEY);
+  }
+
   getRememberLogin(): boolean {
     return localStorage.getItem(REMEMBER_LOGIN_KEY) === 'true';
+  }
+
+  getRememberedEmail(): string {
+    return localStorage.getItem(REMEMBERED_EMAIL_KEY) || '';
+  }
+
+  private storeTokens(tokens: LoginResponse, storage: Storage): void {
+    storage.setItem(ACCESS_TOKEN_KEY, tokens.access);
+
+    if (tokens.refresh) {
+      storage.setItem(REFRESH_TOKEN_KEY, tokens.refresh);
+    }
+  }
+
+  private getTokenStorage(): Storage {
+    return localStorage.getItem(ACCESS_TOKEN_KEY) || localStorage.getItem(REFRESH_TOKEN_KEY)
+      ? localStorage
+      : sessionStorage;
   }
 
   private clearStoredTokens(): void {
