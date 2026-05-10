@@ -108,14 +108,24 @@ export class NotreReseauComponent implements OnInit, AfterViewInit {
       iconAnchor: [18, 36]
     });
 
+    const bounds = L.latLngBounds([]);
+
     this.filteredAgencies.forEach((agency) => {
       if (agency.latitude && agency.longitude) {
-        const marker = L.marker([Number(agency.latitude), Number(agency.longitude)], { icon })
+        const lat = Number(agency.latitude);
+        const lng = Number(agency.longitude);
+        const marker = L.marker([lat, lng], { icon })
           .addTo(this.map!)
           .bindPopup(`<strong>${agency.name}</strong><br>${agency.address || ''}`);
         this.markers.push(marker);
+        bounds.extend([lat, lng]);
       }
     });
+
+    // Fit map to show all markers with padding
+    if (bounds.isValid()) {
+      this.map.fitBounds(bounds, { padding: [60, 60], maxZoom: 16 });
+    }
   }
 
   applyFilters(): void {
