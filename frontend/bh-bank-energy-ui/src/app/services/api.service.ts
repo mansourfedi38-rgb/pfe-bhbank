@@ -284,10 +284,13 @@ export class ApiService {
     return this.http.get<SensorData[]>('/api/sensor-data/', { params });
   }
 
-  getRecentAlerts(month?: string): Observable<RecentAlert[]> {
+  getRecentAlerts(month?: string, energyThreshold?: number): Observable<RecentAlert[]> {
     let params = new HttpParams();
     if (month) {
       params = params.set('month', month);
+    }
+    if (energyThreshold !== undefined) {
+      params = params.set('energy_threshold', energyThreshold);
     }
     return this.http.get<RecentAlert[]>('/api/alerts/recent/', { params });
   }

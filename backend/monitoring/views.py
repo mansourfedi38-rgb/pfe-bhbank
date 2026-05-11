@@ -543,12 +543,13 @@ def _build_crowded_hours(rows):
 @api_view(['GET'])
 def recent_alerts(request):
     month = request.query_params.get('month')
+    energy_threshold = _get_energy_alert_threshold(request)
     queryset = (
         SensorData.objects
         .select_related('agency')
         .filter(
             Q(temperature__gt=30)
-            | Q(energy_usage__gt=4)
+            | Q(energy_usage__gt=energy_threshold)
             | (
                 Q(energy_usage__gt=1)
                 & (
@@ -579,14 +580,23 @@ def recent_alerts(request):
 
     candidates = []
     for reading in queryset:
-        candidates.extend(_build_alerts_for_reading(reading))
+        candidates.extend(_build_alerts_for_reading(reading, energy_threshold))
         if len(candidates) >= 50:
             break
 
     return Response(_select_diverse_recent_alerts(candidates))
 
 
-def _build_alerts_for_reading(reading):
+def _get_energy_alert_threshold(request):
+    raw_value = request.query_params.get('energy_threshold')
+    try:
+        threshold = float(raw_value) if raw_value is not None else 4
+    except (TypeError, ValueError):
+        threshold = 4
+    return threshold if threshold > 0 else 4
+
+
+def _build_alerts_for_reading(reading, energy_threshold=4):
     alerts = []
     temperature = float(reading.temperature)
     energy_usage = float(reading.energy_usage)
@@ -600,12 +610,12 @@ def _build_alerts_for_reading(reading):
             'timestamp': reading.timestamp,
         })
 
-    if energy_usage > 4:
+    if energy_usage > energy_threshold:
         alerts.append({
             'agency_name': reading.agency.name,
             'type': 'High energy usage',
             'severity': 'critical',
-            'message': f'{reading.agency.name} consumed {energy_usage:.2f} kWh in one reading.',
+            'message': f'{reading.agency.name} consumed {energy_usage:.2f} kWh, above the {energy_threshold:.2f} kWh alert threshold.',
             'timestamp': reading.timestamp,
         })
 

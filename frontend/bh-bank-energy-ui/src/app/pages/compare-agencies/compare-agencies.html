@@ -150,7 +150,7 @@
               </div>
               <div class="metric-row">
                 <span class="label">{{ 'compareAgencies.labels.avgTemperature' | translate }}:</span>
-                <span class="value">{{ comparisonResult.agency_1.average_temperature | number:'1.1-1' }}°C</span>
+                <span class="value">{{ formatTemperature(comparisonResult.agency_1.average_temperature) }}</span>
               </div>
               <div class="metric-row">
                 <span class="label">{{ 'compareAgencies.labels.totalClients' | translate }}:</span>
@@ -194,7 +194,7 @@
               </div>
               <div class="metric-row">
                 <span class="label">{{ 'compareAgencies.labels.highestTemperature' | translate }}:</span>
-                <span class="value">{{ comparisonResult.agency_1.highest_temperature_reading | number:'1.1-1' }}°C</span>
+                <span class="value">{{ formatTemperature(comparisonResult.agency_1.highest_temperature_reading) }}</span>
               </div>
             </div>
 
@@ -207,7 +207,7 @@
               </div>
               <div class="metric-row">
                 <span class="label">{{ 'compareAgencies.labels.avgTemperature' | translate }}:</span>
-                <span class="value">{{ comparisonResult.agency_2.average_temperature | number:'1.1-1' }}°C</span>
+                <span class="value">{{ formatTemperature(comparisonResult.agency_2.average_temperature) }}</span>
               </div>
               <div class="metric-row">
                 <span class="label">{{ 'compareAgencies.labels.totalClients' | translate }}:</span>
@@ -251,7 +251,7 @@
               </div>
               <div class="metric-row">
                 <span class="label">{{ 'compareAgencies.labels.highestTemperature' | translate }}:</span>
-                <span class="value">{{ comparisonResult.agency_2.highest_temperature_reading | number:'1.1-1' }}°C</span>
+                <span class="value">{{ formatTemperature(comparisonResult.agency_2.highest_temperature_reading) }}</span>
               </div>
             </div>
           </div>

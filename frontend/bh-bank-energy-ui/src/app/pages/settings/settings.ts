@@ -3,6 +3,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NavbarComponent } from '../../components/navbar/navbar';
+import { AutoRefreshInterval, AutoRefreshService } from '../../services/auto-refresh.service';
+import { EnergyAlertThresholdService } from '../../services/energy-alert-threshold.service';
+import { NotificationMode, NotificationPreferencesService, NotificationSoundMode } from '../../services/notification-preferences.service';
+import { TemperatureUnit, TemperatureUnitService } from '../../services/temperature-unit.service';
 
 import type { SupportedLanguageCode } from '../../language/supported-languages';
 import { supportedLanguages } from '../../language/supported-languages';
@@ -15,8 +19,12 @@ import { supportedLanguages } from '../../language/supported-languages';
   styleUrl: './settings.scss'
 })
 export class SettingsComponent implements OnInit {
-  notificationsEnabled: 'enabled' | 'disabled' = 'enabled';
+  notificationsEnabled: NotificationMode = 'enabled';
+  notificationSound: NotificationSoundMode = 'enabled';
   theme: 'default' | 'light' | 'dark' = 'default';
+  temperatureUnit: TemperatureUnit = 'celsius';
+  energyAlertThreshold = 4;
+  autoRefreshInterval: AutoRefreshInterval = '30000';
 
   // App UI language
   selectedLanguage: SupportedLanguageCode = 'en';
@@ -24,7 +32,11 @@ export class SettingsComponent implements OnInit {
   readonly supported = supportedLanguages;
 
   constructor(
-    private translate: TranslateService
+    private translate: TranslateService,
+    private autoRefresh: AutoRefreshService,
+    private energyAlertThresholdService: EnergyAlertThresholdService,
+    private notificationPreferences: NotificationPreferencesService,
+    private temperatureUnitService: TemperatureUnitService
   ) {}
 
   ngOnInit(): void {
@@ -42,6 +54,11 @@ export class SettingsComponent implements OnInit {
     this.selectedLanguage = safeLang;
     this.translate.use(safeLang);
     this.applyDirection(safeLang);
+    this.temperatureUnit = this.temperatureUnitService.unit;
+    this.energyAlertThreshold = this.energyAlertThresholdService.threshold;
+    this.autoRefreshInterval = this.autoRefresh.interval;
+    this.notificationsEnabled = this.notificationPreferences.notifications;
+    this.notificationSound = this.notificationPreferences.sound;
 
     // Load saved theme
     const storedTheme =
@@ -75,6 +92,35 @@ export class SettingsComponent implements OnInit {
 
     if (typeof localStorage !== 'undefined') {
       localStorage.setItem('theme', newTheme);
+    }
+  }
+
+  onTemperatureUnitChange(unit: TemperatureUnit) {
+    this.temperatureUnit = unit;
+    this.temperatureUnitService.setUnit(unit);
+  }
+
+  onEnergyAlertThresholdChange(value: number | string) {
+    this.energyAlertThresholdService.setThreshold(value);
+    this.energyAlertThreshold = this.energyAlertThresholdService.threshold;
+  }
+
+  onAutoRefreshChange(value: AutoRefreshInterval | string) {
+    this.autoRefresh.setInterval(value);
+    this.autoRefreshInterval = this.autoRefresh.interval;
+  }
+
+  onNotificationsChange(value: NotificationMode | string) {
+    this.notificationPreferences.setNotifications(value);
+    this.notificationsEnabled = this.notificationPreferences.notifications;
+  }
+
+  onNotificationSoundChange(value: NotificationSoundMode | string) {
+    this.notificationPreferences.setSound(value);
+    this.notificationSound = this.notificationPreferences.sound;
+
+    if (this.notificationSound === 'enabled') {
+      this.notificationPreferences.playAlertSound();
     }
   }
 

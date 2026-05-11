@@ -380,7 +380,8 @@
 }
 
 .filter-btn,
-.clear-btn {
+.clear-btn,
+.refresh-btn {
   border: none;
   border-radius: 10px;
   padding: 11px 14px;
@@ -396,6 +397,11 @@
 .clear-btn {
   background: #e5e7eb;
   color: #0a2342;
+}
+
+.refresh-btn {
+  background: #08264d;
+  color: #ffffff;
 }
 
 /* SENSOR TABLE */

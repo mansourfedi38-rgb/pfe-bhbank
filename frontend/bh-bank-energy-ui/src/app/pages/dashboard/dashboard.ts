@@ -1,12 +1,17 @@
 import { NgFor, NgIf } from '@angular/common';
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NavbarComponent } from '../../components/navbar/navbar';
 import { forkJoin } from 'rxjs';
+import { Subscription } from 'rxjs';
 import Chart from 'chart.js/auto';
 import { ApiService, MonthlyEnergyKpi, RecentAlert, SensorData } from '../../services/api.service';
+import { AutoRefreshService } from '../../services/auto-refresh.service';
+import { EnergyAlertThresholdService } from '../../services/energy-alert-threshold.service';
+import { NotificationPreferencesService } from '../../services/notification-preferences.service';
+import { TemperatureUnitService } from '../../services/temperature-unit.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -15,9 +20,10 @@ import { ApiService, MonthlyEnergyKpi, RecentAlert, SensorData } from '../../ser
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   kpiStatus = '';
   monthlyRows: MonthlyEnergyKpi[] = [];
+  private allRecentAlerts: RecentAlert[] = [];
   recentAlerts: RecentAlert[] = [];
   selectedMonth = '';
   selectedAlertMonth = '';
@@ -33,6 +39,9 @@ export class DashboardComponent implements OnInit {
   };
 
   private agencyChart: Chart | null = null;
+  private readonly subscriptions = new Subscription();
+  private refreshInterval: any;
+  private latestAlertSignature = '';
 
   chartsLoading = true;
   chartsEmpty = false;
@@ -40,17 +49,49 @@ export class DashboardComponent implements OnInit {
 
   constructor(
     private api: ApiService,
+    private autoRefresh: AutoRefreshService,
     private translate: TranslateService,
+    private energyAlertThreshold: EnergyAlertThresholdService,
+    private notificationPreferences: NotificationPreferencesService,
+    private temperatureUnit: TemperatureUnitService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.setLoadingState();
     this.loadDashboardData();
+    this.configureAutoRefresh(this.autoRefresh.intervalMs);
 
-    this.translate.onLangChange.subscribe(() => {
+    this.subscriptions.add(this.translate.onLangChange.subscribe(() => {
       this.updateSelectedMonthSummary();
-    });
+    }));
+
+    this.subscriptions.add(this.temperatureUnit.unit$.subscribe(() => {
+      this.updateSelectedMonthSummary();
+    }));
+
+    this.subscriptions.add(this.energyAlertThreshold.threshold$.subscribe(() => {
+      this.loadRecentAlerts();
+    }));
+
+    this.subscriptions.add(this.autoRefresh.interval$.subscribe((interval) => {
+      this.configureAutoRefresh(this.autoRefresh.toMilliseconds(interval));
+    }));
+
+    this.subscriptions.add(this.notificationPreferences.notifications$.subscribe(() => {
+      this.applyNotificationVisibility();
+    }));
+
+    this.subscriptions.add(this.notificationPreferences.sound$.subscribe(() => {
+      this.latestAlertSignature = '';
+    }));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval);
+    }
   }
 
   onMonthChange(): void {
@@ -62,8 +103,21 @@ export class DashboardComponent implements OnInit {
     this.loadRecentAlerts();
   }
 
+  refreshNow(): void {
+    this.setLoadingState();
+    this.loadDashboardData();
+  }
+
   formatAlertTimestamp(value: string): string {
     return new Date(value).toLocaleString();
+  }
+
+  formatAlertMessage(message: string): string {
+    return message.replace(/(-?\d+(?:\.\d+)?)\s*°C/g, (_match, value) => this.temperatureUnit.format(value));
+  }
+
+  areNotificationMessagesEnabled(): boolean {
+    return this.notificationPreferences.notifications === 'enabled';
   }
 
   private loadDashboardData(): void {
@@ -95,13 +149,15 @@ export class DashboardComponent implements OnInit {
   }
 
   private loadRecentAlerts(): void {
-    this.api.getRecentAlerts(this.selectedAlertMonth).subscribe({
+    this.api.getRecentAlerts(this.selectedAlertMonth, this.energyAlertThreshold.threshold).subscribe({
       next: (alerts) => {
-        this.recentAlerts = alerts.slice(0, 5);
-        this.dashboardMetrics.activeAlerts = String(this.recentAlerts.length);
+        this.allRecentAlerts = alerts.slice(0, 5);
+        this.playSoundForNewAlerts(this.allRecentAlerts);
+        this.applyNotificationVisibility();
         this.cdr.detectChanges();
       },
       error: () => {
+        this.allRecentAlerts = [];
         this.recentAlerts = [];
         this.dashboardMetrics.activeAlerts = this.notAvailable();
         this.cdr.detectChanges();
@@ -128,7 +184,7 @@ export class DashboardComponent implements OnInit {
     const peakAgency = [...rows].sort((a, b) => Number(b.total_energy) - Number(a.total_energy))[0];
 
     this.dashboardMetrics.totalEnergyThisMonth = `${totalEnergy.toFixed(2)} kWh`;
-    this.dashboardMetrics.averageTemperatureThisMonth = `${avgTemperature.toFixed(1)}°C`;
+    this.dashboardMetrics.averageTemperatureThisMonth = this.temperatureUnit.format(avgTemperature);
     this.dashboardMetrics.peakAgencyThisMonth = peakAgency?.agency_name ?? this.notAvailable();
     this.dashboardMetrics.latestReadingTime = this.latestReadingTime;
     this.chartsEmpty = false;
@@ -211,5 +267,44 @@ export class DashboardComponent implements OnInit {
 
   private notAvailable(): string {
     return this.translate.instant('common.notAvailable');
+  }
+
+  private applyNotificationVisibility(): void {
+    if (this.notificationPreferences.notifications === 'enabled') {
+      this.recentAlerts = this.allRecentAlerts;
+      this.dashboardMetrics.activeAlerts = String(this.recentAlerts.length);
+    } else {
+      this.recentAlerts = [];
+      this.dashboardMetrics.activeAlerts = '0';
+    }
+
+    this.cdr.detectChanges();
+  }
+
+  private playSoundForNewAlerts(alerts: RecentAlert[]): void {
+    if (alerts.length === 0) {
+      this.latestAlertSignature = '';
+      return;
+    }
+
+    const signature = alerts
+      .map((alert) => `${alert.type}-${alert.agency_name}-${alert.timestamp}`)
+      .join('|');
+
+    if (signature !== this.latestAlertSignature) {
+      this.latestAlertSignature = signature;
+      this.notificationPreferences.playAlertSound();
+    }
+  }
+
+  private configureAutoRefresh(intervalMs: number | null): void {
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval);
+      this.refreshInterval = null;
+    }
+
+    if (intervalMs !== null) {
+      this.refreshInterval = setInterval(() => this.loadDashboardData(), intervalMs);
+    }
   }
 }

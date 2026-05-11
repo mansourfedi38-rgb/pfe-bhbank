@@ -22,9 +22,19 @@
         <div class="card-top red-line"></div>
         <h3>{{ 'settings.notifications' | translate }}</h3>
         <p>{{ 'settings.notificationsHelp' | translate }}</p>
-        <select [(ngModel)]="notificationsEnabled">
+        <select [(ngModel)]="notificationsEnabled" (change)="onNotificationsChange(notificationsEnabled)">
           <option value="enabled">{{ 'settings.enabled' | translate }}</option>
           <option value="disabled">{{ 'settings.disabled' | translate }}</option>
+        </select>
+      </div>
+
+      <div class="setting-card">
+        <div class="card-top blue-line"></div>
+        <h3>{{ 'settings.notificationSound' | translate }}</h3>
+        <p>{{ 'settings.notificationSoundHelp' | translate }}</p>
+        <select [(ngModel)]="notificationSound" (change)="onNotificationSoundChange(notificationSound)">
+          <option value="enabled">{{ 'settings.enableSoundAlerts' | translate }}</option>
+          <option value="disabled">{{ 'settings.disableSoundAlerts' | translate }}</option>
         </select>
       </div>
 
@@ -47,6 +57,49 @@
           <option value="en">{{ 'languageSelector.english' | translate }}</option>
           <option value="fr">{{ 'languageSelector.french' | translate }}</option>
           <option value="ar">{{ 'languageSelector.arabic' | translate }}</option>
+        </select>
+      </div>
+
+      <div class="setting-card">
+        <div class="card-top blue-line"></div>
+        <h3>{{ 'settings.temperatureUnit' | translate }}</h3>
+        <p>{{ 'settings.temperatureUnitHelp' | translate }}</p>
+        <select [(ngModel)]="temperatureUnit" (change)="onTemperatureUnitChange(temperatureUnit)">
+          <option value="celsius">{{ 'settings.celsius' | translate }}</option>
+          <option value="fahrenheit">{{ 'settings.fahrenheit' | translate }}</option>
+        </select>
+      </div>
+
+      <div class="setting-card">
+        <div class="card-top red-line"></div>
+        <h3>{{ 'settings.energyAlertThreshold' | translate }}</h3>
+        <p>{{ 'settings.energyAlertThresholdHelp' | translate }}</p>
+        <label class="input-label" for="energy-alert-threshold">
+          {{ 'settings.alertMeWhenEnergyExceeds' | translate }}
+        </label>
+        <div class="unit-input">
+          <input
+            id="energy-alert-threshold"
+            type="number"
+            min="0.001"
+            step="0.001"
+            [(ngModel)]="energyAlertThreshold"
+            (change)="onEnergyAlertThresholdChange(energyAlertThreshold)"
+            (blur)="onEnergyAlertThresholdChange(energyAlertThreshold)"
+          />
+          <span>kWh</span>
+        </div>
+      </div>
+
+      <div class="setting-card">
+        <div class="card-top blue-line"></div>
+        <h3>{{ 'settings.autoRefreshData' | translate }}</h3>
+        <p>{{ 'settings.autoRefreshDataHelp' | translate }}</p>
+        <select [(ngModel)]="autoRefreshInterval" (change)="onAutoRefreshChange(autoRefreshInterval)">
+          <option value="10000">{{ 'settings.refreshEvery10Sec' | translate }}</option>
+          <option value="30000">{{ 'settings.refreshEvery30Sec' | translate }}</option>
+          <option value="60000">{{ 'settings.refreshEvery1Min' | translate }}</option>
+          <option value="manual">{{ 'settings.manualRefresh' | translate }}</option>
         </select>
       </div>
     </section>

@@ -272,6 +272,48 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+.input-label {
+  display: block;
+  color: #0a2342;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.unit-input {
+  display: flex;
+  align-items: center;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  background: #ffffff;
+  overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.unit-input:focus-within {
+  border-color: #08264d;
+  box-shadow: 0 0 0 3px rgba(8, 38, 77, 0.08);
+}
+
+.unit-input input {
+  width: 100%;
+  min-width: 0;
+  border: none;
+  outline: none;
+  padding: 12px 14px;
+  font-size: 14px;
+  color: #0a2342;
+  background: transparent;
+}
+
+.unit-input span {
+  padding: 0 14px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 700;
+  border-left: 1px solid #e5e7eb;
+}
+
 .setting-card select:focus {
   border-color: #08264d;
   box-shadow: 0 0 0 3px rgba(8, 38, 77, 0.08);

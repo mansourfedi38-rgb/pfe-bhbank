@@ -1,10 +1,12 @@
 import { NgFor, NgIf } from '@angular/common';
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NavbarComponent } from '../../components/navbar/navbar';
 import { ApiService, MonthlyEnergyKpi } from '../../services/api.service';
+import { TemperatureUnitService } from '../../services/temperature-unit.service';
+import { Subscription } from 'rxjs';
 
 interface MonthlyReportCard {
   month: string;
@@ -22,7 +24,7 @@ interface MonthlyReportCard {
   templateUrl: './reports.html',
   styleUrl: './reports.scss'
 })
-export class ReportsComponent implements OnInit {
+export class ReportsComponent implements OnInit, OnDestroy {
   backendStatus = '';
   isLoading = true;
   hasError = false;
@@ -39,15 +41,21 @@ export class ReportsComponent implements OnInit {
     peakAgency: '',
     totalReadings: ''
   };
+  private readonly subscriptions = new Subscription();
 
   constructor(
     private api: ApiService,
     private translate: TranslateService,
+    private temperatureUnit: TemperatureUnitService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.setLoadingState();
+    this.subscriptions.add(this.temperatureUnit.unit$.subscribe(() => {
+      this.cdr.detectChanges();
+    }));
+
     this.api.getMonthlyEnergyKpi().subscribe({
       next: (rows) => {
         this.rawRows = rows;
@@ -72,6 +80,10 @@ export class ReportsComponent implements OnInit {
     });
   }
 
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
+
   applyYearFilter(): void {
     this.filteredReportCards = this.reportCards.filter((report) => report.month.startsWith(this.selectedYear));
     this.updateSummary();
@@ -94,7 +106,7 @@ export class ReportsComponent implements OnInit {
     const headers = [
       'Month',
       'Total Energy',
-      'Average Temperature',
+      `Average Temperature (${this.temperatureUnit.symbol})`,
       'Highest Consuming Agency',
       'Number of Readings',
       'Status'
@@ -102,7 +114,7 @@ export class ReportsComponent implements OnInit {
     const rows = this.filteredReportCards.map((report) => [
       report.month,
       report.totalEnergy.toFixed(2),
-      report.averageTemperature.toFixed(1),
+      this.formatTemperatureValue(report.averageTemperature),
       report.highestAgency,
       String(report.readingsCount),
       report.status
@@ -203,6 +215,14 @@ export class ReportsComponent implements OnInit {
 
   private notAvailable(): string {
     return this.translate.instant('common.notAvailable');
+  }
+
+  formatTemperature(value: number): string {
+    return this.temperatureUnit.format(value);
+  }
+
+  private formatTemperatureValue(value: number): string {
+    return this.temperatureUnit.format(value).replace(this.temperatureUnit.symbol, '');
   }
 
   private escapeCsvValue(value: string): string {

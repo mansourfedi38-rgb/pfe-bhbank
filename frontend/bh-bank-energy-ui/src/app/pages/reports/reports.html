@@ -92,7 +92,7 @@
           <span>{{ 'reports.totalEnergyLabel' | translate }}</span>
           <strong>{{ report.totalEnergy.toFixed(2) }} kWh</strong>
           <span>{{ 'reports.averageTemperature' | translate }}</span>
-          <strong>{{ report.averageTemperature.toFixed(1) }}°C</strong>
+          <strong>{{ formatTemperature(report.averageTemperature) }}</strong>
           <span>{{ 'reports.highestConsumingAgency' | translate }}</span>
           <strong>{{ report.highestAgency }}</strong>
           <span>{{ 'reports.numberOfReadings' | translate }}</span>

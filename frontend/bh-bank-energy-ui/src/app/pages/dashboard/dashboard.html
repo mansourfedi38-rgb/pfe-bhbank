@@ -26,6 +26,9 @@
       <select id="month-select" [(ngModel)]="selectedMonth" (change)="onMonthChange()">
         <option *ngFor="let month of availableMonths" [ngValue]="month">{{ month }}</option>
       </select>
+      <button type="button" class="refresh-btn" (click)="refreshNow()">
+        {{ 'dashboard.refreshNow' | translate }}
+      </button>
     </section>
 
     <section class="cards">
@@ -73,11 +76,15 @@
           </div>
         </div>
 
-        <div *ngIf="recentAlerts.length === 0" class="alerts-empty">
+        <div *ngIf="!areNotificationMessagesEnabled()" class="alerts-empty">
+          {{ 'dashboard.notificationMessagesDisabled' | translate }}
+        </div>
+
+        <div *ngIf="areNotificationMessagesEnabled() && recentAlerts.length === 0" class="alerts-empty">
           {{ selectedAlertMonth ? ('dashboard.noAlertsForMonth' | translate) : ('dashboard.noActiveAlerts' | translate) }}
         </div>
 
-        <div *ngIf="recentAlerts.length > 0" class="alerts-list">
+        <div *ngIf="areNotificationMessagesEnabled() && recentAlerts.length > 0" class="alerts-list">
           <div
             *ngFor="let alert of recentAlerts"
             class="alert-item"
@@ -87,7 +94,7 @@
               <span class="alert-type">{{ alert.type }}</span>
               <span class="alert-agency">{{ alert.agency_name }}</span>
             </div>
-            <p>{{ alert.message }}</p>
+            <p>{{ formatAlertMessage(alert.message) }}</p>
             <time>{{ formatAlertTimestamp(alert.timestamp) }}</time>
           </div>
         </div>

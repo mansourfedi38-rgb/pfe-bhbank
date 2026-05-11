@@ -1,10 +1,12 @@
 import { NgFor, NgIf, DecimalPipe, UpperCasePipe } from '@angular/common';
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NavbarComponent } from '../../components/navbar/navbar';
 import { ApiService, Region, Agency, ComparisonResponse, MonthlyEnergyKpi } from '../../services/api.service';
+import { TemperatureUnitService } from '../../services/temperature-unit.service';
+import { Subscription } from 'rxjs';
 
 type ComparisonPeriod = 'month' | 'year';
 
@@ -23,7 +25,7 @@ type ComparisonPeriod = 'month' | 'year';
   templateUrl: './compare-agencies.html',
   styleUrl: './compare-agencies.scss'
 })
-export class CompareAgenciesComponent implements OnInit {
+export class CompareAgenciesComponent implements OnInit, OnDestroy {
   regions: Region[] = [];
   agencies: Agency[] = [];
   monthlyRows: MonthlyEnergyKpi[] = [];
@@ -50,15 +52,25 @@ export class CompareAgenciesComponent implements OnInit {
     clientGap: '',
     mainReason: ''
   };
+  private readonly subscriptions = new Subscription();
 
   constructor(
     private api: ApiService,
     private translate: TranslateService,
+    private temperatureUnit: TemperatureUnitService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    this.subscriptions.add(this.temperatureUnit.unit$.subscribe(() => {
+      this.updateComparisonCards();
+      this.cdr.detectChanges();
+    }));
     this.loadInitialData();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   loadInitialData(): void {
@@ -178,6 +190,10 @@ export class CompareAgenciesComponent implements OnInit {
       : this.comparisonResult.agency_2.name;
   }
 
+  formatTemperature(value: number): string {
+    return this.temperatureUnit.format(value);
+  }
+
   toggleDetails(): void {
     this.showDetails = !this.showDetails;
   }
@@ -221,7 +237,7 @@ export class CompareAgenciesComponent implements OnInit {
     this.comparisonCards.efficiencyWinner = agency1.energy_per_client <= agency2.energy_per_client
       ? agency1.name
       : agency2.name;
-    this.comparisonCards.temperatureGap = `${tempGap.toFixed(1)}°C`;
+    this.comparisonCards.temperatureGap = this.temperatureUnit.formatDifference(tempGap);
     this.comparisonCards.clientGap = `${clientGap.toFixed(1)} ${this.translate.instant('common.clientsUnit')}`;
     this.comparisonCards.mainReason =
       this.comparisonResult.main_reason || this.translate.instant('compareAgencies.noDominantCause');
