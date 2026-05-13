@@ -1,2 +1,546 @@
 /* You can add global styles to this file, and also import other style files */
 
+:root {
+  color-scheme: light;
+}
+
+:root.theme-dark {
+  color-scheme: dark;
+}
+
+body.theme-dark {
+  background: #07111f;
+  color: #eaf2ff;
+}
+
+body.theme-dark app-root {
+  background: #07111f;
+  color: #eaf2ff;
+}
+
+body.theme-dark .dashboard-page,
+body.theme-dark .settings-page,
+body.theme-dark .sensors-page,
+body.theme-dark .energy-page,
+body.theme-dark .reports-page,
+body.theme-dark .compare-page,
+body.theme-dark .compare-agencies-page,
+body.theme-dark .ai-detector-page,
+body.theme-dark .notre-reseau-page,
+body.theme-dark .governance-page {
+  background: #07111f !important;
+  color: #eaf2ff !important;
+}
+
+body.theme-dark .main-content,
+body.theme-dark .finder-section,
+body.theme-dark .governance-content {
+  background: #07111f !important;
+  color: #eaf2ff !important;
+}
+
+body.theme-dark .bank-header {
+  background: #ffffff !important;
+  border-color: #dbe3ef !important;
+}
+
+body.theme-dark .bank-header img {
+  filter: none !important;
+}
+
+body.theme-dark .top-nav {
+  background: #08264d !important;
+  border-color: rgba(148, 163, 184, 0.22) !important;
+}
+
+body.theme-dark .header-link {
+  color: #0a2342 !important;
+}
+
+body.theme-dark .top-nav a {
+  color: #f8fbff !important;
+}
+
+body.theme-dark .header-link:hover {
+  background: rgba(8, 38, 77, 0.06) !important;
+  color: #e30613 !important;
+}
+
+body.theme-dark .top-nav a:hover {
+  color: #ffb4be !important;
+}
+
+body.theme-dark .hero-section,
+body.theme-dark .card,
+body.theme-dark .setting-card,
+body.theme-dark .metric-card,
+body.theme-dark .summary-card,
+body.theme-dark .report-card,
+body.theme-dark .monthly-card,
+body.theme-dark .table-card,
+body.theme-dark .message-card,
+body.theme-dark .image-panel,
+body.theme-dark .selection-panel,
+body.theme-dark .main-reason-card,
+body.theme-dark .cause-analysis-section,
+body.theme-dark .recommendations-section,
+body.theme-dark .metrics-comparison,
+body.theme-dark .agency-metrics,
+body.theme-dark .insights-section,
+body.theme-dark .insight-card,
+body.theme-dark .summary-panel,
+body.theme-dark .recommendation-card,
+body.theme-dark .hourly-card,
+body.theme-dark .zone-card,
+body.theme-dark .report-metric,
+body.theme-dark .alerts-card,
+body.theme-dark .finder-left,
+body.theme-dark .agency-card,
+body.theme-dark .chart-data-section,
+body.theme-dark .filter-section,
+body.theme-dark .kpi-table-section .card {
+  background: #0d1b2f !important;
+  border-color: rgba(148, 163, 184, 0.22) !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.32) !important;
+  color: #eaf2ff !important;
+}
+
+body.theme-dark .hero-text h1,
+body.theme-dark .card h3,
+body.theme-dark .card p,
+body.theme-dark .setting-card h3,
+body.theme-dark .metric-card h3,
+body.theme-dark .summary-card h3,
+body.theme-dark .report-card h3,
+body.theme-dark .monthly-card h3,
+body.theme-dark .table-card h3,
+body.theme-dark .message-card h3,
+body.theme-dark .image-panel h3,
+body.theme-dark .selection-panel h2,
+body.theme-dark .main-reason-card h3,
+body.theme-dark .cause-analysis-section h3,
+body.theme-dark .recommendations-section h3,
+body.theme-dark .metrics-comparison h3,
+body.theme-dark .agency-metrics h4,
+body.theme-dark .insights-section h3,
+body.theme-dark .summary-panel h3,
+body.theme-dark .input-label,
+body.theme-dark .filter-section label,
+body.theme-dark .agency-header h3,
+body.theme-dark .finder-header h2,
+body.theme-dark .governance-list p,
+body.theme-dark .governance-list strong,
+body.theme-dark .governance-list span,
+body.theme-dark .governance-list address,
+body.theme-dark .login-header h2,
+body.theme-dark .forgot-header h2,
+body.theme-dark .form-group label,
+body.theme-dark .remember-me,
+body.theme-dark .kpi-table th,
+body.theme-dark .kpi-table td,
+body.theme-dark .chart-table th,
+body.theme-dark .chart-table td {
+  color: #f8fbff !important;
+}
+
+body.theme-dark .hero-text p,
+body.theme-dark .setting-card p,
+body.theme-dark .metric-card p,
+body.theme-dark .summary-card p,
+body.theme-dark .report-card p,
+body.theme-dark .monthly-card p,
+body.theme-dark .table-card p,
+body.theme-dark .message-card p,
+body.theme-dark .image-panel p,
+body.theme-dark .selection-panel p,
+body.theme-dark .main-reason-card p,
+body.theme-dark .cause-analysis-section p,
+body.theme-dark .recommendations-section p,
+body.theme-dark .metrics-comparison p,
+body.theme-dark .agency-metrics p,
+body.theme-dark .insights-section p,
+body.theme-dark .summary-panel p,
+body.theme-dark .finder-header p,
+body.theme-dark .detail-row,
+body.theme-dark .login-header p,
+body.theme-dark .forgot-header p,
+body.theme-dark .chart-loading,
+body.theme-dark .chart-empty,
+body.theme-dark .alerts-empty,
+body.theme-dark .status-lines,
+body.theme-dark .backend-status,
+body.theme-dark .metric-label,
+body.theme-dark .metric-value,
+body.theme-dark .recommendation-card,
+body.theme-dark .hourly-card,
+body.theme-dark .zone-card,
+body.theme-dark .report-metrics {
+  color: #c9d7ea !important;
+}
+
+body.theme-dark .mini-brand,
+body.theme-dark .brand-badge {
+  background: rgba(255, 59, 82, 0.14) !important;
+  color: #ffccd3 !important;
+  border-color: rgba(255, 59, 82, 0.32) !important;
+}
+
+body.theme-dark select,
+body.theme-dark input,
+body.theme-dark textarea,
+body.theme-dark .unit-input,
+body.theme-dark .search-field,
+body.theme-dark .region-field select,
+body.theme-dark .captcha-refresh {
+  background: #101f35 !important;
+  border-color: rgba(148, 163, 184, 0.38) !important;
+  color: #f8fbff !important;
+}
+
+body.theme-dark select option {
+  background: #101f35 !important;
+  color: #f8fbff !important;
+}
+
+body.theme-dark input::placeholder,
+body.theme-dark textarea::placeholder {
+  color: #9fb0c7 !important;
+}
+
+body.theme-dark select:focus,
+body.theme-dark input:focus,
+body.theme-dark textarea:focus,
+body.theme-dark .unit-input:focus-within,
+body.theme-dark .search-field:focus-within {
+  border-color: #7fb7ff !important;
+  box-shadow: 0 0 0 3px rgba(127, 183, 255, 0.16) !important;
+}
+
+body.theme-dark .badge-card,
+body.theme-dark .search-btn,
+body.theme-dark .captcha-question {
+  background: #0a3a6d !important;
+  color: #ffffff !important;
+}
+
+body.theme-dark .badge-title,
+body.theme-dark .feature-title {
+  color: #d6e6ff !important;
+}
+
+body.theme-dark .kpi-table th,
+body.theme-dark .chart-table th {
+  background: #101f35 !important;
+}
+
+body.theme-dark .kpi-table td,
+body.theme-dark .chart-table td,
+body.theme-dark .kpi-table th,
+body.theme-dark .chart-table th {
+  border-color: rgba(148, 163, 184, 0.22) !important;
+}
+
+body.theme-dark .kpi-table tbody tr:hover,
+body.theme-dark .chart-table tbody tr:hover {
+  background: #142842 !important;
+}
+
+body.theme-dark .alert-item {
+  background: #2b2114 !important;
+  border-color: rgba(251, 191, 36, 0.38) !important;
+  color: #fff7e6 !important;
+}
+
+body.theme-dark .alert-item.critical,
+body.theme-dark .error-message {
+  background: #35141a !important;
+  border-color: rgba(248, 113, 113, 0.42) !important;
+  color: #ffdbe0 !important;
+}
+
+body.theme-dark .success-message {
+  background: #0f2c1a !important;
+  border-color: rgba(74, 222, 128, 0.38) !important;
+  color: #d7ffe5 !important;
+}
+
+body.theme-dark .login-page,
+body.theme-dark .forgot-page {
+  background: linear-gradient(135deg, #020817 0%, #061a35 54%, #07111f 54%, #0d1b2f 100%) !important;
+}
+
+body.theme-dark .login-layout,
+body.theme-dark .forgot-layout,
+body.theme-dark .login-box,
+body.theme-dark .forgot-box {
+  background: #0d1b2f !important;
+  border-color: rgba(148, 163, 184, 0.24) !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42) !important;
+}
+
+body.theme-dark .form-panel {
+  background: #0a1628 !important;
+}
+
+body.theme-dark .brand-panel {
+  background: linear-gradient(135deg, #061a35 0%, #020817 100%) !important;
+}
+
+body.theme-dark .feature-card {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+}
+
+body.theme-dark .hero-copy h1 {
+  color: #08264d !important;
+  text-shadow: none;
+}
+
+body.theme-dark .hero-copy p {
+  color: #000000 !important;
+  text-shadow: none;
+}
+
+body.theme-dark .map-container {
+  border-color: rgba(148, 163, 184, 0.22) !important;
+  filter: brightness(0.86) contrast(1.05);
+}
+
+/* Refined dark theme: clearer text, calmer surfaces, no pale text on light panels. */
+body.theme-dark {
+  background: #101722 !important;
+  color: #f8fafc !important;
+}
+
+body.theme-dark app-root,
+body.theme-dark .dashboard-page,
+body.theme-dark .settings-page,
+body.theme-dark .sensors-page,
+body.theme-dark .energy-page,
+body.theme-dark .reports-page,
+body.theme-dark .compare-page,
+body.theme-dark .compare-agencies-page,
+body.theme-dark .ai-detector-page,
+body.theme-dark .notre-reseau-page,
+body.theme-dark .governance-page,
+body.theme-dark .main-content,
+body.theme-dark .finder-section,
+body.theme-dark .governance-content {
+  background: #101722 !important;
+  color: #f8fafc !important;
+}
+
+body.theme-dark .hero-section {
+  background: linear-gradient(135deg, #1e293b 0%, #162032 100%) !important;
+  border: 1px solid #334155 !important;
+  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.24) !important;
+}
+
+body.theme-dark .card,
+body.theme-dark .setting-card,
+body.theme-dark .metric-card,
+body.theme-dark .summary-card,
+body.theme-dark .report-card,
+body.theme-dark .monthly-card,
+body.theme-dark .table-card,
+body.theme-dark .message-card,
+body.theme-dark .image-panel,
+body.theme-dark .selection-panel,
+body.theme-dark .main-reason-card,
+body.theme-dark .cause-analysis-section,
+body.theme-dark .recommendations-section,
+body.theme-dark .metrics-comparison,
+body.theme-dark .agency-metrics,
+body.theme-dark .insights-section,
+body.theme-dark .insight-card,
+body.theme-dark .summary-panel,
+body.theme-dark .recommendation-card,
+body.theme-dark .hourly-card,
+body.theme-dark .zone-card,
+body.theme-dark .report-metric,
+body.theme-dark .alerts-card,
+body.theme-dark .finder-left,
+body.theme-dark .agency-card,
+body.theme-dark .chart-data-section,
+body.theme-dark .filter-section,
+body.theme-dark .kpi-table-section .card {
+  background: #172033 !important;
+  border: 1px solid #334155 !important;
+  color: #f8fafc !important;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.22) !important;
+}
+
+body.theme-dark .card:hover,
+body.theme-dark .setting-card:hover,
+body.theme-dark .agency-card:hover,
+body.theme-dark .metric-card:hover,
+body.theme-dark .summary-card:hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3) !important;
+  border-color: #47627f !important;
+}
+
+body.theme-dark h1,
+body.theme-dark h2,
+body.theme-dark h3,
+body.theme-dark h4,
+body.theme-dark .hero-text h1,
+body.theme-dark .card h3,
+body.theme-dark .card p,
+body.theme-dark .setting-card h3,
+body.theme-dark .metric-card h3,
+body.theme-dark .summary-card h3,
+body.theme-dark .report-card h3,
+body.theme-dark .monthly-card h3,
+body.theme-dark .table-card h3,
+body.theme-dark .message-card h3,
+body.theme-dark .image-panel h3,
+body.theme-dark .selection-panel h2,
+body.theme-dark .main-reason-card h3,
+body.theme-dark .cause-analysis-section h3,
+body.theme-dark .recommendations-section h3,
+body.theme-dark .metrics-comparison h3,
+body.theme-dark .agency-metrics h4,
+body.theme-dark .insights-section h3,
+body.theme-dark .summary-panel h3,
+body.theme-dark .input-label,
+body.theme-dark .filter-section label,
+body.theme-dark .agency-header h3,
+body.theme-dark .finder-header h2,
+body.theme-dark .form-group label,
+body.theme-dark .remember-me {
+  color: #ffffff !important;
+}
+
+body.theme-dark p,
+body.theme-dark .hero-text p,
+body.theme-dark .setting-card p,
+body.theme-dark .metric-card p,
+body.theme-dark .summary-card p,
+body.theme-dark .report-card p,
+body.theme-dark .monthly-card p,
+body.theme-dark .table-card p,
+body.theme-dark .message-card p,
+body.theme-dark .image-panel p,
+body.theme-dark .selection-panel p,
+body.theme-dark .main-reason-card p,
+body.theme-dark .cause-analysis-section p,
+body.theme-dark .recommendations-section p,
+body.theme-dark .metrics-comparison p,
+body.theme-dark .agency-metrics p,
+body.theme-dark .insights-section p,
+body.theme-dark .summary-panel p,
+body.theme-dark .finder-header p,
+body.theme-dark .detail-row,
+body.theme-dark .status-lines,
+body.theme-dark .backend-status,
+body.theme-dark .metric-label,
+body.theme-dark .metric-value,
+body.theme-dark .report-metrics,
+body.theme-dark .alert-month-filter label {
+  color: #dbe7f5 !important;
+}
+
+body.theme-dark .alerts-empty,
+body.theme-dark .chart-loading,
+body.theme-dark .chart-empty,
+body.theme-dark .loading-state,
+body.theme-dark .empty-state {
+  background: #101722 !important;
+  border: 1px solid #334155 !important;
+  color: #f8fafc !important;
+}
+
+body.theme-dark select,
+body.theme-dark input,
+body.theme-dark textarea,
+body.theme-dark .unit-input,
+body.theme-dark .search-field,
+body.theme-dark .region-field select,
+body.theme-dark .captcha-refresh {
+  background: #0f172a !important;
+  border-color: #475569 !important;
+  color: #ffffff !important;
+}
+
+body.theme-dark select option {
+  background: #0f172a !important;
+  color: #ffffff !important;
+}
+
+body.theme-dark input::placeholder,
+body.theme-dark textarea::placeholder {
+  color: #b8c7da !important;
+}
+
+body.theme-dark select:focus,
+body.theme-dark input:focus,
+body.theme-dark textarea:focus,
+body.theme-dark .unit-input:focus-within,
+body.theme-dark .search-field:focus-within {
+  border-color: #93c5fd !important;
+  box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.22) !important;
+}
+
+body.theme-dark .kpi-table th,
+body.theme-dark .chart-table th {
+  background: #111c2e !important;
+  color: #ffffff !important;
+}
+
+body.theme-dark .kpi-table td,
+body.theme-dark .chart-table td {
+  color: #edf4ff !important;
+}
+
+body.theme-dark .kpi-table tbody tr:hover,
+body.theme-dark .chart-table tbody tr:hover {
+  background: #1f2d44 !important;
+}
+
+body.theme-dark .mini-brand {
+  background: rgba(227, 6, 19, 0.16) !important;
+  color: #ffccd3 !important;
+}
+
+body.theme-dark .badge-card,
+body.theme-dark .search-btn,
+body.theme-dark .captcha-question {
+  background: #0b3a70 !important;
+  color: #ffffff !important;
+}
+
+body.theme-dark .login-page,
+body.theme-dark .forgot-page {
+  background: linear-gradient(135deg, #061a35 0%, #0a2342 52%, #101722 52%, #172033 100%) !important;
+}
+
+body.theme-dark .login-layout,
+body.theme-dark .forgot-layout {
+  background: #172033 !important;
+}
+
+body.theme-dark .form-panel,
+body.theme-dark .login-box,
+body.theme-dark .forgot-box {
+  background: #f8fafc !important;
+  color: #0a2342 !important;
+}
+
+body.theme-dark .login-header h2,
+body.theme-dark .forgot-header h2,
+body.theme-dark .login-header p,
+body.theme-dark .forgot-header p,
+body.theme-dark .login-box .form-group label,
+body.theme-dark .forgot-box .form-group label,
+body.theme-dark .login-box .remember-me,
+body.theme-dark .forgot-box .back-link {
+  color: #0a2342 !important;
+}
+
+body.theme-dark .login-box input,
+body.theme-dark .forgot-box input {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0a2342 !important;
+}
+

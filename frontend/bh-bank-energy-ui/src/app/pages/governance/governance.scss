@@ -1,0 +1,169 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: #ffffff;
+  color: #001b3d;
+  font-family: Arial, sans-serif;
+}
+
+.governance-page {
+  min-height: 100vh;
+  background: #ffffff;
+}
+
+.governance-hero {
+  position: relative;
+  height: 440px;
+  overflow: hidden;
+  background: #d9eef8;
+}
+
+.governance-hero img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.hero-copy {
+  position: absolute;
+  left: 70px;
+  top: 116px;
+  max-width: 510px;
+}
+
+.hero-copy h1 {
+  margin: 0 0 50px;
+  color: #08264d;
+  font-size: 42px;
+  line-height: 1.12;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.hero-copy p {
+  margin: 0;
+  color: #000000;
+  font-size: 16px;
+  line-height: 1.35;
+  font-weight: 500;
+}
+
+.governance-content {
+  position: relative;
+  min-height: 680px;
+  padding: 10px 0 48px 24px;
+  display: grid;
+  grid-template-columns: 52% 48%;
+  align-items: start;
+  background: #ffffff;
+}
+
+.governance-list {
+  max-width: 640px;
+}
+
+.governance-list h2 {
+  margin: 20px 0 18px;
+  color: #c60012;
+  font-size: 21px;
+  line-height: 1.1;
+  font-weight: 900;
+  letter-spacing: 1.4px;
+}
+
+.governance-list h2:first-child {
+  margin-top: 0;
+}
+
+.governance-list p {
+  margin: 0 0 11px;
+  color: #001b3d;
+  font-size: 14px;
+  line-height: 1.15;
+}
+
+.governance-list strong {
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.governance-list span {
+  margin-left: 8px;
+  font-size: 12px;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+.governance-list address {
+  margin-top: 12px;
+  color: #001b3d;
+  font-size: 12px;
+  font-style: normal;
+  line-height: 2.45;
+}
+
+.governance-visual {
+  width: 548px;
+  max-width: calc(100% - 24px);
+  height: auto;
+  margin-top: 83px;
+  justify-self: center;
+  display: block;
+}
+
+@media (max-width: 1100px) {
+  .hero-copy {
+    left: 42px;
+  }
+
+  .governance-content {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding-right: 24px;
+  }
+
+  .governance-visual {
+    margin-top: 0;
+    justify-self: start;
+  }
+}
+
+@media (max-width: 768px) {
+  .governance-hero {
+    height: 360px;
+  }
+
+  .governance-hero img {
+    object-position: 58% top;
+  }
+
+  .hero-copy {
+    left: 24px;
+    right: 24px;
+    top: 76px;
+  }
+
+  .hero-copy h1 {
+    margin-bottom: 28px;
+    font-size: 34px;
+  }
+
+  .hero-copy p {
+    font-size: 14px;
+  }
+
+  .governance-content {
+    padding: 18px 18px 40px;
+  }
+
+  .governance-list strong {
+    font-size: 16px;
+  }
+
+  .governance-list span {
+    display: block;
+    margin: 4px 0 0;
+  }
+}

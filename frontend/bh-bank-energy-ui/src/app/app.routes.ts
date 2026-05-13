@@ -9,6 +9,7 @@ import { AiDetectorComponent } from './pages/ai-detector/ai-detector';
 import { SettingsComponent } from './pages/settings/settings';
 import { ForgotPasswordComponent } from './pages/forgot-password/forgot-password';
 import { NotreReseauComponent } from './pages/notre-reseau/notre-reseau';
+import { GovernanceComponent } from './pages/governance/governance';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -22,5 +23,6 @@ export const routes: Routes = [
   { path: 'ai-detector', component: AiDetectorComponent, canActivate: [authGuard] },
   { path: 'settings', component: SettingsComponent, canActivate: [authGuard] },
   { path: 'notre-reseau', component: NotreReseauComponent, canActivate: [authGuard] },
+  { path: 'governance', component: GovernanceComponent, canActivate: [authGuard] },
   { path: 'forgot-password', component: ForgotPasswordComponent }
 ];

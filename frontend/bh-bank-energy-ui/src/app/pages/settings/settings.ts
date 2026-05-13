@@ -7,6 +7,7 @@ import { AutoRefreshInterval, AutoRefreshService } from '../../services/auto-ref
 import { EnergyAlertThresholdService } from '../../services/energy-alert-threshold.service';
 import { NotificationMode, NotificationPreferencesService, NotificationSoundMode } from '../../services/notification-preferences.service';
 import { TemperatureUnit, TemperatureUnitService } from '../../services/temperature-unit.service';
+import { ThemeMode, ThemeService } from '../../services/theme.service';
 
 import type { SupportedLanguageCode } from '../../language/supported-languages';
 import { supportedLanguages } from '../../language/supported-languages';
@@ -21,7 +22,7 @@ import { supportedLanguages } from '../../language/supported-languages';
 export class SettingsComponent implements OnInit {
   notificationsEnabled: NotificationMode = 'enabled';
   notificationSound: NotificationSoundMode = 'enabled';
-  theme: 'default' | 'light' | 'dark' = 'default';
+  theme: ThemeMode = 'default';
   temperatureUnit: TemperatureUnit = 'celsius';
   energyAlertThreshold = 4;
   autoRefreshInterval: AutoRefreshInterval = '30000';
@@ -36,7 +37,8 @@ export class SettingsComponent implements OnInit {
     private autoRefresh: AutoRefreshService,
     private energyAlertThresholdService: EnergyAlertThresholdService,
     private notificationPreferences: NotificationPreferencesService,
-    private temperatureUnitService: TemperatureUnitService
+    private temperatureUnitService: TemperatureUnitService,
+    private themeService: ThemeService
   ) {}
 
   ngOnInit(): void {
@@ -59,17 +61,7 @@ export class SettingsComponent implements OnInit {
     this.autoRefreshInterval = this.autoRefresh.interval;
     this.notificationsEnabled = this.notificationPreferences.notifications;
     this.notificationSound = this.notificationPreferences.sound;
-
-    // Load saved theme
-    const storedTheme =
-      typeof localStorage !== 'undefined'
-        ? (localStorage.getItem('theme') as 'default' | 'light' | 'dark' | null)
-        : null;
-
-    if (storedTheme && ['default', 'light', 'dark'].includes(storedTheme)) {
-      this.theme = storedTheme;
-      this.applyTheme(storedTheme);
-    }
+    this.theme = this.themeService.theme;
   }
 
   onLanguageChange(lang: SupportedLanguageCode | string) {
@@ -86,13 +78,9 @@ export class SettingsComponent implements OnInit {
     this.applyDirection(safeLang);
   }
 
-  onThemeChange(newTheme: 'default' | 'light' | 'dark') {
-    this.theme = newTheme;
-    this.applyTheme(newTheme);
-
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem('theme', newTheme);
-    }
+  onThemeChange(newTheme: ThemeMode | string) {
+    this.themeService.setTheme(newTheme);
+    this.theme = this.themeService.theme;
   }
 
   onTemperatureUnitChange(unit: TemperatureUnit) {
@@ -130,20 +118,4 @@ export class SettingsComponent implements OnInit {
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
   }
 
-  private applyTheme(theme: 'default' | 'light' | 'dark') {
-    if (typeof document === 'undefined') return;
-
-    const body = document.body;
-    
-    // Remove all theme classes first
-    body.classList.remove('theme-light', 'theme-dark');
-
-    // Apply the selected theme
-    if (theme === 'light') {
-      body.classList.add('theme-light');
-    } else if (theme === 'dark') {
-      body.classList.add('theme-dark');
-    }
-    // 'default' theme means no extra classes (uses base styles)
-  }
 }

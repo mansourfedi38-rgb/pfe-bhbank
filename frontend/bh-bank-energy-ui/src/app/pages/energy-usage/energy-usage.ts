@@ -131,7 +131,20 @@ export class EnergyUsageComponent implements OnInit {
           responsive: true,
           maintainAspectRatio: false,
           scales: {
-            y: { beginAtZero: true, title: { display: true, text: this.translate.instant('energyUsage.totalEnergy') + ' (kWh)' } }
+            y: {
+              beginAtZero: true,
+              ticks: { color: this.chartTextColor() },
+              grid: { color: this.chartGridColor() },
+              title: {
+                display: true,
+                text: this.translate.instant('energyUsage.totalEnergy') + ' (kWh)',
+                color: this.chartTextColor()
+              }
+            },
+            x: {
+              ticks: { color: this.chartTextColor() },
+              grid: { color: this.chartGridColor() }
+            }
           }
         }
       });
@@ -143,6 +156,18 @@ export class EnergyUsageComponent implements OnInit {
     this.hasError = false;
     this.backendStatus = this.translate.instant('energyUsage.status.loading');
     this.setCardsNotAvailable();
+  }
+
+  private isDarkTheme(): boolean {
+    return typeof document !== 'undefined' && document.body.classList.contains('theme-dark');
+  }
+
+  private chartTextColor(): string {
+    return this.isDarkTheme() ? '#f8fafc' : '#555555';
+  }
+
+  private chartGridColor(): string {
+    return this.isDarkTheme() ? 'rgba(219, 231, 245, 0.24)' : 'rgba(0, 0, 0, 0.1)';
   }
 
   private setCardsNotAvailable(): void {

@@ -225,15 +225,31 @@ export class DashboardComponent implements OnInit, OnDestroy {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: { display: true, position: 'top' }
+            legend: {
+              display: true,
+              position: 'top',
+              labels: { color: this.chartTextColor() }
+            }
           },
           scales: {
             y: {
               beginAtZero: true,
-              title: { display: true, text: this.translate.instant('energyUsage.totalEnergy') + ' (kWh)' }
+              ticks: { color: this.chartTextColor() },
+              grid: { color: this.chartGridColor() },
+              title: {
+                display: true,
+                text: this.translate.instant('energyUsage.totalEnergy') + ' (kWh)',
+                color: this.chartTextColor()
+              }
             },
             x: {
-              title: { display: true, text: this.translate.instant('sensors.agency') }
+              ticks: { color: this.chartTextColor() },
+              grid: { color: this.chartGridColor() },
+              title: {
+                display: true,
+                text: this.translate.instant('sensors.agency'),
+                color: this.chartTextColor()
+              }
             }
           }
         }
@@ -267,6 +283,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private notAvailable(): string {
     return this.translate.instant('common.notAvailable');
+  }
+
+  private isDarkTheme(): boolean {
+    return typeof document !== 'undefined' && document.body.classList.contains('theme-dark');
+  }
+
+  private chartTextColor(): string {
+    return this.isDarkTheme() ? '#f8fafc' : '#555555';
+  }
+
+  private chartGridColor(): string {
+    return this.isDarkTheme() ? 'rgba(219, 231, 245, 0.24)' : 'rgba(0, 0, 0, 0.1)';
   }
 
   private applyNotificationVisibility(): void {
