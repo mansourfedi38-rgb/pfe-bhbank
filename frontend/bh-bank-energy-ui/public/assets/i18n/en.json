@@ -165,9 +165,16 @@
     },
     "status": {
       "loading": "Loading sensors from backend...",
+      "waitingForApply": "Select a date range, then apply filters.",
       "loaded": "Showing latest 20 of {{count}} matching readings.",
       "noDataBackend": "No sensor data in backend.",
       "failed": "Sensor backend load failed: {{error}}"
+    },
+    "errors": {
+      "selectAgency": "Please select an agency before applying.",
+      "selectDateRange": "Please select both From and To dates before applying.",
+      "invalidDateRange": "The From date must be before or equal to the To date.",
+      "dateOutOfRange": "Please select dates between January 1, 2025 and April 30, 2026."
     }
   },
   "energyUsage": {

@@ -8,6 +8,14 @@ import { Agency, ApiService, SensorData } from '../../services/api.service';
 import { AutoRefreshService } from '../../services/auto-refresh.service';
 import { TemperatureUnitService } from '../../services/temperature-unit.service';
 
+const SENSOR_AGENCY_NAMES = [
+  'bh bank nabeul',
+  'bh bank dar chaaben',
+  'bh bank mrezga'
+];
+const SENSOR_MIN_DATE = '2025-01-01';
+const SENSOR_MAX_DATE = '2026-04-30';
+
 @Component({
   selector: 'app-sensors',
   standalone: true,
@@ -35,6 +43,8 @@ export class SensorsComponent implements OnInit, OnDestroy {
   selectedAcMode: 'OFF' | 'ECO' | 'ON' | '' = '';
   dateFrom = '';
   dateTo = '';
+  filterError = '';
+  private hasAppliedFilters = false;
   private pollingInterval: any;
   private temperatureUnitSubscription?: { unsubscribe: () => void };
   private autoRefreshSubscription?: { unsubscribe: () => void };
@@ -48,15 +58,26 @@ export class SensorsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.setLoadingState();
+    this.setEmptyState();
     this.api.getAgencies().subscribe({
       next: (agencies) => {
-        this.agencies = agencies;
-        agencies.forEach((agency) => this.agenciesMap.set(agency.id, agency.name));
+        const uniqueAgencies = new Map<string, Agency>();
+        agencies
+          .filter((agency) => SENSOR_AGENCY_NAMES.includes(this.normalizeName(agency.name)))
+          .forEach((agency) => {
+            const normalizedName = this.normalizeName(agency.name);
+            const existingAgency = uniqueAgencies.get(normalizedName);
+            if (!existingAgency || agency.id < existingAgency.id) {
+              uniqueAgencies.set(normalizedName, agency);
+            }
+          });
+
+        this.agencies = Array.from(uniqueAgencies.values())
+          .sort((a, b) => SENSOR_AGENCY_NAMES.indexOf(this.normalizeName(a.name)) - SENSOR_AGENCY_NAMES.indexOf(this.normalizeName(b.name)));
+        this.agencies.forEach((agency) => this.agenciesMap.set(agency.id, agency.name));
       }
     });
 
-    this.loadSensorData();
     this.configureAutoRefresh(this.autoRefresh.intervalMs);
     this.temperatureUnitSubscription = this.temperatureUnit.unit$.subscribe(() => {
       this.updateTemperatureCard();
@@ -76,6 +97,10 @@ export class SensorsComponent implements OnInit, OnDestroy {
   }
 
   loadSensorData(): void {
+    if (!this.hasAppliedFilters) {
+      return;
+    }
+
     const filters: {
       agency?: number;
       ac_mode?: 'OFF' | 'ECO' | 'ON';
@@ -91,21 +116,25 @@ export class SensorsComponent implements OnInit, OnDestroy {
 
     this.api.getSensorData(filters).subscribe({
       next: (rows) => {
+        const allowedAgencyIds = new Set(this.agencies.map((agency) => agency.id));
+        const scopedRows = rows.filter((row) => allowedAgencyIds.has(row.agency));
+
         this.isLoading = false;
         this.hasError = false;
-        this.sensorRows = rows;
-        this.visibleRows = rows.slice(0, 20);
+        this.filterError = '';
+        this.sensorRows = scopedRows;
+        this.visibleRows = scopedRows.slice(0, 20);
         this.lastUpdated = new Date().toLocaleString();
 
-        if (rows.length === 0) {
+        if (scopedRows.length === 0) {
           this.backendStatus = this.translate.instant('sensors.status.noDataBackend');
           this.cards.systemStatus = this.translate.instant('common.noData');
           this.cdr.detectChanges();
           return;
         }
 
-        const avgClients = rows.reduce((sum, item) => sum + Number(item.clients_count), 0) / rows.length;
-        const activeAc = rows.filter((item) => item.ac_mode !== 'OFF').length;
+        const avgClients = scopedRows.reduce((sum, item) => sum + Number(item.clients_count), 0) / scopedRows.length;
+        const activeAc = scopedRows.filter((item) => item.ac_mode !== 'OFF').length;
 
         this.updateTemperatureCard();
         this.cards.clientsCount = this.translate.instant('sensors.metrics.clients', {
@@ -113,10 +142,10 @@ export class SensorsComponent implements OnInit, OnDestroy {
         });
         this.cards.activeAC = this.translate.instant('sensors.metrics.activeAc', {
           active: activeAc,
-          total: rows.length
+          total: scopedRows.length
         });
         this.cards.systemStatus = this.translate.instant('sensors.systemOnline');
-        this.backendStatus = this.translate.instant('sensors.status.loaded', { count: rows.length });
+        this.backendStatus = this.translate.instant('sensors.status.loaded', { count: scopedRows.length });
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -134,11 +163,21 @@ export class SensorsComponent implements OnInit, OnDestroy {
   }
 
   applyFilters(): void {
+    if (!this.validateDates()) {
+      return;
+    }
+
+    this.hasAppliedFilters = true;
     this.isLoading = true;
     this.loadSensorData();
   }
 
   refreshNow(): void {
+    if (!this.validateDates()) {
+      return;
+    }
+
+    this.hasAppliedFilters = true;
     this.isLoading = true;
     this.loadSensorData();
   }
@@ -148,7 +187,9 @@ export class SensorsComponent implements OnInit, OnDestroy {
     this.selectedAcMode = '';
     this.dateFrom = '';
     this.dateTo = '';
-    this.applyFilters();
+    this.hasAppliedFilters = false;
+    this.setEmptyState();
+    this.cdr.detectChanges();
   }
 
   getAgencyName(id: number): string {
@@ -179,11 +220,26 @@ export class SensorsComponent implements OnInit, OnDestroy {
   private setLoadingState(): void {
     this.isLoading = true;
     this.hasError = false;
+    this.filterError = '';
     this.backendStatus = this.translate.instant('sensors.status.loading');
     this.cards.temperature = this.translate.instant('common.notAvailable');
     this.cards.clientsCount = this.translate.instant('common.notAvailable');
     this.cards.activeAC = this.translate.instant('common.notAvailable');
     this.cards.systemStatus = this.translate.instant('common.notAvailable');
+    this.lastUpdated = this.translate.instant('common.notAvailable');
+  }
+
+  private setEmptyState(): void {
+    this.isLoading = false;
+    this.hasError = false;
+    this.filterError = '';
+    this.backendStatus = this.translate.instant('sensors.status.waitingForApply');
+    this.cards.temperature = this.translate.instant('common.notAvailable');
+    this.cards.clientsCount = this.translate.instant('common.notAvailable');
+    this.cards.activeAC = this.translate.instant('common.notAvailable');
+    this.cards.systemStatus = this.translate.instant('common.notAvailable');
+    this.sensorRows = [];
+    this.visibleRows = [];
     this.lastUpdated = this.translate.instant('common.notAvailable');
   }
 
@@ -208,5 +264,70 @@ export class SensorsComponent implements OnInit, OnDestroy {
     if (intervalMs !== null) {
       this.pollingInterval = setInterval(() => this.loadSensorData(), intervalMs);
     }
+  }
+
+  private validateDates(): boolean {
+    if (!this.selectedAgencyId) {
+      this.filterError = this.translate.instant('sensors.errors.selectAgency');
+      this.backendStatus = this.filterError;
+      this.isLoading = false;
+      this.hasError = false;
+      this.setCardsNotAvailable();
+      this.sensorRows = [];
+      this.visibleRows = [];
+      this.cdr.detectChanges();
+      return false;
+    }
+
+    if (!this.dateFrom || !this.dateTo) {
+      this.filterError = this.translate.instant('sensors.errors.selectDateRange');
+      this.backendStatus = this.filterError;
+      this.isLoading = false;
+      this.hasError = false;
+      this.setCardsNotAvailable();
+      this.sensorRows = [];
+      this.visibleRows = [];
+      this.cdr.detectChanges();
+      return false;
+    }
+
+    if (this.dateFrom > this.dateTo) {
+      this.filterError = this.translate.instant('sensors.errors.invalidDateRange');
+      this.backendStatus = this.filterError;
+      this.isLoading = false;
+      this.hasError = false;
+      this.setCardsNotAvailable();
+      this.sensorRows = [];
+      this.visibleRows = [];
+      this.cdr.detectChanges();
+      return false;
+    }
+
+    if (this.dateFrom < SENSOR_MIN_DATE || this.dateTo > SENSOR_MAX_DATE) {
+      this.filterError = this.translate.instant('sensors.errors.dateOutOfRange');
+      this.backendStatus = this.filterError;
+      this.isLoading = false;
+      this.hasError = false;
+      this.setCardsNotAvailable();
+      this.sensorRows = [];
+      this.visibleRows = [];
+      this.cdr.detectChanges();
+      return false;
+    }
+
+    this.filterError = '';
+    return true;
+  }
+
+  private setCardsNotAvailable(): void {
+    this.cards.temperature = this.translate.instant('common.notAvailable');
+    this.cards.clientsCount = this.translate.instant('common.notAvailable');
+    this.cards.activeAC = this.translate.instant('common.notAvailable');
+    this.cards.systemStatus = this.translate.instant('common.notAvailable');
+    this.lastUpdated = this.translate.instant('common.notAvailable');
+  }
+
+  private normalizeName(value: string): string {
+    return value.trim().toLowerCase();
   }
 }

@@ -165,9 +165,16 @@
     },
     "status": {
       "loading": "Chargement des capteurs depuis le backend...",
+      "waitingForApply": "Sélectionnez une période, puis appliquez les filtres.",
       "loaded": "Affichage des 20 dernières lectures sur {{count}} résultats.",
       "noDataBackend": "Aucune donnée capteur dans le backend.",
       "failed": "Échec du chargement des capteurs : {{error}}"
+    },
+    "errors": {
+      "selectAgency": "Veuillez sélectionner une agence avant d’appliquer.",
+      "selectDateRange": "Veuillez sélectionner les dates De et À avant d’appliquer.",
+      "invalidDateRange": "La date De doit être antérieure ou égale à la date À.",
+      "dateOutOfRange": "Veuillez sélectionner des dates entre le 1 janvier 2025 et le 30 avril 2026."
     }
   },
   "energyUsage": {

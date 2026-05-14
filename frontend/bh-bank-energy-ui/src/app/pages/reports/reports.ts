@@ -17,6 +17,25 @@ interface MonthlyReportCard {
   status: 'High' | 'Normal' | 'Low';
 }
 
+const REPORT_MONTHS = [
+  '2025-01',
+  '2025-02',
+  '2025-03',
+  '2025-04',
+  '2025-05',
+  '2025-06',
+  '2025-07',
+  '2025-08',
+  '2025-09',
+  '2025-10',
+  '2025-11',
+  '2025-12',
+  '2026-01',
+  '2026-02',
+  '2026-03',
+  '2026-04'
+];
+
 @Component({
   selector: 'app-reports',
   standalone: true,
@@ -58,8 +77,8 @@ export class ReportsComponent implements OnInit, OnDestroy {
 
     this.api.getMonthlyEnergyKpi().subscribe({
       next: (rows) => {
-        this.rawRows = rows;
-        this.reportCards = this.buildReportCards(rows);
+        this.rawRows = rows.filter((row) => REPORT_MONTHS.includes(row.month));
+        this.reportCards = this.buildReportCards(this.rawRows);
         this.availableYears = Array.from(new Set(this.reportCards.map((report) => report.month.slice(0, 4)))).sort();
         this.selectedYear = this.availableYears.includes('2025')
           ? '2025'

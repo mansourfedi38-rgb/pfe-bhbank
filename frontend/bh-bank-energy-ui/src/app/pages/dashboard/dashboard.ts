@@ -13,6 +13,25 @@ import { EnergyAlertThresholdService } from '../../services/energy-alert-thresho
 import { NotificationPreferencesService } from '../../services/notification-preferences.service';
 import { TemperatureUnitService } from '../../services/temperature-unit.service';
 
+const DASHBOARD_MONTHS = [
+  '2025-01',
+  '2025-02',
+  '2025-03',
+  '2025-04',
+  '2025-05',
+  '2025-06',
+  '2025-07',
+  '2025-08',
+  '2025-09',
+  '2025-10',
+  '2025-11',
+  '2025-12',
+  '2026-01',
+  '2026-02',
+  '2026-03',
+  '2026-04'
+];
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -95,8 +114,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   onMonthChange(): void {
+    this.selectedAlertMonth = this.selectedMonth;
     this.updateSelectedMonthSummary();
     this.createMonthlyAgencyChart();
+    this.loadRecentAlerts();
   }
 
   onAlertMonthChange(): void {
@@ -126,13 +147,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
       latestReadings: this.api.getSensorData({ ordering: '-timestamp' })
     }).subscribe({
       next: ({ monthlyKpi, latestReadings }) => {
-        this.monthlyRows = monthlyKpi;
-        this.availableMonths = Array.from(new Set(monthlyKpi.map((row) => row.month))).sort();
+        this.monthlyRows = monthlyKpi.filter((row) => DASHBOARD_MONTHS.includes(row.month));
+        const monthsWithData = new Set(this.monthlyRows.map((row) => row.month));
+        this.availableMonths = DASHBOARD_MONTHS.filter((month) => monthsWithData.has(month));
         this.selectedMonth = this.availableMonths[this.availableMonths.length - 1] || '';
         this.selectedAlertMonth = this.selectedMonth;
         this.latestReadingTime = this.formatLatestReading(latestReadings[0]);
 
-        this.kpiStatus = this.translate.instant('dashboard.status.loadedMonthly', { count: monthlyKpi.length });
+        this.kpiStatus = this.translate.instant('dashboard.status.loadedMonthly', { count: this.monthlyRows.length });
         this.updateSelectedMonthSummary();
         this.createMonthlyAgencyChart();
         this.loadRecentAlerts();

@@ -10,6 +10,31 @@ import { Subscription } from 'rxjs';
 
 type ComparisonPeriod = 'month' | 'year';
 
+const COMPARE_REGION_NAME = 'cap bon';
+const COMPARE_AGENCY_NAMES = [
+  'bh bank nabeul',
+  'bh bank dar chaaben',
+  'bh bank mrezga'
+];
+const COMPARE_MONTHS = [
+  '2025-01',
+  '2025-02',
+  '2025-03',
+  '2025-04',
+  '2025-05',
+  '2025-06',
+  '2025-07',
+  '2025-08',
+  '2025-09',
+  '2025-10',
+  '2025-11',
+  '2025-12',
+  '2026-01',
+  '2026-02',
+  '2026-03',
+  '2026-04'
+];
+
 @Component({
   selector: 'app-compare-agencies',
   standalone: true,
@@ -78,8 +103,8 @@ export class CompareAgenciesComponent implements OnInit, OnDestroy {
       next: (rows) => {
         this.monthlyRows = rows;
         this.availableMonths = this.getCompleteMonths(rows);
-        this.availableYears = Array.from(new Set(rows.map((row) => row.month.slice(0, 4)))).sort();
-        this.selectedMonth = this.availableMonths[this.availableMonths.length - 1] || rows[rows.length - 1]?.month || '';
+        this.availableYears = Array.from(new Set(this.availableMonths.map((month) => month.slice(0, 4)))).sort();
+        this.selectedMonth = this.availableMonths[this.availableMonths.length - 1] || '';
         this.selectedYear = this.availableYears.includes('2025') ? '2025' : this.availableYears[this.availableYears.length - 1] || '';
         this.loadRegions();
       },
@@ -93,8 +118,8 @@ export class CompareAgenciesComponent implements OnInit, OnDestroy {
   loadRegions(): void {
     this.api.getRegions().subscribe({
       next: (regions) => {
-        this.regions = regions;
-        this.selectedRegionId = regions[0]?.id ?? null;
+        this.regions = regions.filter((region) => this.normalizeName(region.name) === COMPARE_REGION_NAME);
+        this.selectedRegionId = this.regions[0]?.id ?? null;
         if (this.selectedRegionId) {
           this.loadAgenciesForRegion(true);
         }
@@ -122,9 +147,11 @@ export class CompareAgenciesComponent implements OnInit, OnDestroy {
 
     this.api.getAgencies(this.selectedRegionId).subscribe({
       next: (agencies) => {
-        this.agencies = agencies;
-        this.selectedAgency1Id = agencies[0]?.id ?? null;
-        this.selectedAgency2Id = agencies[1]?.id ?? null;
+        this.agencies = agencies
+          .filter((agency) => COMPARE_AGENCY_NAMES.includes(this.normalizeName(agency.name)))
+          .sort((a, b) => COMPARE_AGENCY_NAMES.indexOf(this.normalizeName(a.name)) - COMPARE_AGENCY_NAMES.indexOf(this.normalizeName(b.name)));
+        this.selectedAgency1Id = this.agencies[0]?.id ?? null;
+        this.selectedAgency2Id = this.agencies[1]?.id ?? null;
         this.cdr.detectChanges();
 
         if (autoCompare && this.selectedAgency1Id && this.selectedAgency2Id) {
@@ -263,20 +290,16 @@ export class CompareAgenciesComponent implements OnInit, OnDestroy {
 
     return {
       date_from: `${this.selectedYear}-01-01`,
-      date_to: `${this.selectedYear}-12-31`
+      date_to: this.selectedYear === '2026' ? '2026-04-30' : `${this.selectedYear}-12-31`
     };
   }
 
-  private getCompleteMonths(rows: MonthlyEnergyKpi[]): string[] {
-    const byMonth = new Map<string, MonthlyEnergyKpi[]>();
-    rows.forEach((row) => {
-      byMonth.set(row.month, [...(byMonth.get(row.month) || []), row]);
-    });
+  private getCompleteMonths(_rows: MonthlyEnergyKpi[]): string[] {
+    return COMPARE_MONTHS;
+  }
 
-    return Array.from(byMonth.entries())
-      .filter(([, monthRows]) => monthRows.length >= 2 && monthRows.reduce((sum, row) => sum + row.readings_count, 0) >= 100)
-      .map(([month]) => month)
-      .sort();
+  private normalizeName(value: string): string {
+    return value.trim().toLowerCase();
   }
 
   private resetComparisonOnly(): void {

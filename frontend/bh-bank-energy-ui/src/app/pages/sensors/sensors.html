@@ -54,6 +54,10 @@
       <button class="filter-btn" (click)="applyFilters()">{{ 'sensors.apply' | translate }}</button>
       <button class="clear-btn" (click)="clearFilters()">{{ 'sensors.clear' | translate }}</button>
       <button class="refresh-btn" (click)="refreshNow()">{{ 'sensors.refreshNow' | translate }}</button>
+
+      <div *ngIf="filterError" class="filter-error">
+        {{ filterError }}
+      </div>
     </section>
 
     <section class="cards">
