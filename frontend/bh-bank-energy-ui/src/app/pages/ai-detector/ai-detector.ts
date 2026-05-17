@@ -7,7 +7,6 @@ import { timeout } from 'rxjs';
 import { NavbarComponent } from '../../components/navbar/navbar';
 import {
   Agency,
-  AiDetectorCrowdedHour,
   AiDetectorDailyResponse,
   AiDetectorHourlyImage,
   AiDetectorMonthlyResponse,
@@ -20,9 +19,9 @@ interface ZoneCard {
   clients: number;
 }
 
-interface ZoneAverageCard {
+interface ZoneTotalCard {
   labelKey: string;
-  average: number;
+  total: number;
 }
 
 interface HourlyImageDayGroup {
@@ -160,30 +159,19 @@ export class AiDetectorComponent implements OnInit {
     return 'crowded';
   }
 
-  get zoneAverageCards(): ZoneAverageCard[] {
-    const summary = this.monthlyResult?.zone_summary;
+  get zoneTotalCards(): ZoneTotalCard[] {
+    const totals = this.monthlyResult?.zone_totals;
     return [
-      { labelKey: 'aiDetector.zone1', average: summary?.zone_1_avg ?? 0 },
-      { labelKey: 'aiDetector.zone2', average: summary?.zone_2_avg ?? 0 },
-      { labelKey: 'aiDetector.zone3', average: summary?.zone_3_avg ?? 0 },
-      { labelKey: 'aiDetector.zone4', average: summary?.zone_4_avg ?? 0 }
+      { labelKey: 'aiDetector.zone1', total: totals?.zone_1 ?? 0 },
+      { labelKey: 'aiDetector.zone2', total: totals?.zone_2 ?? 0 },
+      { labelKey: 'aiDetector.zone3', total: totals?.zone_3 ?? 0 },
+      { labelKey: 'aiDetector.zone4', total: totals?.zone_4 ?? 0 }
     ];
-  }
-
-  get topCrowdedHours(): AiDetectorCrowdedHour[] {
-    return (this.monthlyResult?.crowded_hours ?? [])
-      .slice()
-      .sort((a, b) => b.total_clients - a.total_clients)
-      .slice(0, 10);
   }
 
   formatTimestamp(value: string | null): string {
     if (!value) return '';
     return new Date(value).toLocaleString();
-  }
-
-  crowdedZoneLabel(zone: string): string {
-    return zone.replace('zone_', 'Zone ');
   }
 
   toggleHourlyImages(): void {
@@ -214,6 +202,13 @@ export class AiDetectorComponent implements OnInit {
     ) ?? null;
   }
 
+  get monthlyPeakImage(): AiDetectorHourlyImage | null {
+    if (!this.monthlyResult?.peak_timestamp) return null;
+    return this.monthlyResult.hourly_images.find(
+      (image) => image.timestamp === this.monthlyResult?.peak_timestamp
+    ) ?? null;
+  }
+
   isPeakHour(image: AiDetectorHourlyImage): boolean {
     return image.timestamp === this.dailyResult?.peak_timestamp;
   }
@@ -232,5 +227,9 @@ export class AiDetectorComponent implements OnInit {
 
   severityLabelKey(severity: string): string {
     return `aiDetector.severity.${severity}`;
+  }
+
+  recommendationMessageKey(type: string): string {
+    return `aiDetector.recommendationMessages.${type}`;
   }
 }

@@ -206,6 +206,12 @@ export interface AiDetectorMonthlyResponse {
     zone_3_avg: number;
     zone_4_avg: number;
   };
+  zone_totals: {
+    zone_1: number;
+    zone_2: number;
+    zone_3: number;
+    zone_4: number;
+  };
   crowded_hours: AiDetectorCrowdedHour[];
   sample_image_url?: string;
   hourly_images: AiDetectorHourlyImage[];
@@ -228,6 +234,12 @@ export interface AiDetectorDailyResponse {
     zone_2_avg: number;
     zone_3_avg: number;
     zone_4_avg: number;
+  };
+  zone_totals: {
+    zone_1: number;
+    zone_2: number;
+    zone_3: number;
+    zone_4: number;
   };
   recommendations: AiDetectorRecommendation[];
   hourly_images: AiDetectorHourlyImage[];

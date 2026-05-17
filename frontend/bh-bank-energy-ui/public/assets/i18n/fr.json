@@ -370,6 +370,7 @@
     "dailyErrorState": "L’analyse IA quotidienne a échoué. Choisissez un jour ouvrable et réessayez.",
     "dailyPeakExplanation": "Cette image correspond à l’heure la plus chargée détectée pour le jour sélectionné.",
     "dailyResultGuide": "Ci-dessous, vous pouvez consulter les moyennes par zone et inspecter chaque image horaire. Cliquez sur une image pour l’agrandir.",
+    "dailySuccessMessage": "L’analyse IA quotidienne de l’occupation est terminée avec succès.",
     "operationalNotes": "Notes opérationnelles IA",
     "operationalNotesSubtitle": "Recommandations basées sur des règles à partir du profil d’occupation quotidien détecté.",
     "dailyHourlyImages": "Images horaires de ce jour",
@@ -392,6 +393,14 @@
     },
     "monthlyTitle": "Résumé mensuel",
     "monthlyExplanation": "Optionnel : résumez l’agence et le mois sélectionnés après avoir consulté la vue quotidienne.",
+    "monthlyOverviewTitle": "Vue mensuelle de l’occupation",
+    "monthlyOverviewSubtitle": "Un résumé clair du flux clients, du personnel, de la pression de pointe et des zones les plus chargées pour le mois sélectionné.",
+    "zoneAveragesTitle": "Moyennes par zone",
+    "zoneAveragesSubtitle": "Clients moyens détectés par zone pendant les heures ouvrables.",
+    "zoneTotalsTitle": "Total clients par zone",
+    "zoneTotalsSubtitle": "Flux total de clients détectés par zone pour le mois sélectionné.",
+    "crowdedPreviewTitle": "Aperçu des heures chargées",
+    "crowdedPreviewSubtitle": "Heures avec 18 clients ou plus, avec la zone la plus chargée pour chaque moment.",
     "agency": "Agence",
     "month": "Mois",
     "runMonthlyAnalysis": "Lancer l’analyse mensuelle",
@@ -428,6 +437,24 @@
     "imagesReady": "images horaires prêtes",
     "showImages": "Afficher les images",
     "hideImages": "Masquer les images",
+    "closeImage": "Fermer l’image agrandie",
+    "zoneShort": {
+      "zone1": "Zone 1",
+      "zone2": "Zone 2",
+      "zone3": "Zone 3",
+      "zone4": "Zone 4"
+    },
+    "alt": {
+      "busiestImage": "Schéma de l’agence à l’heure la plus chargée",
+      "hourlyImage": "Schéma horaire de détection IA",
+      "enlargedImage": "Schéma IA agrandi"
+    },
+    "recommendationMessages": {
+      "staffing": "Le pic de fréquentation peut nécessiter du personnel supplémentaire pendant les périodes chargées.",
+      "ac_control": "Ajustez le mode AC selon l’occupation pour garder le confort tout en évitant le gaspillage.",
+      "zone_crowding": "Surveillez la zone la plus chargée et redistribuez les files d’attente si nécessaire.",
+      "energy_optimization": "Profitez des périodes de faible occupation pour réduire l’intensité de la climatisation et optimiser l’énergie."
+    },
     "recommendationTypes": {
       "staffing": "Personnel",
       "ac_control": "Contrôle AC",

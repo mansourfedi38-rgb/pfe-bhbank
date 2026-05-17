@@ -370,6 +370,7 @@
     "dailyErrorState": "Daily AI analysis failed. Please choose a business day and try again.",
     "dailyPeakExplanation": "This image is the busiest hour detected for the selected day.",
     "dailyResultGuide": "Below you can review zone averages and inspect each hourly image. Click any image to enlarge it.",
+    "dailySuccessMessage": "Daily AI occupancy analysis completed successfully.",
     "operationalNotes": "AI Operational Notes",
     "operationalNotesSubtitle": "Rule-based recommendations from the detected daily occupancy pattern.",
     "dailyHourlyImages": "Hourly images for this day",
@@ -392,6 +393,14 @@
     },
     "monthlyTitle": "Monthly summary",
     "monthlyExplanation": "Optional: summarize the selected agency and month after reviewing the daily view.",
+    "monthlyOverviewTitle": "Monthly occupancy overview",
+    "monthlyOverviewSubtitle": "A clear summary of client flow, staffing, peak pressure, and the most crowded zones for the selected month.",
+    "zoneAveragesTitle": "Zone averages",
+    "zoneAveragesSubtitle": "Average detected clients per zone across business hours.",
+    "zoneTotalsTitle": "Zone total clients",
+    "zoneTotalsSubtitle": "Total detected client flow per zone for the selected month.",
+    "crowdedPreviewTitle": "Crowded hour preview",
+    "crowdedPreviewSubtitle": "Hours with 18 or more clients, showing the busiest zone for each moment.",
     "agency": "Agency",
     "month": "Month",
     "runMonthlyAnalysis": "Run Monthly Analysis",
@@ -427,8 +436,25 @@
     "hourlyImagesSubtitle": "These are all generated images for the month, grouped by business day. Open the gallery when you want to inspect every hour.",
     "imagesReady": "hourly images ready",
     "showImages": "Show images",
-    "hideImages": "Hide images"
-    ,
+    "hideImages": "Hide images",
+    "closeImage": "Close enlarged image",
+    "zoneShort": {
+      "zone1": "Zone 1",
+      "zone2": "Zone 2",
+      "zone3": "Zone 3",
+      "zone4": "Zone 4"
+    },
+    "alt": {
+      "busiestImage": "Busiest hour agency schematic",
+      "hourlyImage": "Hourly AI detection schematic",
+      "enlargedImage": "Enlarged AI detection schematic"
+    },
+    "recommendationMessages": {
+      "staffing": "Peak client flow may require additional staff during busy periods.",
+      "ac_control": "Adjust AC mode according to occupancy to keep comfort while avoiding waste.",
+      "zone_crowding": "Monitor the busiest zone and redistribute waiting queues when needed.",
+      "energy_optimization": "Use low-occupancy periods to reduce AC intensity and optimize energy."
+    },
     "recommendationTypes": {
       "staffing": "Staffing",
       "ac_control": "AC Control",

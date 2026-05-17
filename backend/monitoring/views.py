@@ -232,6 +232,7 @@ def _run_daily_ai_occupancy_analysis(agency, selected_day):
         'total_employees': total_employees,
         'average_employees': average_employees,
         'zone_summary': zone_summary,
+        'zone_totals': _build_zone_totals(rows),
         'recommendations': _build_daily_ai_recommendations(
             rows=rows,
             peak_clients=peak_clients,
@@ -274,6 +275,7 @@ def _run_monthly_ai_occupancy_analysis(agency, month_start):
         'total_employees': total_employees,
         'average_employees': _average(row['employees_count'] for row in rows),
         'zone_summary': zone_summary,
+        'zone_totals': _build_zone_totals(rows),
         'crowded_hours': crowded_hours,
         'sample_image_url': peak_row['image_url'] if peak_row else '',
         'hourly_images': hourly_images,
@@ -432,6 +434,15 @@ def _build_zone_summary(rows):
     }
 
 
+def _build_zone_totals(rows):
+    return {
+        'zone_1': sum(row['zone_1_clients'] for row in rows),
+        'zone_2': sum(row['zone_2_clients'] for row in rows),
+        'zone_3': sum(row['zone_3_clients'] for row in rows),
+        'zone_4': sum(row['zone_4_clients'] for row in rows),
+    }
+
+
 def _build_daily_ai_recommendations(
     rows,
     peak_clients,
@@ -581,18 +592,18 @@ def _build_crowded_hours(rows):
     ]
 
     for row in rows:
-        crowded_zone, crowded_count = max(
+        crowded_zone, _ = max(
             zone_keys,
             key=lambda item: row[item[1]],
         )
-        if row[crowded_count] >= 8:
+        if row['total_clients'] >= 18:
             crowded.append({
                 'timestamp': row['timestamp'],
                 'total_clients': row['total_clients'],
                 'crowded_zone': crowded_zone,
             })
 
-    return crowded
+    return sorted(crowded, key=lambda item: item['total_clients'], reverse=True)
 
 
 @api_view(['GET'])

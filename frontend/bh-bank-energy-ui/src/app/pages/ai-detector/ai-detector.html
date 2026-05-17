@@ -100,7 +100,10 @@
             <span class="peak-badge">{{ 'aiDetector.busiestBadge' | translate }}</span>
           </div>
           <p class="panel-helper">{{ 'aiDetector.dailyPeakExplanation' | translate }}</p>
-          <img [src]="dailyPeakImage.image_url" alt="Busiest hour agency schematic" (click)="openImage(dailyPeakImage)" />
+          <img
+            [src]="dailyPeakImage.image_url"
+            [attr.alt]="'aiDetector.alt.busiestImage' | translate"
+            (click)="openImage(dailyPeakImage)" />
           <div class="peak-details">
             <span>{{ 'aiDetector.peakTimestamp' | translate }}: {{ formatTimestamp(dailyResult.peak_timestamp) }}</span>
             <span>{{ 'aiDetector.peakClients' | translate }}: {{ dailyResult.peak_clients }}</span>
@@ -108,7 +111,7 @@
         </div>
 
         <div class="message-card monthly-message">
-          <p>{{ dailyResult.message }}</p>
+          <p>{{ 'aiDetector.dailySuccessMessage' | translate }}</p>
           <p class="message-helper">{{ 'aiDetector.dailyResultGuide' | translate }}</p>
         </div>
       </section>
@@ -132,7 +135,7 @@
                   {{ severityLabelKey(note.severity) | translate }}
                 </span>
               </div>
-              <p>{{ note.message }}</p>
+              <p>{{ recommendationMessageKey(note.type) | translate }}</p>
             </article>
           </div>
         </div>
@@ -163,16 +166,16 @@
               [class.peak-hour-card]="isPeakHour(image)"
               (click)="openImage(image)">
               <div *ngIf="isPeakHour(image)" class="peak-ribbon">{{ 'aiDetector.busiestBadge' | translate }}</div>
-              <img [src]="image.image_url" alt="Hourly AI detection schematic" loading="lazy" />
+              <img [src]="image.image_url" [attr.alt]="'aiDetector.alt.hourlyImage' | translate" loading="lazy" />
               <div class="hourly-card-body">
                 <strong>{{ formatHour(image.timestamp) }}</strong>
                 <span>{{ 'aiDetector.clients' | translate }}: {{ image.total_clients }}</span>
                 <span>{{ 'aiDetector.detectedEmployees' | translate }}: {{ image.employees_count }}</span>
                 <div class="hourly-zones">
-                  <span>Z1: {{ image.zones.zone_1 }}</span>
-                  <span>Z2: {{ image.zones.zone_2 }}</span>
-                  <span>Z3: {{ image.zones.zone_3 }}</span>
-                  <span>Z4: {{ image.zones.zone_4 }}</span>
+                  <span>{{ 'aiDetector.zoneShort.zone1' | translate }}: {{ image.zones.zone_1 }}</span>
+                  <span>{{ 'aiDetector.zoneShort.zone2' | translate }}: {{ image.zones.zone_2 }}</span>
+                  <span>{{ 'aiDetector.zoneShort.zone3' | translate }}: {{ image.zones.zone_3 }}</span>
+                  <span>{{ 'aiDetector.zoneShort.zone4' | translate }}: {{ image.zones.zone_4 }}</span>
                 </div>
               </div>
             </article>
@@ -209,44 +212,87 @@
       </div>
 
       <div *ngIf="monthlyResult && !isMonthlyLoading" class="monthly-results">
-        <section class="cards monthly-summary">
-          <div class="metric-card">
+        <section class="monthly-overview">
+          <div class="monthly-overview-main">
             <div class="card-top red-line"></div>
-            <h3>{{ 'aiDetector.selectedMonth' | translate }}</h3>
-            <p>{{ monthlyResult.month }}</p>
+            <span class="monthly-eyebrow">{{ monthlyResult.agency_name }} • {{ monthlyResult.month }}</span>
+            <h2>{{ 'aiDetector.monthlyOverviewTitle' | translate }}</h2>
+            <p>{{ 'aiDetector.monthlyOverviewSubtitle' | translate }}</p>
+
+            <div class="monthly-highlight-row">
+              <div>
+                <span>{{ 'aiDetector.peakTimestamp' | translate }}</span>
+                <strong>{{ formatTimestamp(monthlyResult.peak_timestamp) }}</strong>
+              </div>
+              <div>
+                <span>{{ 'aiDetector.peakClients' | translate }}</span>
+                <strong>{{ monthlyResult.peak_clients }}</strong>
+              </div>
+            </div>
           </div>
 
-          <div class="metric-card">
+          <div class="monthly-overview-side" *ngIf="monthlyPeakImage">
+            <img
+              [src]="monthlyPeakImage.image_url"
+              [attr.alt]="'aiDetector.alt.busiestImage' | translate"
+              (click)="openImage(monthlyPeakImage)" />
+            <span class="peak-badge">{{ 'aiDetector.busiestBadge' | translate }}</span>
+          </div>
+        </section>
+
+        <section class="monthly-kpi-grid">
+          <article class="monthly-kpi-card">
+            <span>{{ 'aiDetector.businessDays' | translate }}</span>
+            <strong>{{ monthlyResult.business_days }}</strong>
+          </article>
+
+          <article class="monthly-kpi-card">
+            <span>{{ 'aiDetector.totalClients' | translate }}</span>
+            <strong>{{ monthlyResult.total_clients }}</strong>
+          </article>
+
+          <article class="monthly-kpi-card">
+            <span>{{ 'aiDetector.peakClients' | translate }}</span>
+            <strong>{{ monthlyResult.peak_clients }}</strong>
+          </article>
+
+          <article class="monthly-kpi-card">
+            <span>{{ 'aiDetector.totalEmployees' | translate }}</span>
+            <strong>{{ monthlyResult.total_employees }}</strong>
+          </article>
+        </section>
+
+        <section class="monthly-detail-grid">
+          <div class="table-card">
             <div class="card-top blue-line"></div>
-            <h3>{{ 'aiDetector.businessDays' | translate }}</h3>
-            <p>{{ monthlyResult.business_days }}</p>
+            <h2>{{ 'aiDetector.zoneTotalsTitle' | translate }}</h2>
+            <p class="table-subtitle">{{ 'aiDetector.zoneTotalsSubtitle' | translate }}</p>
+
+            <div class="monthly-zone-list">
+              <article
+                *ngFor="let zone of zoneTotalCards"
+                class="monthly-zone-row">
+                <div>
+                  <strong>{{ zone.labelKey | translate }}</strong>
+                  <span>{{ 'aiDetector.totalClients' | translate }}</span>
+                </div>
+                <p>{{ zone.total }}</p>
+              </article>
+            </div>
           </div>
 
-          <div class="metric-card">
-            <div class="card-top red-line"></div>
-            <h3>{{ 'aiDetector.totalClients' | translate }}</h3>
-            <p>{{ monthlyResult.total_clients }}</p>
-          </div>
-
-          <div class="metric-card">
-            <div class="card-top blue-line"></div>
-            <h3>{{ 'aiDetector.peakClients' | translate }}</h3>
-            <p>{{ monthlyResult.peak_clients }}</p>
-          </div>
-
-          <div class="metric-card">
-            <div class="card-top red-line"></div>
-            <h3>{{ 'aiDetector.totalEmployees' | translate }}</h3>
-            <p>{{ monthlyResult.total_employees }}</p>
-          </div>
         </section>
       </div>
     </section>
 
     <div *ngIf="enlargedImage" class="image-modal" (click)="closeImage()">
       <div class="image-modal-content" (click)="$event.stopPropagation()">
-        <button class="modal-close" type="button" (click)="closeImage()">×</button>
-        <img [src]="enlargedImage.image_url" alt="Enlarged AI detection schematic" />
+        <button
+          class="modal-close"
+          type="button"
+          [attr.aria-label]="'aiDetector.closeImage' | translate"
+          (click)="closeImage()">×</button>
+        <img [src]="enlargedImage.image_url" [attr.alt]="'aiDetector.alt.enlargedImage' | translate" />
         <div class="modal-caption">
           <strong>{{ formatTimestamp(enlargedImage.timestamp) }}</strong>
           <span>{{ 'aiDetector.clients' | translate }}: {{ enlargedImage.total_clients }}</span>
