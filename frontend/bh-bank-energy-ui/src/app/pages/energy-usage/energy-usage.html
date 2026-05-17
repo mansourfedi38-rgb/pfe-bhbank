@@ -14,7 +14,7 @@
     </section>
 
     <section class="range-actions">
-      <button [class.active]="selectedRange === 'month'" (click)="applyRange('month')">{{ 'energyUsage.thisMonth' | translate }}</button>
+      <button [class.active]="selectedRange === 'month'" (click)="applyRange('month')">{{ 'energyUsage.oneMonth' | translate }}</button>
       <button [class.active]="selectedRange === 'quarter'" (click)="applyRange('quarter')">{{ 'energyUsage.last3Months' | translate }}</button>
       <button [class.active]="selectedRange === 'year'" (click)="applyRange('year')">{{ 'energyUsage.fullYear' | translate }}</button>
     </section>
@@ -36,7 +36,7 @@
 
       <div *ngIf="!isLoading" class="card">
         <div class="card-top blue-line"></div>
-        <h3>{{ 'energyUsage.averageEnergyPerMonth' | translate }}</h3>
+        <h3>{{ averageEnergyLabel() }}</h3>
         <p>{{ cards.averageEnergyPerMonth }}</p>
       </div>
 
@@ -44,6 +44,24 @@
         <div class="card-top red-line"></div>
         <h3>{{ 'energyUsage.peakMonth' | translate }}</h3>
         <p>{{ cards.peakMonth }}</p>
+      </div>
+
+      <div *ngIf="!isLoading && selectedRange === 'month'" class="card">
+        <div class="card-top blue-line"></div>
+        <h3>{{ 'energyUsage.peakDay' | translate }}</h3>
+        <p>{{ cards.peakDay }}</p>
+      </div>
+
+      <div *ngIf="!isLoading && selectedRange === 'quarter'" class="card">
+        <div class="card-top blue-line"></div>
+        <h3>{{ 'energyUsage.selectedPeriod' | translate }}</h3>
+        <p>{{ cards.selectedPeriod }}</p>
+      </div>
+
+      <div *ngIf="!isLoading && selectedRange === 'year'" class="card">
+        <div class="card-top blue-line"></div>
+        <h3>{{ 'energyUsage.selectedYear' | translate }}</h3>
+        <p>{{ cards.selectedPeriod }}</p>
       </div>
 
       <div *ngIf="!isLoading" class="card">
@@ -55,7 +73,7 @@
 
     <section class="summary-grid" *ngIf="!isLoading && !hasError">
       <div class="summary-panel">
-        <h3>{{ 'energyUsage.energyTrendByMonth' | translate }}</h3>
+        <h3>{{ trendChartTitle() }}</h3>
         <div class="chart-wrapper">
           <canvas id="energyTrendChart"></canvas>
         </div>

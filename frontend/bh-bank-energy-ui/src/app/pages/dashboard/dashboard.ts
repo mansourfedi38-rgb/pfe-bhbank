@@ -43,6 +43,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   kpiStatus = '';
   monthlyRows: MonthlyEnergyKpi[] = [];
   private allRecentAlerts: RecentAlert[] = [];
+  private latestReadings: SensorData[] = [];
   recentAlerts: RecentAlert[] = [];
   selectedMonth = '';
   selectedAlertMonth = '';
@@ -130,11 +131,28 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   formatAlertTimestamp(value: string): string {
-    return new Date(value).toLocaleString();
+    return new Date(value).toLocaleString(this.currentLocale());
   }
 
-  formatAlertMessage(message: string): string {
-    return message.replace(/(-?\d+(?:\.\d+)?)\s*°C/g, (_match, value) => this.temperatureUnit.format(value));
+  formatAlertType(alert: RecentAlert): string {
+    const key = this.alertTranslationKey(alert);
+    return this.translate.instant(`dashboard.alerts.${key}.type`);
+  }
+
+  formatAlertMessage(alert: RecentAlert): string {
+    const key = this.alertTranslationKey(alert);
+    const translated = this.translate.instant(`dashboard.alerts.${key}.message`, {
+      agency: alert.agency_name,
+      temperature: alert.temperature !== undefined ? this.temperatureUnit.format(alert.temperature) : '',
+      energy: this.formatEnergy(alert.energy_usage),
+      threshold: this.formatEnergy(alert.energy_threshold)
+    });
+
+    if (translated !== `dashboard.alerts.${key}.message`) {
+      return translated;
+    }
+
+    return alert.message.replace(/(-?\d+(?:\.\d+)?)\s*°C/g, (_match, value) => this.temperatureUnit.format(value));
   }
 
   areNotificationMessagesEnabled(): boolean {
@@ -148,11 +166,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }).subscribe({
       next: ({ monthlyKpi, latestReadings }) => {
         this.monthlyRows = monthlyKpi.filter((row) => DASHBOARD_MONTHS.includes(row.month));
+        this.latestReadings = latestReadings;
         const monthsWithData = new Set(this.monthlyRows.map((row) => row.month));
         this.availableMonths = DASHBOARD_MONTHS.filter((month) => monthsWithData.has(month));
         this.selectedMonth = this.availableMonths[this.availableMonths.length - 1] || '';
         this.selectedAlertMonth = this.selectedMonth;
-        this.latestReadingTime = this.formatLatestReading(latestReadings[0]);
 
         this.kpiStatus = this.translate.instant('dashboard.status.loadedMonthly', { count: this.monthlyRows.length });
         this.updateSelectedMonthSummary();
@@ -191,6 +209,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const rows = this.getSelectedMonthRows();
 
     if (rows.length === 0) {
+      this.latestReadingTime = this.formatLatestReadingForMonth(this.selectedMonth);
       this.dashboardMetrics.totalEnergyThisMonth = this.notAvailable();
       this.dashboardMetrics.averageTemperatureThisMonth = this.notAvailable();
       this.dashboardMetrics.peakAgencyThisMonth = this.notAvailable();
@@ -204,6 +223,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const avgTemperature =
       rows.reduce((sum, row) => sum + Number(row.avg_temperature), 0) / rows.length;
     const peakAgency = [...rows].sort((a, b) => Number(b.total_energy) - Number(a.total_energy))[0];
+    this.latestReadingTime = this.formatLatestReadingForMonth(this.selectedMonth);
 
     this.dashboardMetrics.totalEnergyThisMonth = `${totalEnergy.toFixed(2)} kWh`;
     this.dashboardMetrics.averageTemperatureThisMonth = this.temperatureUnit.format(avgTemperature);
@@ -287,7 +307,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private formatLatestReading(row?: SensorData): string {
     if (!row) return this.notAvailable();
-    return new Date(row.timestamp).toLocaleString();
+    return new Date(row.timestamp).toLocaleString(this.currentLocale());
+  }
+
+  private formatLatestReadingForMonth(month: string): string {
+    if (!month) return this.notAvailable();
+    const row = this.latestReadings.find((reading) => reading.timestamp.startsWith(month));
+    return this.formatLatestReading(row);
   }
 
   private setLoadingState(): void {
@@ -305,6 +331,29 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private notAvailable(): string {
     return this.translate.instant('common.notAvailable');
+  }
+
+  private alertTranslationKey(alert: RecentAlert): string {
+    if (alert.alert_key) return alert.alert_key;
+    const keys: Record<RecentAlert['type'], string> = {
+      'High temperature': 'high_temperature',
+      'High energy usage': 'high_energy_usage',
+      'After-hours energy waste': 'after_hours_energy_waste'
+    };
+    return keys[alert.type] || 'high_energy_usage';
+  }
+
+  private formatEnergy(value?: number): string {
+    return value === undefined ? '' : `${Number(value).toFixed(2)} kWh`;
+  }
+
+  private currentLocale(): string {
+    const locales: Record<string, string> = {
+      en: 'en-US',
+      fr: 'fr-FR',
+      ar: 'ar-TN'
+    };
+    return locales[this.translate.currentLang] || 'en-US';
   }
 
   private isDarkTheme(): boolean {

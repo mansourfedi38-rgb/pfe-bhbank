@@ -83,6 +83,20 @@
     "monthlyEnergyByAgency": "الاستهلاك الشهري حسب الوكالة",
     "loadingChart": "جارٍ تحميل الرسم...",
     "noMonthlyData": "لا توجد بيانات شهرية متاحة.",
+    "alerts": {
+      "high_temperature": {
+        "type": "درجة حرارة مرتفعة",
+        "message": "سجلت {{agency}} درجة {{temperature}}، وهي أعلى من حد الراحة 30 °C."
+      },
+      "high_energy_usage": {
+        "type": "استهلاك طاقة مرتفع",
+        "message": "استهلكت {{agency}} {{energy}}، وهو أعلى من حد التنبيه {{threshold}}."
+      },
+      "after_hours_energy_waste": {
+        "type": "استهلاك خارج ساعات العمل",
+        "message": "استخدمت {{agency}} {{energy}} خارج ساعات العمل."
+      }
+    },
     "status": {
       "loadingMonthly": "جارٍ تحميل مؤشرات الأداء الشهرية...",
       "loadedMonthly": "تم تحميل {{count}} صفوف KPI شهرية.",
@@ -136,7 +150,7 @@
     "title": "مراقبة المستشعرات",
     "subtitle": "تابع درجة الحرارة وعدد العملاء ووضع التكييف عبر وكالات بنك BH.",
     "temperatureSensor": "درجة الحرارة",
-    "clientsCount": "عدد العملاء",
+    "clientsCount": "إجمالي عدد العملاء",
     "activeAC": "أجهزة التكييف النشطة",
     "systemStatus": "حالة النظام",
     "systemOnline": "متصل",
@@ -155,13 +169,20 @@
     "refreshNow": "تحديث الآن",
     "latestReadings": "آخر قراءات المستشعرات",
     "tableSubtitle": "يتم عرض آخر 20 قراءة مطابقة. يتبع توقيت التحديث الإعدادات.",
+    "displayFrequency": "وتيرة العرض",
+    "frequency": {
+      "hour": "بالساعة",
+      "day": "باليوم",
+      "week": "بالأسبوع",
+      "month": "بالشهر"
+    },
     "temperature": "درجة الحرارة",
     "clients": "العملاء",
     "energyUsage": "استهلاك الطاقة",
     "timestamp": "الوقت",
     "metrics": {
       "clients": "{{count}} عميل",
-      "activeAc": "{{active}}/{{total}} تكييف نشط"
+      "activeAc": "{{active}}h/{{total}}h تكييف نشط"
     },
     "status": {
       "loading": "جارٍ تحميل بيانات المستشعرات من الخلفية...",
@@ -181,13 +202,21 @@
     "title": "نظرة على استهلاك الطاقة",
     "subtitle": "راقب استهلاك الطاقة وتحسينه عبر وكالات بنك BH.",
     "thisMonth": "هذا الشهر",
-    "last3Months": "آخر 3 أشهر",
+    "oneMonth": "شهر واحد",
+    "last3Months": "3 أشهر",
     "fullYear": "السنة كاملة",
     "totalEnergy": "إجمالي الطاقة",
     "averageEnergyPerMonth": "متوسط الطاقة / شهر",
+    "averageEnergyPerDay": "متوسط الطاقة / يوم",
+    "averageEnergyPerWeek": "متوسط الطاقة / أسبوع",
     "peakMonth": "شهر الذروة",
+    "peakDay": "يوم الذروة",
+    "selectedPeriod": "الفترة المحددة",
+    "selectedYear": "السنة المحددة",
     "peakAgency": "وكالة الذروة",
     "energyTrendByMonth": "اتجاه الطاقة حسب الشهر",
+    "energyTrendByDay": "اتجاه الطاقة حسب اليوم",
+    "energyTrendByWeek": "اتجاه الطاقة حسب الأسبوع",
     "agencyComparison": "مقارنة الوكالات",
     "agency": "الوكالة",
     "status": {

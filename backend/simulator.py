@@ -169,15 +169,16 @@ def get_seasonal_temperature(current_time, agency_profile):
 def get_clients_for_time(current_time, agency_profile):
     """Estimate realistic agency traffic for a given date and hour."""
     hour = current_time.hour
-    is_weekend = current_time.weekday() >= 5
 
-    if is_weekend:
+    if not is_agency_open_for_time(current_time):
         base_clients = 0
     elif 8 <= hour < 10:
         base_clients = 9
     elif 10 <= hour < 13:
         base_clients = 22
-    elif 13 <= hour < 15:
+    elif is_summer_2025(current_time) and 13 <= hour < 14:
+        base_clients = 17
+    elif 13 <= hour < 15 and not is_summer_2025(current_time):
         base_clients = 17
     elif 15 <= hour < 17:
         base_clients = 10
@@ -192,6 +193,18 @@ def get_clients_for_time(current_time, agency_profile):
     clients_count = round(traffic + variation)
 
     return int(min(35, max(0, clients_count)))
+
+
+def is_summer_2025(current_time):
+    return current_time.year == 2025 and current_time.month in (7, 8)
+
+
+def is_agency_open_for_time(current_time):
+    if current_time.weekday() >= 5:
+        return False
+    if is_summer_2025(current_time):
+        return 8 <= current_time.hour < 14
+    return 8 <= current_time.hour < 17
 
 
 def get_ai_clients_for_time(current_time, agency_id, agency_profile):
@@ -231,8 +244,12 @@ def get_ai_clients_for_time(current_time, agency_id, agency_profile):
     return occupancy["clients_count"], occupancy
 
 
-def calculate_ac_mode(temperature, clients_count):
+def calculate_ac_mode(temperature, clients_count, is_open=True):
     """Choose AC mode from temperature and occupancy."""
+    if is_open and temperature >= 30:
+        return "ON"
+    if is_open and temperature >= 26:
+        return "ECO"
     if clients_count == 0:
         return "OFF"
     if temperature >= 29 or clients_count >= 22:
@@ -278,7 +295,11 @@ def build_historical_payload(agency_id, current_time):
         clients_count, _ = get_ai_clients_for_time(current_time, agency_id, agency_profile)
     else:
         clients_count = get_clients_for_time(current_time, agency_profile)
-    ac_mode = calculate_ac_mode(temperature, clients_count)
+    ac_mode = calculate_ac_mode(
+        temperature,
+        clients_count,
+        is_open=is_agency_open_for_time(current_time),
+    )
     energy_usage = calculate_energy_usage(
         temperature=temperature,
         clients_count=clients_count,
@@ -333,7 +354,11 @@ def update_live_agency_state(agency_id, state):
         clients_count = state["clients_count"] + client_delta + client_noise
         clients_count = min(35, max(0, clients_count))
 
-    ac_mode = calculate_ac_mode(temperature, clients_count)
+    ac_mode = calculate_ac_mode(
+        temperature,
+        clients_count,
+        is_open=is_agency_open_for_time(now),
+    )
     energy_usage = calculate_energy_usage(
         temperature=temperature,
         clients_count=clients_count,

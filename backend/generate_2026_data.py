@@ -16,6 +16,7 @@ from simulator import (
     calculate_energy_usage,
     get_clients_for_time,
     get_seasonal_temperature,
+    is_agency_open_for_time,
 )
 
 
@@ -54,7 +55,11 @@ def main():
 
             temperature = get_seasonal_temperature(naive_current, profile)
             clients_count = get_clients_for_time(naive_current, profile)
-            ac_mode = calculate_ac_mode(temperature, clients_count)
+            ac_mode = calculate_ac_mode(
+                temperature,
+                clients_count,
+                is_open=is_agency_open_for_time(naive_current),
+            )
             energy_usage = calculate_energy_usage(
                 temperature=temperature,
                 clients_count=clients_count,

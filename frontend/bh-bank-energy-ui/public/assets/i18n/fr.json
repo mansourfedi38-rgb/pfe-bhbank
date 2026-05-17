@@ -83,6 +83,20 @@
     "monthlyEnergyByAgency": "Consommation mensuelle par agence",
     "loadingChart": "Chargement du graphique...",
     "noMonthlyData": "Aucune donnée mensuelle disponible.",
+    "alerts": {
+      "high_temperature": {
+        "type": "Température élevée",
+        "message": "{{agency}} a enregistré {{temperature}}, au-dessus du seuil de confort de 30 °C."
+      },
+      "high_energy_usage": {
+        "type": "Forte consommation d'énergie",
+        "message": "{{agency}} a consommé {{energy}}, au-dessus du seuil d'alerte de {{threshold}}."
+      },
+      "after_hours_energy_waste": {
+        "type": "Consommation hors horaires",
+        "message": "{{agency}} a utilisé {{energy}} en dehors des heures ouvrables."
+      }
+    },
     "status": {
       "loadingMonthly": "Chargement des KPI mensuels...",
       "loadedMonthly": "{{count}} lignes KPI mensuelles chargées.",
@@ -136,7 +150,7 @@
     "title": "Surveillance des capteurs",
     "subtitle": "Suivez la température, le nombre de clients et le mode de climatisation dans les agences BH Bank.",
     "temperatureSensor": "Température",
-    "clientsCount": "Nombre de clients",
+    "clientsCount": "Nombre total de clients",
     "activeAC": "Climatisations actives",
     "systemStatus": "État du système",
     "systemOnline": "En ligne",
@@ -155,13 +169,20 @@
     "refreshNow": "Actualiser",
     "latestReadings": "Dernières lectures des capteurs",
     "tableSubtitle": "Affichage des 20 dernières lectures correspondantes. La fréquence suit les paramètres.",
+    "displayFrequency": "Fréquence d'affichage",
+    "frequency": {
+      "hour": "Par heure",
+      "day": "Par jour",
+      "week": "Par semaine",
+      "month": "Par mois"
+    },
     "temperature": "Température",
     "clients": "Clients",
     "energyUsage": "Consommation énergétique",
     "timestamp": "Horodatage",
     "metrics": {
       "clients": "{{count}} clients",
-      "activeAc": "{{active}}/{{total}} climatisations actives"
+      "activeAc": "{{active}}h/{{total}}h climatisations actives"
     },
     "status": {
       "loading": "Chargement des capteurs depuis le backend...",
@@ -181,13 +202,21 @@
     "title": "Vue de la consommation énergétique",
     "subtitle": "Surveillez la consommation et l’optimisation énergétique dans les agences BH Bank.",
     "thisMonth": "Ce mois-ci",
-    "last3Months": "3 derniers mois",
+    "oneMonth": "Un mois",
+    "last3Months": "3 mois",
     "fullYear": "Année complète",
     "totalEnergy": "Énergie totale",
     "averageEnergyPerMonth": "Énergie moyenne / mois",
+    "averageEnergyPerDay": "Énergie moyenne / jour",
+    "averageEnergyPerWeek": "Énergie moyenne / semaine",
     "peakMonth": "Mois de pointe",
+    "peakDay": "Jour de pointe",
+    "selectedPeriod": "Période sélectionnée",
+    "selectedYear": "Année sélectionnée",
     "peakAgency": "Agence de pointe",
     "energyTrendByMonth": "Tendance énergétique par mois",
+    "energyTrendByDay": "Tendance énergétique par jour",
+    "energyTrendByWeek": "Tendance énergétique par semaine",
     "agencyComparison": "Comparaison des agences",
     "agency": "Agence",
     "status": {

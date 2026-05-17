@@ -91,10 +91,10 @@
             [class.critical]="alert.severity === 'critical'"
             [class.warning]="alert.severity === 'warning'">
             <div class="alert-main">
-              <span class="alert-type">{{ alert.type }}</span>
+              <span class="alert-type">{{ formatAlertType(alert) }}</span>
               <span class="alert-agency">{{ alert.agency_name }}</span>
             </div>
-            <p>{{ formatAlertMessage(alert.message) }}</p>
+            <p>{{ formatAlertMessage(alert) }}</p>
             <time>{{ formatAlertTimestamp(alert.timestamp) }}</time>
           </div>
         </div>

@@ -83,6 +83,20 @@
     "monthlyEnergyByAgency": "Monthly Energy Usage by Agency",
     "loadingChart": "Loading chart...",
     "noMonthlyData": "No monthly data available.",
+    "alerts": {
+      "high_temperature": {
+        "type": "High temperature",
+        "message": "{{agency}} recorded {{temperature}}, above the 30°C comfort threshold."
+      },
+      "high_energy_usage": {
+        "type": "High energy usage",
+        "message": "{{agency}} consumed {{energy}}, above the {{threshold}} alert threshold."
+      },
+      "after_hours_energy_waste": {
+        "type": "After-hours energy waste",
+        "message": "{{agency}} used {{energy}} outside business hours."
+      }
+    },
     "status": {
       "loadingMonthly": "Loading monthly KPI...",
       "loadedMonthly": "Loaded {{count}} monthly KPI rows.",
@@ -136,7 +150,7 @@
     "title": "Sensors Monitoring",
     "subtitle": "Track temperature, clients count, and AC mode across BH Bank agencies.",
     "temperatureSensor": "Temperature",
-    "clientsCount": "Clients Count",
+    "clientsCount": "Total Clients",
     "activeAC": "Active AC Units",
     "systemStatus": "System Status",
     "systemOnline": "Online",
@@ -155,13 +169,20 @@
     "refreshNow": "Refresh now",
     "latestReadings": "Latest Sensor Readings",
     "tableSubtitle": "Showing the latest 20 matching readings. Refresh timing follows Settings.",
+    "displayFrequency": "Display frequency",
+    "frequency": {
+      "hour": "Per hour",
+      "day": "Per day",
+      "week": "Per week",
+      "month": "Per month"
+    },
     "temperature": "Temperature",
     "clients": "Clients",
     "energyUsage": "Energy Usage",
     "timestamp": "Timestamp",
     "metrics": {
       "clients": "{{count}} clients",
-      "activeAc": "{{active}}/{{total}} active AC"
+      "activeAc": "{{active}}h/{{total}}h active AC"
     },
     "status": {
       "loading": "Loading sensors from backend...",
@@ -181,13 +202,21 @@
     "title": "Energy Usage Overview",
     "subtitle": "Monitor energy consumption and optimization across BH Bank agencies.",
     "thisMonth": "This Month",
-    "last3Months": "Last 3 Months",
+    "oneMonth": "One month",
+    "last3Months": "3 months",
     "fullYear": "Full Year",
     "totalEnergy": "Total Energy",
     "averageEnergyPerMonth": "Average Energy / Month",
+    "averageEnergyPerDay": "Average Energy / Day",
+    "averageEnergyPerWeek": "Average Energy / Week",
     "peakMonth": "Peak Month",
+    "peakDay": "Peak Day",
+    "selectedPeriod": "Selected Period",
+    "selectedYear": "Selected Year",
     "peakAgency": "Peak Agency",
     "energyTrendByMonth": "Energy Trend by Month",
+    "energyTrendByDay": "Energy Trend by Day",
+    "energyTrendByWeek": "Energy Trend by Week",
     "agencyComparison": "Agency Comparison",
     "agency": "Agency",
     "status": {

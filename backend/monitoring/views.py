@@ -605,27 +605,34 @@ def _build_alerts_for_reading(reading, energy_threshold=4):
         alerts.append({
             'agency_name': reading.agency.name,
             'type': 'High temperature',
+            'alert_key': 'high_temperature',
             'severity': 'critical',
             'message': f'{reading.agency.name} recorded {temperature:.1f}°C, above the 30°C comfort threshold.',
             'timestamp': reading.timestamp,
+            'temperature': round(temperature, 1),
         })
 
     if energy_usage > energy_threshold:
         alerts.append({
             'agency_name': reading.agency.name,
             'type': 'High energy usage',
+            'alert_key': 'high_energy_usage',
             'severity': 'critical',
             'message': f'{reading.agency.name} consumed {energy_usage:.2f} kWh, above the {energy_threshold:.2f} kWh alert threshold.',
             'timestamp': reading.timestamp,
+            'energy_usage': round(energy_usage, 2),
+            'energy_threshold': round(energy_threshold, 2),
         })
 
     if energy_usage > 1 and _is_outside_business_hours(reading.timestamp):
         alerts.append({
             'agency_name': reading.agency.name,
             'type': 'After-hours energy waste',
+            'alert_key': 'after_hours_energy_waste',
             'severity': 'warning',
             'message': f'{reading.agency.name} used {energy_usage:.2f} kWh outside business hours.',
             'timestamp': reading.timestamp,
+            'energy_usage': round(energy_usage, 2),
         })
 
     return alerts

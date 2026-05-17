@@ -48,9 +48,13 @@ export interface SensorData {
 export interface RecentAlert {
   agency_name: string;
   type: 'High temperature' | 'High energy usage' | 'After-hours energy waste';
+  alert_key?: 'high_temperature' | 'high_energy_usage' | 'after_hours_energy_waste';
   severity: 'critical' | 'warning';
   message: string;
   timestamp: string;
+  temperature?: number;
+  energy_usage?: number;
+  energy_threshold?: number;
 }
 
 export interface DailyEnergyKpi {

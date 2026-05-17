@@ -104,6 +104,18 @@
         <h3>{{ 'sensors.latestReadings' | translate }}</h3>
         <p class="table-subtitle">{{ 'sensors.tableSubtitle' | translate }}</p>
 
+        <div class="table-controls">
+          <div class="filter-field">
+            <label for="table-frequency">{{ 'sensors.displayFrequency' | translate }}</label>
+            <select id="table-frequency" [(ngModel)]="selectedTableFrequency" (change)="onTableFrequencyChange()">
+              <option value="hour">{{ 'sensors.frequency.hour' | translate }}</option>
+              <option value="day">{{ 'sensors.frequency.day' | translate }}</option>
+              <option value="week">{{ 'sensors.frequency.week' | translate }}</option>
+              <option value="month">{{ 'sensors.frequency.month' | translate }}</option>
+            </select>
+          </div>
+        </div>
+
         <div *ngIf="sensorRows.length === 0" class="table-empty">
           <p>{{ 'common.noData' | translate }}</p>
         </div>
@@ -131,7 +143,7 @@
                     {{ row.ac_mode }}
                   </span>
                 </td>
-                <td>{{ formatTimestamp(row.timestamp) }}</td>
+                <td>{{ formatTableTimestamp(row) }}</td>
               </tr>
             </tbody>
           </table>

@@ -430,6 +430,16 @@
   margin-bottom: 16px;
 }
 
+.table-controls {
+  display: flex;
+  justify-content: flex-end;
+  margin: 8px 0 12px;
+}
+
+.table-controls .filter-field {
+  width: min(220px, 100%);
+}
+
 .table-empty {
   display: flex;
   align-items: center;
