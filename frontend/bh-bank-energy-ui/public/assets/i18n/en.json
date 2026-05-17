@@ -210,6 +210,7 @@
     "averageEnergyPerDay": "Average Energy / Day",
     "averageEnergyPerWeek": "Average Energy / Week",
     "peakMonth": "Peak Month",
+    "selectedMonth": "Selected month",
     "peakDay": "Peak Day",
     "selectedPeriod": "Selected Period",
     "selectedYear": "Selected Year",

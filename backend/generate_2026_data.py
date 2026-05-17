@@ -21,6 +21,7 @@ from simulator import (
 
 
 YEAR = 2026
+REPLACE_EXISTING = True
 
 
 def main():
@@ -34,13 +35,16 @@ def main():
         agency.id: agency
         for agency in Agency.objects.filter(id__in=AGENCIES.keys())
     }
-    existing = set(
-        SensorData.objects.filter(
-            agency_id__in=AGENCIES.keys(),
-            timestamp__gte=start,
-            timestamp__lt=end,
-        ).values_list("agency_id", "timestamp")
+    year_queryset = SensorData.objects.filter(
+        agency_id__in=AGENCIES.keys(),
+        timestamp__gte=start,
+        timestamp__lt=end,
     )
+    deleted_count = 0
+    if REPLACE_EXISTING:
+        deleted_count, _ = year_queryset.delete()
+
+    existing = set(year_queryset.values_list("agency_id", "timestamp"))
 
     rows = []
     current = start
@@ -65,6 +69,7 @@ def main():
                 clients_count=clients_count,
                 ac_mode=ac_mode,
                 load_factor=profile["load_factor"],
+                reading_month=naive_current.month,
             )
 
             rows.append(
@@ -82,6 +87,7 @@ def main():
 
     SensorData.objects.bulk_create(rows, batch_size=1000, ignore_conflicts=True)
 
+    print(f"deleted={deleted_count}")
     print(f"created={len(rows)}")
     print(f"total_{YEAR}={SensorData.objects.filter(timestamp__year=YEAR).count()}")
 

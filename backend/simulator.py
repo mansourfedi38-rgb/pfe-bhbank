@@ -245,7 +245,11 @@ def get_ai_clients_for_time(current_time, agency_id, agency_profile):
 
 
 def calculate_ac_mode(temperature, clients_count, is_open=True):
-    """Choose AC mode from temperature and occupancy."""
+    """Choose HVAC mode from temperature and occupancy."""
+    if is_open and temperature <= 16:
+        return "ON"
+    if is_open and temperature <= 19:
+        return "ECO"
     if is_open and temperature >= 30:
         return "ON"
     if is_open and temperature >= 26:
@@ -259,11 +263,12 @@ def calculate_ac_mode(temperature, clients_count, is_open=True):
     return "OFF"
 
 
-def calculate_energy_usage(temperature, clients_count, ac_mode, load_factor):
+def calculate_energy_usage(temperature, clients_count, ac_mode, load_factor, reading_month=None):
     """Estimate kWh per reading from realistic drivers.
 
     Closed agencies still consume a small baseline for lighting, network,
-    standby devices, and refrigeration/security systems.
+    standby devices, and refrigeration/security systems. Cold months add
+    heating demand, so November, December, January, and February are higher.
     """
     ac_base_consumption = {
         "OFF": 0.18 if clients_count == 0 else 0.45,
@@ -274,14 +279,20 @@ def calculate_energy_usage(temperature, clients_count, ac_mode, load_factor):
     base = ac_base_consumption[ac_mode]
     client_impact = clients_count * 0.035
     heat_impact = max(0, temperature - 24) * 0.13
+    cold_impact = max(0, 19 - temperature) * 0.22
     summer_impact = 0.20 if temperature >= 30 else 0
+    winter_month_impact = 0.65 if reading_month in (11, 12, 1, 2) else 0
+    winter_temperature_impact = 0.35 if temperature <= 18 else 0
     noise = random.uniform(-0.06, 0.06)
 
     energy_usage = (
         base
         + client_impact
         + heat_impact
+        + cold_impact
         + summer_impact
+        + winter_month_impact
+        + winter_temperature_impact
     ) * load_factor + noise
 
     return round(min(5.0, max(0.1, energy_usage)), 3)
@@ -305,6 +316,7 @@ def build_historical_payload(agency_id, current_time):
         clients_count=clients_count,
         ac_mode=ac_mode,
         load_factor=agency_profile["load_factor"],
+        reading_month=current_time.month,
     )
 
     return {
@@ -364,6 +376,7 @@ def update_live_agency_state(agency_id, state):
         clients_count=clients_count,
         ac_mode=ac_mode,
         load_factor=agency_profile["load_factor"],
+        reading_month=now.month,
     )
 
     state.update(

@@ -9,9 +9,10 @@ import { ApiService, DailyEnergyKpi, MonthlyEnergyKpi } from '../../services/api
 
 type EnergyRange = 'month' | 'quarter' | 'year';
 type TrendPoint = { label: string; total: number };
+type AgencyTrendPanel = { agency: string; labels: string[]; data: number[]; color: string; backgroundColor: string };
 
-const ONE_MONTH_VALUE = '2026-04';
-const THREE_MONTH_VALUES = ['2026-01', '2026-02', '2026-03'];
+const ONE_MONTH_VALUE = '2025-04';
+const THREE_MONTH_VALUES = ['2025-04', '2025-05', '2025-06'];
 const FULL_YEAR_VALUE = '2025';
 
 @Component({
@@ -31,6 +32,7 @@ export class EnergyUsageComponent implements OnInit {
   filteredRows: MonthlyEnergyKpi[] = [];
   monthTotals: { month: string; total: number }[] = [];
   trendPoints: TrendPoint[] = [];
+  agencyTrendPanels: AgencyTrendPanel[] = [];
   agencyTotals: { agency: string; total: number }[] = [];
 
   cards = {
@@ -42,7 +44,7 @@ export class EnergyUsageComponent implements OnInit {
     peakAgency: ''
   };
 
-  private trendChart: Chart | null = null;
+  private trendCharts: Chart[] = [];
 
   constructor(
     private api: ApiService,
@@ -118,6 +120,7 @@ export class EnergyUsageComponent implements OnInit {
       : this.selectedRange === 'quarter'
         ? this.buildWeeklyTrend()
       : this.monthTotals.map((row) => ({ label: row.month, total: row.total }));
+    this.buildAgencyTrendPanels();
 
     this.cards.totalEnergy = `${totalEnergy.toFixed(2)} kWh`;
     this.cards.averageEnergyPerMonth = this.selectedRange === 'month'
@@ -141,46 +144,55 @@ export class EnergyUsageComponent implements OnInit {
 
   private createTrendChart(): void {
     setTimeout(() => {
-      if (this.trendChart) {
-        this.trendChart.destroy();
-      }
+      this.trendCharts.forEach((chart) => chart.destroy());
+      this.trendCharts = [];
 
-      const ctx = document.getElementById('energyTrendChart') as HTMLCanvasElement;
-      if (!ctx || this.trendPoints.length === 0) return;
+      this.agencyTrendPanels.forEach((panel, index) => {
+        const ctx = document.getElementById(`energyTrendChart-${index}`) as HTMLCanvasElement;
+        if (!ctx) return;
 
-      this.trendChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: this.trendPoints.map((row) => row.label),
-          datasets: [{
-            label: `${this.trendChartTitle()} (kWh)`,
-            data: this.trendPoints.map((row) => row.total),
-            borderColor: 'rgba(8, 38, 77, 1)',
-            backgroundColor: 'rgba(8, 38, 77, 0.12)',
-            fill: true,
-            tension: 0.35
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            y: {
-              beginAtZero: true,
-              ticks: { color: this.chartTextColor() },
-              grid: { color: this.chartGridColor() },
-              title: {
-                display: true,
-                text: this.translate.instant('energyUsage.totalEnergy') + ' (kWh)',
-                color: this.chartTextColor()
+        this.trendCharts.push(new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: panel.labels,
+            datasets: [{
+              label: `${panel.agency} (kWh)`,
+              data: panel.data,
+              borderColor: panel.color,
+              backgroundColor: panel.backgroundColor,
+              fill: true,
+              tension: 0.35,
+              pointRadius: this.selectedRange === 'year' ? 4 : 2,
+              pointHoverRadius: 5,
+              borderWidth: 3
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: false
               }
             },
-            x: {
-              ticks: { color: this.chartTextColor() },
-              grid: { color: this.chartGridColor() }
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: { color: this.chartTextColor() },
+                grid: { color: this.chartGridColor() },
+                title: {
+                  display: true,
+                  text: this.translate.instant('energyUsage.totalEnergy') + ' (kWh)',
+                  color: this.chartTextColor()
+                }
+              },
+              x: {
+                ticks: { color: this.chartTextColor() },
+                grid: { color: this.chartGridColor() }
+              }
             }
           }
-        }
+        }));
       });
     }, 100);
   }
@@ -228,11 +240,18 @@ export class EnergyUsageComponent implements OnInit {
 
   private buildWeeklyTrend(): TrendPoint[] {
     const weekMap = new Map<string, { start: Date; total: number }>();
+    const selectedStart = this.monthStart(THREE_MONTH_VALUES[0]);
+    const selectedEnd = this.monthEnd(THREE_MONTH_VALUES[THREE_MONTH_VALUES.length - 1]);
 
     this.dailyRows
       .filter((row) => THREE_MONTH_VALUES.some((month) => row.date.startsWith(month)))
       .forEach((row) => {
         const start = this.weekStart(row.date);
+        const end = new Date(start);
+        end.setUTCDate(start.getUTCDate() + 6);
+        if (start < selectedStart || end > selectedEnd) {
+          return;
+        }
         const key = start.toISOString().slice(0, 10);
         const current = weekMap.get(key) || { start, total: 0 };
         current.total += Number(row.total_energy);
@@ -247,6 +266,80 @@ export class EnergyUsageComponent implements OnInit {
       }));
   }
 
+  private buildAgencyTrendPanels(): void {
+    const trendLabels = this.trendPoints.map((row) => row.label);
+    const agencies = Array.from(new Set(this.filteredRows.map((row) => row.agency_name))).sort();
+    const labelIndex = new Map(trendLabels.map((label, index) => [label, index]));
+
+    this.agencyTrendPanels = agencies.map((agency, index) => {
+      const color = this.chartPalette(index);
+      return {
+        agency,
+        labels: trendLabels,
+        data: new Array(trendLabels.length).fill(0),
+        color: color.border,
+        backgroundColor: color.background
+      };
+    });
+
+    const panelByAgency = new Map(this.agencyTrendPanels.map((panel) => [panel.agency, panel]));
+
+    if (this.selectedRange === 'month') {
+      this.dailyRows
+        .filter((row) => row.date.startsWith(ONE_MONTH_VALUE))
+        .forEach((row) => {
+          const panel = panelByAgency.get(row.agency_name);
+          const index = labelIndex.get(this.formatDay(row.date));
+          if (panel && index !== undefined) {
+            panel.data[index] += Number(row.total_energy);
+          }
+        });
+      return;
+    }
+
+    if (this.selectedRange === 'quarter') {
+      const selectedStart = this.monthStart(THREE_MONTH_VALUES[0]);
+      const selectedEnd = this.monthEnd(THREE_MONTH_VALUES[THREE_MONTH_VALUES.length - 1]);
+
+      this.dailyRows
+        .filter((row) => THREE_MONTH_VALUES.some((month) => row.date.startsWith(month)))
+        .forEach((row) => {
+          const start = this.weekStart(row.date);
+          const end = new Date(start);
+          end.setUTCDate(start.getUTCDate() + 6);
+          if (start < selectedStart || end > selectedEnd) {
+            return;
+          }
+          const panel = panelByAgency.get(row.agency_name);
+          const index = labelIndex.get(this.weekLabel(start));
+          if (panel && index !== undefined) {
+            panel.data[index] += Number(row.total_energy);
+          }
+        });
+      return;
+    }
+
+    this.filteredRows.forEach((row) => {
+      const panel = panelByAgency.get(row.agency_name);
+      const index = labelIndex.get(row.month);
+      if (panel && index !== undefined) {
+        panel.data[index] += Number(row.total_energy);
+      }
+    });
+  }
+
+  private chartPalette(index: number): { border: string; background: string } {
+    const colors = [
+      ['rgba(8, 38, 77, 1)', 'rgba(8, 38, 77, 0.12)'],
+      ['rgba(227, 6, 19, 1)', 'rgba(227, 6, 19, 0.12)'],
+      ['rgba(14, 116, 144, 1)', 'rgba(14, 116, 144, 0.12)'],
+      ['rgba(180, 83, 9, 1)', 'rgba(180, 83, 9, 0.12)'],
+      ['rgba(22, 101, 52, 1)', 'rgba(22, 101, 52, 0.12)']
+    ];
+    const [border, background] = colors[index % colors.length];
+    return { border, background };
+  }
+
   private peakDayLabel(): string {
     const peakDay = [...this.trendPoints].sort((a, b) => b.total - a.total)[0];
     return peakDay?.label ?? this.notAvailable();
@@ -257,7 +350,7 @@ export class EnergyUsageComponent implements OnInit {
       return this.formatMonth(ONE_MONTH_VALUE);
     }
     if (this.selectedRange === 'quarter') {
-      return `${this.formatMonth(THREE_MONTH_VALUES[0])} - ${this.formatMonth(THREE_MONTH_VALUES[2])}`;
+      return THREE_MONTH_VALUES.map((month) => this.formatMonth(month)).join(' / ');
     }
     return FULL_YEAR_VALUE;
   }
@@ -265,6 +358,16 @@ export class EnergyUsageComponent implements OnInit {
   private daysInMonth(month: string): number {
     const [year, monthNumber] = month.split('-').map(Number);
     return new Date(year, monthNumber, 0).getDate();
+  }
+
+  private monthStart(month: string): Date {
+    const [year, monthNumber] = month.split('-').map(Number);
+    return new Date(Date.UTC(year, monthNumber - 1, 1));
+  }
+
+  private monthEnd(month: string): Date {
+    const [year, monthNumber] = month.split('-').map(Number);
+    return new Date(Date.UTC(year, monthNumber, 0));
   }
 
   private formatMonth(month: string): string {

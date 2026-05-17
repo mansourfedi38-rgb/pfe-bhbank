@@ -42,7 +42,7 @@
 
       <div *ngIf="!isLoading" class="card">
         <div class="card-top red-line"></div>
-        <h3>{{ 'energyUsage.peakMonth' | translate }}</h3>
+        <h3>{{ (selectedRange === 'month' ? 'energyUsage.selectedMonth' : 'energyUsage.peakMonth') | translate }}</h3>
         <p>{{ cards.peakMonth }}</p>
       </div>
 
@@ -74,8 +74,13 @@
     <section class="summary-grid" *ngIf="!isLoading && !hasError">
       <div class="summary-panel">
         <h3>{{ trendChartTitle() }}</h3>
-        <div class="chart-wrapper">
-          <canvas id="energyTrendChart"></canvas>
+        <div class="agency-chart-list">
+          <div class="agency-chart" *ngFor="let panel of agencyTrendPanels; let i = index">
+            <h4>{{ panel.agency }}</h4>
+            <div class="chart-wrapper">
+              <canvas [id]="'energyTrendChart-' + i"></canvas>
+            </div>
+          </div>
         </div>
       </div>
 
