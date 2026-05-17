@@ -21,6 +21,7 @@ from simulator import (
 
 
 YEAR = 2026
+END_MONTH = 4
 REPLACE_EXISTING = True
 
 
@@ -28,23 +29,29 @@ def main():
     random.seed(YEAR)
 
     start = datetime(YEAR, 1, 1, tzinfo=timezone.utc)
-    end = datetime(YEAR + 1, 1, 1, tzinfo=timezone.utc)
+    end = datetime(YEAR, END_MONTH + 1, 1, tzinfo=timezone.utc)
+    full_year_end = datetime(YEAR + 1, 1, 1, tzinfo=timezone.utc)
     step = timedelta(hours=1)
 
     agencies = {
         agency.id: agency
         for agency in Agency.objects.filter(id__in=AGENCIES.keys())
     }
-    year_queryset = SensorData.objects.filter(
+    target_queryset = SensorData.objects.filter(
         agency_id__in=AGENCIES.keys(),
         timestamp__gte=start,
         timestamp__lt=end,
+    )
+    year_queryset = SensorData.objects.filter(
+        agency_id__in=AGENCIES.keys(),
+        timestamp__gte=start,
+        timestamp__lt=full_year_end,
     )
     deleted_count = 0
     if REPLACE_EXISTING:
         deleted_count, _ = year_queryset.delete()
 
-    existing = set(year_queryset.values_list("agency_id", "timestamp"))
+    existing = set(target_queryset.values_list("agency_id", "timestamp"))
 
     rows = []
     current = start
@@ -63,6 +70,8 @@ def main():
                 temperature,
                 clients_count,
                 is_open=is_agency_open_for_time(naive_current),
+                reading_month=naive_current.month,
+                reading_year=naive_current.year,
             )
             energy_usage = calculate_energy_usage(
                 temperature=temperature,
@@ -70,6 +79,7 @@ def main():
                 ac_mode=ac_mode,
                 load_factor=profile["load_factor"],
                 reading_month=naive_current.month,
+                reading_year=naive_current.year,
             )
 
             rows.append(

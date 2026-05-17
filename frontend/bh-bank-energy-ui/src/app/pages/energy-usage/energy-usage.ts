@@ -11,8 +11,8 @@ type EnergyRange = 'month' | 'quarter' | 'year';
 type TrendPoint = { label: string; total: number };
 type AgencyTrendPanel = { agency: string; labels: string[]; data: number[]; color: string; backgroundColor: string };
 
-const ONE_MONTH_VALUE = '2025-04';
-const THREE_MONTH_VALUES = ['2025-04', '2025-05', '2025-06'];
+const ONE_MONTH_FALLBACK_VALUE = '2025-07';
+const THREE_MONTH_VALUES = ['2025-06', '2025-07', '2025-08'];
 const FULL_YEAR_VALUE = '2025';
 
 @Component({
@@ -81,7 +81,7 @@ export class EnergyUsageComponent implements OnInit {
     const months = Array.from(new Set(this.monthlyRows.map((row) => row.month))).sort();
     const selectedMonths =
       range === 'month'
-        ? [ONE_MONTH_VALUE]
+        ? [this.oneMonthValue()]
         : range === 'quarter'
           ? THREE_MONTH_VALUES
           : months.filter((month) => month.startsWith(FULL_YEAR_VALUE));
@@ -124,12 +124,12 @@ export class EnergyUsageComponent implements OnInit {
 
     this.cards.totalEnergy = `${totalEnergy.toFixed(2)} kWh`;
     this.cards.averageEnergyPerMonth = this.selectedRange === 'month'
-      ? `${(totalEnergy / this.daysInMonth(ONE_MONTH_VALUE)).toFixed(2)} kWh`
+      ? `${(totalEnergy / this.daysInMonth(this.oneMonthValue())).toFixed(2)} kWh`
       : this.selectedRange === 'quarter'
         ? `${(totalEnergy / Math.max(this.trendPoints.length, 1)).toFixed(2)} kWh`
       : `${(totalEnergy / this.monthTotals.length).toFixed(2)} kWh`;
     this.cards.peakMonth = this.selectedRange === 'month'
-      ? this.formatMonth(ONE_MONTH_VALUE)
+      ? this.formatMonth(this.oneMonthValue())
       : (peakMonth?.month ?? this.notAvailable());
     this.cards.peakDay = this.selectedRange === 'month'
       ? this.peakDayLabel()
@@ -228,7 +228,7 @@ export class EnergyUsageComponent implements OnInit {
     const dayMap = new Map<string, number>();
 
     this.dailyRows
-      .filter((row) => row.date.startsWith(ONE_MONTH_VALUE))
+      .filter((row) => row.date.startsWith(this.oneMonthValue()))
       .forEach((row) => {
         dayMap.set(row.date, (dayMap.get(row.date) || 0) + Number(row.total_energy));
       });
@@ -286,7 +286,7 @@ export class EnergyUsageComponent implements OnInit {
 
     if (this.selectedRange === 'month') {
       this.dailyRows
-        .filter((row) => row.date.startsWith(ONE_MONTH_VALUE))
+        .filter((row) => row.date.startsWith(this.oneMonthValue()))
         .forEach((row) => {
           const panel = panelByAgency.get(row.agency_name);
           const index = labelIndex.get(this.formatDay(row.date));
@@ -347,12 +347,25 @@ export class EnergyUsageComponent implements OnInit {
 
   private selectedPeriodLabel(): string {
     if (this.selectedRange === 'month') {
-      return this.formatMonth(ONE_MONTH_VALUE);
+      return this.formatMonth(this.oneMonthValue());
     }
     if (this.selectedRange === 'quarter') {
       return THREE_MONTH_VALUES.map((month) => this.formatMonth(month)).join(' / ');
     }
     return FULL_YEAR_VALUE;
+  }
+
+  private oneMonthValue(): string {
+    const totalsByMonth = new Map<string, number>();
+
+    this.monthlyRows
+      .filter((row) => row.month.startsWith(FULL_YEAR_VALUE))
+      .forEach((row) => {
+        totalsByMonth.set(row.month, (totalsByMonth.get(row.month) || 0) + Number(row.total_energy));
+      });
+
+    return Array.from(totalsByMonth.entries())
+      .sort((a, b) => b[1] - a[1])[0]?.[0] || ONE_MONTH_FALLBACK_VALUE;
   }
 
   private daysInMonth(month: string): number {

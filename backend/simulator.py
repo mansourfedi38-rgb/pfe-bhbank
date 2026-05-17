@@ -60,8 +60,17 @@ MONTHLY_TEMPERATURE_RANGES = {
     12: (15, 19),
 }
 
+HEATING_MONTHS = {1, 2, 11, 12}
+HEATING_YEARS = {2025, 2026}
+
 ACCESS_TOKEN = None
 REFRESH_TOKEN = None
+
+
+def is_heating_month(reading_month=None, reading_year=None):
+    if reading_month not in HEATING_MONTHS:
+        return False
+    return reading_year is None or reading_year in HEATING_YEARS
 
 
 def login():
@@ -244,12 +253,21 @@ def get_ai_clients_for_time(current_time, agency_id, agency_profile):
     return occupancy["clients_count"], occupancy
 
 
-def calculate_ac_mode(temperature, clients_count, is_open=True):
+def calculate_ac_mode(temperature, clients_count, is_open=True, reading_month=None, reading_year=None):
     """Choose HVAC mode from temperature and occupancy."""
-    if is_open and temperature <= 16:
-        return "ON"
-    if is_open and temperature <= 19:
-        return "ECO"
+    heating_active = is_heating_month(reading_month, reading_year)
+
+    if is_open and heating_active:
+        if temperature <= 18:
+            return "ON"
+        if temperature <= 23:
+            return "ECO"
+    elif is_open and reading_month is None:
+        if temperature <= 17:
+            return "ON"
+        if temperature <= 21:
+            return "ECO"
+
     if is_open and temperature >= 30:
         return "ON"
     if is_open and temperature >= 26:
@@ -263,7 +281,14 @@ def calculate_ac_mode(temperature, clients_count, is_open=True):
     return "OFF"
 
 
-def calculate_energy_usage(temperature, clients_count, ac_mode, load_factor, reading_month=None):
+def calculate_energy_usage(
+    temperature,
+    clients_count,
+    ac_mode,
+    load_factor,
+    reading_month=None,
+    reading_year=None,
+):
     """Estimate kWh per reading from realistic drivers.
 
     Closed agencies still consume a small baseline for lighting, network,
@@ -279,17 +304,19 @@ def calculate_energy_usage(temperature, clients_count, ac_mode, load_factor, rea
     base = ac_base_consumption[ac_mode]
     client_impact = clients_count * 0.035
     heat_impact = max(0, temperature - 24) * 0.13
-    cold_impact = max(0, 19 - temperature) * 0.22
+    heating_active = is_heating_month(reading_month, reading_year)
+    hvac_active = ac_mode != "OFF"
+    heating_impact = max(0, 22 - temperature) * 0.35 if heating_active and hvac_active else 0
     summer_impact = 0.20 if temperature >= 30 else 0
-    winter_month_impact = 0.65 if reading_month in (11, 12, 1, 2) else 0
-    winter_temperature_impact = 0.35 if temperature <= 18 else 0
+    winter_month_impact = 0.95 if heating_active and ac_mode == "ON" else 0.55 if heating_active and ac_mode == "ECO" else 0
+    winter_temperature_impact = 0.55 if heating_active and hvac_active and temperature <= 18 else 0
     noise = random.uniform(-0.06, 0.06)
 
     energy_usage = (
         base
         + client_impact
         + heat_impact
-        + cold_impact
+        + heating_impact
         + summer_impact
         + winter_month_impact
         + winter_temperature_impact
@@ -310,6 +337,8 @@ def build_historical_payload(agency_id, current_time):
         temperature,
         clients_count,
         is_open=is_agency_open_for_time(current_time),
+        reading_month=current_time.month,
+        reading_year=current_time.year,
     )
     energy_usage = calculate_energy_usage(
         temperature=temperature,
@@ -317,6 +346,7 @@ def build_historical_payload(agency_id, current_time):
         ac_mode=ac_mode,
         load_factor=agency_profile["load_factor"],
         reading_month=current_time.month,
+        reading_year=current_time.year,
     )
 
     return {
@@ -370,6 +400,8 @@ def update_live_agency_state(agency_id, state):
         temperature,
         clients_count,
         is_open=is_agency_open_for_time(now),
+        reading_month=now.month,
+        reading_year=now.year,
     )
     energy_usage = calculate_energy_usage(
         temperature=temperature,
@@ -377,6 +409,7 @@ def update_live_agency_state(agency_id, state):
         ac_mode=ac_mode,
         load_factor=agency_profile["load_factor"],
         reading_month=now.month,
+        reading_year=now.year,
     )
 
     state.update(
