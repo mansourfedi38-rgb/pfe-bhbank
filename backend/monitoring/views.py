@@ -215,6 +215,7 @@ def _run_daily_ai_occupancy_analysis(agency, selected_day):
     )
     average_clients = _average(row['total_clients'] for row in rows)
     average_employees = _average(row['employees_count'] for row in rows)
+    total_employees = max((row['employees_count'] for row in rows), default=0)
     zone_summary = _build_zone_summary(rows)
     peak_clients = peak_row['total_clients'] if peak_row else 0
     peak_timestamp = peak_row['timestamp'] if peak_row else None
@@ -224,9 +225,11 @@ def _run_daily_ai_occupancy_analysis(agency, selected_day):
         'agency_name': agency.name,
         'day': selected_day.strftime('%Y-%m-%d'),
         'total_images': len(rows),
+        'total_clients': sum(row['total_clients'] for row in rows),
         'average_clients': average_clients,
         'peak_clients': peak_clients,
         'peak_timestamp': peak_timestamp,
+        'total_employees': total_employees,
         'average_employees': average_employees,
         'zone_summary': zone_summary,
         'recommendations': _build_daily_ai_recommendations(
@@ -256,6 +259,7 @@ def _run_monthly_ai_occupancy_analysis(agency, month_start):
     total_images = len(rows)
     zone_summary = _build_zone_summary(rows)
     crowded_hours = _build_crowded_hours(rows)
+    total_employees = max((row['employees_count'] for row in rows), default=0)
 
     return {
         'agency': agency.id,
@@ -263,9 +267,11 @@ def _run_monthly_ai_occupancy_analysis(agency, month_start):
         'month': month_start.strftime('%Y-%m'),
         'business_days': len(business_days),
         'total_images_analyzed': total_images,
+        'total_clients': sum(row['total_clients'] for row in rows),
         'average_clients': _average(row['total_clients'] for row in rows),
         'peak_clients': peak_row['total_clients'] if peak_row else 0,
         'peak_timestamp': peak_row['timestamp'] if peak_row else None,
+        'total_employees': total_employees,
         'average_employees': _average(row['employees_count'] for row in rows),
         'zone_summary': zone_summary,
         'crowded_hours': crowded_hours,
@@ -279,7 +285,6 @@ def _analyze_ai_occupancy_for_timestamps(agency, timestamps):
     from ai_vision.detect_agency_occupancy import detect_agency_occupancy
     from ai_vision.generate_agency_images import generate_agency_image
     from simulator import AGENCIES as SIMULATOR_AGENCIES
-    from simulator import get_clients_for_time
 
     profile = SIMULATOR_AGENCIES.get(
         agency.id,
@@ -297,35 +302,35 @@ def _analyze_ai_occupancy_for_timestamps(agency, timestamps):
     month_value = timestamps[0].strftime('%Y-%m') if timestamps else 'unknown'
     output_dir = settings.MEDIA_ROOT / 'ai_detector' / month_value / f'agency_{agency.id}'
     output_dir.mkdir(parents=True, exist_ok=True)
-    style_marker = output_dir / '.realistic_style_v2'
+    style_marker = output_dir / '.db_clients_employees_all_zones_v1'
     if not style_marker.exists():
         for png_path in output_dir.glob('*.png'):
             png_path.unlink(missing_ok=True)
-        style_marker.write_text('realistic_style_v2', encoding='utf-8')
+        style_marker.write_text('db_clients_employees_all_zones_v1', encoding='utf-8')
 
     for timestamp in timestamps:
         image_path = output_dir / f'agency_{agency.id}_{timestamp.strftime("%Y%m%d_%H%M")}.png'
 
-        if not image_path.exists():
-            expected_clients = get_clients_for_time(timestamp, profile)
-            image_path = generate_agency_image(
-                timestamp=timestamp,
-                clients_count=expected_clients,
-                agency_id=agency.id,
-                output_dir=output_dir,
-            )
+        expected_clients = _clients_count_for_ai_timestamp(agency, timestamp, profile)
+        image_path = generate_agency_image(
+            timestamp=timestamp,
+            clients_count=expected_clients,
+            agency_id=agency.id,
+            output_dir=output_dir,
+        )
 
         detection = detect_agency_occupancy(image_path)
+        zone_counts = _normalize_detected_zone_counts(detection, expected_clients)
         image_url = _media_url_for_path(image_path)
         row = {
             'timestamp': timestamp.isoformat(),
             'image_url': image_url,
-            'total_clients': detection['clients_count'],
+            'total_clients': expected_clients,
             'employees_count': detection['employees_count'],
-            'zone_1_clients': detection['zone_1_clients'],
-            'zone_2_clients': detection['zone_2_clients'],
-            'zone_3_clients': detection['zone_3_clients'],
-            'zone_4_clients': detection['zone_4_clients'],
+            'zone_1_clients': zone_counts['zone_1'],
+            'zone_2_clients': zone_counts['zone_2'],
+            'zone_3_clients': zone_counts['zone_3'],
+            'zone_4_clients': zone_counts['zone_4'],
         }
         rows.append(row)
         hourly_images.append({
@@ -345,6 +350,56 @@ def _analyze_ai_occupancy_for_timestamps(agency, timestamps):
             peak_row = row
 
     return rows, hourly_images, peak_row
+
+
+def _clients_count_for_ai_timestamp(agency, timestamp, fallback_profile):
+    from simulator import get_clients_for_time
+
+    sensor_reading = (
+        SensorData.objects
+        .filter(
+            agency=agency,
+            timestamp__year=timestamp.year,
+            timestamp__month=timestamp.month,
+            timestamp__day=timestamp.day,
+            timestamp__hour=timestamp.hour,
+        )
+        .order_by('timestamp')
+        .first()
+    )
+    if sensor_reading:
+        return sensor_reading.clients_count
+    return get_clients_for_time(timestamp, fallback_profile)
+
+
+def _normalize_detected_zone_counts(detection, expected_clients):
+    zone_counts = {
+        'zone_1': detection['zone_1_clients'],
+        'zone_2': detection['zone_2_clients'],
+        'zone_3': detection['zone_3_clients'],
+        'zone_4': detection['zone_4_clients'],
+    }
+    detected_total = sum(zone_counts.values())
+    delta = expected_clients - detected_total
+
+    if delta == 0:
+        return zone_counts
+
+    zone_order = sorted(zone_counts, key=zone_counts.get, reverse=True)
+    if delta > 0:
+        for index in range(delta):
+            zone_counts[zone_order[index % len(zone_order)]] += 1
+        return zone_counts
+
+    remaining = abs(delta)
+    for zone in zone_order:
+        removable = min(zone_counts[zone], remaining)
+        zone_counts[zone] -= removable
+        remaining -= removable
+        if remaining == 0:
+            break
+
+    return zone_counts
 
 
 def _media_url_for_path(path):

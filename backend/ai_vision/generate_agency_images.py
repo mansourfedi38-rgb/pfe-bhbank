@@ -125,15 +125,46 @@ def _draw_clients(image, zone_counts, rng):
     return points
 
 
-def _draw_employees(image, rng):
-    employee_specs = [
-        (1, "advisor", 0.22, 0.43),
-        (1, "manager", 0.78, 0.43),
-        (2, "cashier", 0.22, 0.43),
-        (2, "advisor", 0.78, 0.43),
-        (3, "security", 0.50, 0.42),
-        (4, "cashier", 0.50, 0.42),
-    ]
+def _employee_specs_for_agency(agency_id):
+    layouts = {
+        1: [
+            (1, "advisor", 0.22, 0.43),
+            (1, "manager", 0.78, 0.43),
+            (2, "cashier", 0.50, 0.43),
+            (3, "security", 0.50, 0.42),
+            (4, "cashier", 0.50, 0.42),
+        ],
+        2: [
+            (1, "manager", 0.50, 0.43),
+            (2, "cashier", 0.22, 0.43),
+            (2, "advisor", 0.78, 0.43),
+            (3, "advisor", 0.28, 0.42),
+            (3, "security", 0.72, 0.42),
+            (4, "cashier", 0.50, 0.42),
+        ],
+        3: [
+            (1, "advisor", 0.50, 0.43),
+            (2, "cashier", 0.50, 0.43),
+            (3, "security", 0.50, 0.42),
+            (4, "advisor", 0.22, 0.42),
+            (4, "manager", 0.78, 0.42),
+        ],
+    }
+    return layouts.get(
+        agency_id,
+        [
+            (1, "advisor", 0.22, 0.43),
+            (1, "manager", 0.78, 0.43),
+            (2, "cashier", 0.22, 0.43),
+            (2, "advisor", 0.78, 0.43),
+            (3, "security", 0.50, 0.42),
+            (4, "cashier", 0.50, 0.42),
+        ],
+    )
+
+
+def _draw_employees(image, rng, agency_id):
+    employee_specs = _employee_specs_for_agency(agency_id)
     color = (30, 110, 210)
 
     for zone_id, symbol, rel_x, rel_y in employee_specs:
@@ -170,7 +201,7 @@ def generate_agency_image(
 
     _draw_agency_layout(image)
     zone_counts = _zone_centers_for_clients(clients_count, rng)
-    _draw_employees(image, rng)
+    _draw_employees(image, rng, agency_id)
     _draw_clients(image, zone_counts, rng)
 
     path = output_dir / _safe_filename(timestamp, agency_id)

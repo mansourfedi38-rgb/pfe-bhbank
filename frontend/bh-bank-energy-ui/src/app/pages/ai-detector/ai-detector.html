@@ -75,14 +75,8 @@
 
         <div class="metric-card">
           <div class="card-top red-line"></div>
-          <h3>{{ 'aiDetector.imagesAnalyzed' | translate }}</h3>
-          <p>{{ dailyResult.total_images }}</p>
-        </div>
-
-        <div class="metric-card">
-          <div class="card-top blue-line"></div>
-          <h3>{{ 'aiDetector.averageClients' | translate }}</h3>
-          <p>{{ dailyResult.average_clients }}</p>
+          <h3>{{ 'aiDetector.totalClients' | translate }}</h3>
+          <p>{{ dailyResult.total_clients }}</p>
         </div>
 
         <div class="metric-card">
@@ -93,8 +87,8 @@
 
         <div class="metric-card">
           <div class="card-top blue-line"></div>
-          <h3>{{ 'aiDetector.averageEmployees' | translate }}</h3>
-          <p>{{ dailyResult.average_employees }}</p>
+          <h3>{{ 'aiDetector.totalEmployees' | translate }}</h3>
+          <p>{{ dailyResult.total_employees }}</p>
         </div>
       </section>
 
@@ -230,14 +224,20 @@
 
           <div class="metric-card">
             <div class="card-top red-line"></div>
-            <h3>{{ 'aiDetector.imagesAnalyzed' | translate }}</h3>
-            <p>{{ monthlyResult.total_images_analyzed }}</p>
+            <h3>{{ 'aiDetector.totalClients' | translate }}</h3>
+            <p>{{ monthlyResult.total_clients }}</p>
           </div>
 
           <div class="metric-card">
             <div class="card-top blue-line"></div>
             <h3>{{ 'aiDetector.peakClients' | translate }}</h3>
             <p>{{ monthlyResult.peak_clients }}</p>
+          </div>
+
+          <div class="metric-card">
+            <div class="card-top red-line"></div>
+            <h3>{{ 'aiDetector.totalEmployees' | translate }}</h3>
+            <p>{{ monthlyResult.total_employees }}</p>
           </div>
         </section>
       </div>

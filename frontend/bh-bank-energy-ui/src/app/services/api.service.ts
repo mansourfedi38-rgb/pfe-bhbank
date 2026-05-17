@@ -194,9 +194,11 @@ export interface AiDetectorMonthlyResponse {
   month: string;
   business_days: number;
   total_images_analyzed: number;
+  total_clients: number;
   average_clients: number;
   peak_clients: number;
   peak_timestamp: string | null;
+  total_employees: number;
   average_employees: number;
   zone_summary: {
     zone_1_avg: number;
@@ -215,9 +217,11 @@ export interface AiDetectorDailyResponse {
   agency_name: string;
   day: string;
   total_images: number;
+  total_clients: number;
   average_clients: number;
   peak_clients: number;
   peak_timestamp: string | null;
+  total_employees: number;
   average_employees: number;
   zone_summary: {
     zone_1_avg: number;
