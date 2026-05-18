@@ -83,6 +83,13 @@
     "noAlertsForMonth": "Aucune alerte pour ce mois.",
     "notificationMessagesDisabled": "Les messages de notification sont désactivés dans les paramètres.",
     "monthlyEnergyByAgency": "Consommation mensuelle par agence",
+    "energyClientTrend": "Tendance énergie et trafic clients",
+    "clientEnergyComparison": "Clients et consommation énergétique",
+    "energyPerClientByMonth": "Énergie par client par mois",
+    "monthlyEnergyAndClients": "Consommation et clients par mois",
+    "energyUsageChart": "Consommation énergétique",
+    "clientChart": "Trafic clients",
+    "totalClientsTrend": "Total clients",
     "loadingChart": "Chargement du graphique...",
     "noMonthlyData": "Aucune donnée mensuelle disponible.",
     "alerts": {
@@ -229,7 +236,18 @@
     "energyTrendByMonth": "Tendance énergétique par mois",
     "energyTrendByDay": "Tendance énergétique par jour",
     "energyTrendByWeek": "Tendance énergétique par semaine",
+    "clientTrendByMonth": "Tendance clients par mois",
+    "clientTrendByDay": "Tendance clients par jour",
+    "clientTrendByWeek": "Tendance clients par semaine",
+    "chartFilter": "Type de graphique",
+    "energyChart": "Graphique énergie",
+    "clientChart": "Graphique clients",
+    "agencyFilter": "Agence",
+    "allAgencies": "Toutes les agences",
     "agencyComparison": "Comparaison des agences",
+    "clientComparison": "Comparaison des clients",
+    "averageClients": "Clients moyens",
+    "totalClients": "Total clients",
     "agency": "Agence",
     "status": {
       "loading": "Chargement des résumés énergétiques mensuels...",
@@ -243,6 +261,9 @@
     "subtitle": "Consultez les résumés opérationnels et les rapports de performance énergétique des agences BH Bank.",
     "reportYear": "Année du rapport",
     "year": "Année",
+    "month": "Mois",
+    "agency": "Agence",
+    "allAgencies": "Toutes les agences",
     "totalEnergy": "Énergie totale",
     "averageMonthlyEnergy": "Énergie mensuelle moyenne",
     "peakMonth": "Mois de pointe",
@@ -250,6 +271,12 @@
     "numberOfReadings": "Nombre de lectures",
     "totalEnergyLabel": "Énergie totale",
     "averageTemperature": "Température moyenne",
+    "clientsCount": "Nombre de clients",
+    "alertsCount": "Nombre d'alertes",
+    "efficiencyLevel": "Niveau d'efficacité",
+    "afterHoursEnergy": "Énergie hors horaires",
+    "occupancyEstimation": "Estimation d'occupation",
+    "energyChartTitle": "Graphique mensuel de l'énergie",
     "exportCsv": "Exporter CSV",
     "exportNoData": "Aucune donnée de rapport à exporter pour {{year}}.",
     "noReports": "Aucun rapport trouvé pour cette année.",
@@ -263,6 +290,41 @@
       "High": "Élevé",
       "Normal": "Normal",
       "Low": "Faible"
+    },
+    "executiveSummary": {
+      "title": "Résumé exécutif",
+      "subtitle": "Générez un paragraphe de management à partir des indicateurs d'énergie, d'alertes, de clients et d'efficacité.",
+      "generate": "Générer le résumé",
+      "generating": "Génération...",
+      "error": "La génération du résumé exécutif a échoué. Veuillez réessayer."
+    },
+    "pdf": {
+      "title": "Rapport de suivi énergétique",
+      "export": "Exporter le rapport PDF",
+      "exporting": "Export PDF...",
+      "error": "L'export PDF a échoué. Veuillez réessayer.",
+      "agency": "Agence",
+      "month": "Mois sélectionné",
+      "exportDate": "Date d'export",
+      "executiveSummary": "Résumé exécutif",
+      "mainKpis": "KPI principaux",
+      "energyAnalysis": "Analyse énergétique",
+      "alerts": "Alertes",
+      "recommendations": "Recommandations",
+      "charts": "Graphiques",
+      "afterHoursObservation": "Une consommation hors horaires a été détectée et doit être revue par les opérations.",
+      "normalOperationsObservation": "Aucune anomalie de consommation hors horaires n'a été détectée sur la période sélectionnée.",
+      "noAlerts": "Aucune alerte critique ou anomalie d'usage n'a été détectée.",
+      "alertsDetected": "{{count}} événements d'alerte ont été détectés, incluant des indicateurs critiques ou anormaux.",
+      "recommendationAfterHours": "Réduire l'utilisation de la climatisation et des équipements après les heures ouvrables.",
+      "recommendationCooling": "Optimiser les seuils de refroidissement pendant les périodes de forte température.",
+      "recommendationAlerts": "Surveiller les alertes récurrentes et traiter rapidement les usages anormaux.",
+      "recommendationTraffic": "Surveiller les périodes de forte affluence et aligner la climatisation sur l'occupation."
+    },
+    "occupancy": {
+      "high": "Occupation élevée",
+      "moderate": "Occupation modérée",
+      "low": "Faible occupation"
     }
   },
   "compareAgencies": {
@@ -511,10 +573,37 @@
     "allTypes": "Tous",
     "noAgencies": "Aucune agence trouvée.",
     "contact": "Contact",
+    "types": {
+      "all": "Tous",
+      "agency": "Agence",
+      "businessCenter": "Centre d'affaires",
+      "regionalOffice": "Direction régionale",
+      "headOffice": "Siège",
+      "branch": "Succursale",
+      "atm": "GAB"
+    },
     "status": {
       "loading": "Chargement des agences...",
       "loaded": "{{count}} agences chargées.",
       "failed": "Échec du chargement des agences."
+    }
+  },
+  "energyAssistant": {
+    "title": "Assistant energetique",
+    "close": "Fermer l'assistant energetique",
+    "welcome": "Bonjour, je suis l'assistant energetique. Posez-moi une question sur les KPI, les alertes, la comparaison des agences, les recommandations, les resumes mensuels ou les indicateurs du tableau de bord.",
+    "month": "Mois",
+    "agency": "Agence",
+    "autoMonth": "Auto",
+    "allAgencies": "Toutes les agences",
+    "placeholder": "Question sur le suivi energetique...",
+    "send": "Envoyer",
+    "loading": "L'assistant consulte les donnees energetiques...",
+    "error": "L'assistant ne peut pas repondre pour le moment. Veuillez reessayer.",
+    "suggestions": {
+      "compare": "Comparer les agences",
+      "alerts": "Afficher les alertes",
+      "recommendations": "Donner des recommandations"
     }
   },
   "footer": {

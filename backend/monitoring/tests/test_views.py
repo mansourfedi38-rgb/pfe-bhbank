@@ -346,6 +346,139 @@ class RecentAlertsTests(BaseAPITestCase):
         self.assertEqual(response.data, [])
 
 
+class ChatbotTests(BaseAPITestCase):
+    def post_chatbot(self, message, month="2026-04", agency_id=None):
+        data = {"message": message, "month": month}
+        if agency_id is not None:
+            data["agency_id"] = agency_id
+        return self.client.post("/api/chatbot/", data, format="json")
+
+    def create_april_reading(self, **overrides):
+        data = {
+            "agency": self.agency1,
+            "temperature": "31.50",
+            "clients_count": 10,
+            "energy_usage": "5.000",
+            "ac_mode": ACMode.ON,
+            "timestamp": datetime(2026, 4, 15, 10, 0, tzinfo=dt_timezone.utc),
+        }
+        data.update(overrides)
+        return SensorData.objects.create(**data)
+
+    def test_authenticated_access(self):
+        response = self.post_chatbot("hello")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["intent"], "greeting")
+
+    def test_unauthenticated_access_denied(self):
+        self.client.force_authenticate(user=None)
+        response = self.client.post(
+            "/api/chatbot/",
+            {"message": "hello", "month": "2026-04"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_greeting_intent(self):
+        response = self.post_chatbot("Bonjour")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["intent"], "greeting")
+        self.assertIn("Energy Assistant", response.data["reply"])
+
+    def test_kpi_intent(self):
+        self.create_april_reading()
+        response = self.post_chatbot("Show energy KPI")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["intent"], "energy_kpi")
+        self.assertIn("5.00 kWh", response.data["reply"])
+
+    def test_alerts_intent(self):
+        self.create_april_reading()
+        response = self.post_chatbot("Explain alerts")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["intent"], "alerts")
+        self.assertIn("alert", response.data["reply"].lower())
+
+    def test_recommendations_intent(self):
+        self.create_april_reading()
+        response = self.post_chatbot("Give me recommendations")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["intent"], "recommendations")
+        self.assertIn("Recommendations", response.data["reply"])
+
+    def test_invalid_month(self):
+        response = self.post_chatbot("hello", month="04-2026")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data["error"], "month must use YYYY-MM format.")
+
+    def test_no_data_case(self):
+        response = self.post_chatbot("Show energy KPI", month="2026-04")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["intent"], "energy_kpi")
+        self.assertIn("No sensor data", response.data["reply"])
+
+
+class ExecutiveSummaryTests(BaseAPITestCase):
+    def post_summary(self, month="2026-04", agency_id=None):
+        data = {"month": month}
+        if agency_id is not None:
+            data["agency_id"] = agency_id
+        return self.client.post("/api/reports/executive-summary/", data, format="json")
+
+    def test_authenticated_access(self):
+        response = self.post_summary()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("summary", response.data)
+        self.assertIn("metrics", response.data)
+
+    def test_unauthenticated_access_denied(self):
+        self.client.force_authenticate(user=None)
+        response = self.client.post(
+            "/api/reports/executive-summary/",
+            {"month": "2026-04"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_invalid_month(self):
+        response = self.post_summary(month="04-2026")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data["error"], "month must use YYYY-MM format.")
+
+    def test_no_data_case(self):
+        response = self.post_summary(month="2026-04", agency_id=self.agency1.id)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["metrics"]["total_energy"], 0)
+        self.assertIn("No sensor readings", response.data["summary"])
+
+    def test_summary_generation(self):
+        SensorData.objects.create(
+            agency=self.agency1,
+            temperature="31.00",
+            clients_count=20,
+            energy_usage="6.000",
+            ac_mode=ACMode.ON,
+            timestamp=datetime(2026, 4, 15, 10, 0, tzinfo=dt_timezone.utc),
+        )
+        SensorData.objects.create(
+            agency=self.agency1,
+            temperature="29.00",
+            clients_count=5,
+            energy_usage="2.500",
+            ac_mode=ACMode.ON,
+            timestamp=datetime(2026, 4, 15, 20, 0, tzinfo=dt_timezone.utc),
+        )
+
+        response = self.post_summary(month="2026-04", agency_id=self.agency1.id)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["metrics"]["total_energy"], 8.5)
+        self.assertEqual(response.data["metrics"]["clients_count"], 25)
+        self.assertGreater(response.data["metrics"]["alerts_count"], 0)
+        self.assertIn(response.data["metrics"]["efficiency_level"], ["Excellent", "Good", "Moderate", "Poor"])
+        self.assertIn("2026-04", response.data["summary"])
+
+
 class CompareAgenciesTests(BaseAPITestCase):
     def test_compare_valid_agencies(self):
         SensorData.objects.create(
@@ -420,6 +553,8 @@ class ApiSubjectsTests(BaseAPITestCase):
             "ai-detector/daily",
             "ai-detector/monthly",
             "alerts/recent",
+            "chatbot",
+            "reports/executive-summary",
             "kpis/energy/daily",
             "kpis/energy/monthly",
             "kpis/energy/compare",

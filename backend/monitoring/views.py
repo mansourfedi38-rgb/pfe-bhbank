@@ -5,7 +5,7 @@ from django.conf import settings
 from django.db.models import Sum, Avg, Count, Q, Max
 from django.db.models.functions import TruncDate, TruncMonth
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 import base64
@@ -67,6 +67,8 @@ def api_subjects(request):
         'ai-detector/daily',
         'ai-detector/monthly',
         'alerts/recent',
+        'chatbot',
+        'reports/executive-summary',
         'kpis/energy/daily',
         'kpis/energy/monthly',
         'kpis/energy/compare',
@@ -443,6 +445,439 @@ def _build_zone_totals(rows):
     }
 
 
+CHATBOT_SUGGESTIONS = [
+    'Compare agencies',
+    'Show alerts',
+    'Give recommendations',
+]
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def chatbot(request):
+    message = str(request.data.get('message') or '').strip()
+    month_value = request.data.get('month') or None
+    agency_id = request.data.get('agency_id') or None
+
+    if month_value:
+        try:
+            if len(str(month_value)) != 7 or str(month_value)[4] != '-':
+                raise ValueError
+            selected_month = datetime.strptime(str(month_value), '%Y-%m')
+        except ValueError:
+            return Response(
+                {'error': 'month must use YYYY-MM format.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+    else:
+        selected_month = _latest_sensor_month() or datetime.now()
+        month_value = selected_month.strftime('%Y-%m')
+
+    agency = None
+    if agency_id not in (None, ''):
+        try:
+            agency = Agency.objects.get(id=agency_id)
+        except (Agency.DoesNotExist, ValueError):
+            return Response(
+                {'reply': 'I could not find the selected agency.', 'intent': 'fallback', 'suggestions': CHATBOT_SUGGESTIONS},
+                status=status.HTTP_200_OK,
+            )
+
+    queryset = _chatbot_month_queryset(selected_month, agency)
+    intent = _detect_chatbot_intent(message)
+    reply_builders = {
+        'greeting': _chatbot_greeting_reply,
+        'energy_kpi': _chatbot_energy_kpi_reply,
+        'alerts': _chatbot_alerts_reply,
+        'compare_agencies': _chatbot_compare_agencies_reply,
+        'recommendations': _chatbot_recommendations_reply,
+        'monthly_summary': _chatbot_monthly_summary_reply,
+        'explain_dashboard': _chatbot_explain_dashboard_reply,
+        'fallback': _chatbot_fallback_reply,
+    }
+    reply = reply_builders[intent](queryset, month_value, agency)
+
+    return Response({
+        'reply': reply,
+        'intent': intent,
+        'suggestions': CHATBOT_SUGGESTIONS,
+    })
+
+
+def _latest_sensor_month():
+    latest = SensorData.objects.order_by('-timestamp').first()
+    if not latest:
+        return None
+    return latest.timestamp.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+
+def _chatbot_month_queryset(selected_month, agency=None):
+    queryset = SensorData.objects.select_related('agency').filter(
+        timestamp__year=selected_month.year,
+        timestamp__month=selected_month.month,
+    )
+    if agency:
+        queryset = queryset.filter(agency=agency)
+    return queryset
+
+
+def _detect_chatbot_intent(message):
+    text = message.lower()
+    if any(word in text for word in ['hello', 'hi', 'hey', 'bonjour', 'salut', 'salam']):
+        return 'greeting'
+    if any(phrase in text for phrase in ['explain dashboard', 'dashboard', 'indicator', 'indicators', 'indicateur', 'tableau de bord']):
+        return 'explain_dashboard'
+    if any(phrase in text for phrase in ['recommend', 'advice', 'saving', 'optimize', 'optimise', 'recommandation', 'conseil', 'econom', 'économ']):
+        return 'recommendations'
+    if any(phrase in text for phrase in ['summary', 'summarize', 'monthly performance', 'resume', 'résumé', 'bilan']):
+        return 'monthly_summary'
+    if any(phrase in text for phrase in ['alert', 'warning', 'alerte']):
+        return 'alerts'
+    if any(phrase in text for phrase in ['compare', 'comparison', 'most energy', 'highest energy', 'consumes the most', 'more energy', 'comparer', 'plus consom']):
+        return 'compare_agencies'
+    if any(phrase in text for phrase in ['kpi', 'energy', 'temperature', 'client', 'consumption', 'consommation', 'energie', 'énergie']):
+        return 'energy_kpi'
+    return 'fallback'
+
+
+def _chatbot_greeting_reply(queryset, month_value, agency):
+    scope = f' for {agency.name}' if agency else ''
+    return (
+        f'Hello, I am the Energy Assistant. I can help with KPIs, alerts, agency comparisons, '
+        f'recommendations, and monthly summaries for {month_value}{scope}.'
+    )
+
+
+def _chatbot_no_data_reply(month_value, agency):
+    scope = f' for {agency.name}' if agency else ''
+    return f'No sensor data is available for {month_value}{scope}. Try another month or agency.'
+
+
+def _chatbot_energy_kpi_reply(queryset, month_value, agency):
+    if not queryset.exists():
+        return _chatbot_no_data_reply(month_value, agency)
+    stats = _chatbot_stats(queryset)
+    scope = agency.name if agency else 'all selected agencies'
+    return (
+        f'For {month_value}, {scope} recorded {stats["total_energy"]:.2f} kWh, '
+        f'an average temperature of {stats["avg_temperature"]:.1f}C, '
+        f'{stats["total_clients"]} total clients, and {stats["readings"]} sensor readings.'
+    )
+
+
+def _chatbot_alerts_reply(queryset, month_value, agency):
+    if not queryset.exists():
+        return _chatbot_no_data_reply(month_value, agency)
+    candidates = []
+    for reading in queryset.order_by('-timestamp')[:200]:
+        candidates.extend(_build_alerts_for_reading(reading))
+    alerts = _summarize_alerts_for_dashboard(candidates)
+    if not alerts:
+        return f'No energy, temperature, or after-hours alerts were detected for {month_value}.'
+    top_alerts = alerts[:3]
+    details = ' '.join(alert['message'] for alert in top_alerts)
+    return f'I found {len(alerts)} alert group(s) for {month_value}. {details}'
+
+
+def _chatbot_compare_agencies_reply(queryset, month_value, agency):
+    comparison = (
+        queryset
+        .values('agency', 'agency__name')
+        .annotate(total_energy=Sum('energy_usage'), avg_temperature=Avg('temperature'), total_clients=Sum('clients_count'))
+        .order_by('-total_energy')
+    )
+    rows = list(comparison)
+    if not rows:
+        return _chatbot_no_data_reply(month_value, agency)
+    if len(rows) == 1:
+        row = rows[0]
+        return f'{row["agency__name"]} consumed {float(row["total_energy"] or 0):.2f} kWh in {month_value}. Add another agency to compare performance.'
+    highest = rows[0]
+    lowest = rows[-1]
+    gap = float(highest['total_energy'] or 0) - float(lowest['total_energy'] or 0)
+    return (
+        f'{highest["agency__name"]} consumed the most energy in {month_value} with '
+        f'{float(highest["total_energy"] or 0):.2f} kWh. '
+        f'{lowest["agency__name"]} consumed the least with {float(lowest["total_energy"] or 0):.2f} kWh, '
+        f'a gap of {gap:.2f} kWh.'
+    )
+
+
+def _chatbot_recommendations_reply(queryset, month_value, agency):
+    if not queryset.exists():
+        return _chatbot_no_data_reply(month_value, agency)
+    stats = _chatbot_stats(queryset)
+    recommendations = []
+    if stats['avg_temperature'] >= 28:
+        recommendations.append('Review cooling settings because the average temperature is high.')
+    if stats['on_percentage'] >= 55:
+        recommendations.append('Use ECO mode during moderate occupancy instead of keeping AC ON most of the time.')
+    if stats['energy_per_client'] > 0.2:
+        recommendations.append('Monitor energy per client and check lighting, AC, and equipment routines.')
+    if stats['after_hours_energy'] > 0:
+        recommendations.append('Check AC, lighting, and office equipment after closing hours.')
+    if stats['avg_clients'] < 5 and stats['total_energy'] > 0:
+        recommendations.append('Reduce AC intensity during low client traffic periods.')
+    if not recommendations:
+        recommendations.append('Consumption looks stable. Continue monitoring peak hours and keep ECO mode active when comfort allows.')
+    return f'Recommendations for {month_value}: ' + ' '.join(f'{index + 1}. {item}' for index, item in enumerate(recommendations[:4]))
+
+
+def _chatbot_monthly_summary_reply(queryset, month_value, agency):
+    if not queryset.exists():
+        return _chatbot_no_data_reply(month_value, agency)
+    stats = _chatbot_stats(queryset)
+    peak = (
+        queryset
+        .values('agency__name')
+        .annotate(total_energy=Sum('energy_usage'))
+        .order_by('-total_energy')
+        .first()
+    )
+    peak_text = f' The highest-consuming agency was {peak["agency__name"]}.' if peak and not agency else ''
+    return (
+        f'Monthly summary for {month_value}: total energy was {stats["total_energy"]:.2f} kWh, '
+        f'average temperature was {stats["avg_temperature"]:.1f}C, average client count was {stats["avg_clients"]:.1f}, '
+        f'and AC was ON {stats["on_percentage"]:.1f}% of the time.{peak_text}'
+    )
+
+
+def _chatbot_explain_dashboard_reply(queryset, month_value, agency):
+    return (
+        'Dashboard indicators are simple operational KPIs: total energy shows consumed kWh, '
+        'average temperature shows comfort conditions, clients show agency traffic, alerts show abnormal energy or temperature events, '
+        'and AC status shows whether cooling was OFF, ECO, or ON.'
+    )
+
+
+def _chatbot_fallback_reply(queryset, month_value, agency):
+    return (
+        'I can only answer questions about BH Bank energy monitoring: KPIs, alerts, agency comparison, '
+        'recommendations, monthly summaries, and dashboard indicators.'
+    )
+
+
+def _chatbot_stats(queryset):
+    aggregates = queryset.aggregate(
+        total_energy=Sum('energy_usage'),
+        avg_temperature=Avg('temperature'),
+        total_clients=Sum('clients_count'),
+        avg_clients=Avg('clients_count'),
+        readings=Count('id'),
+    )
+    readings = aggregates['readings'] or 0
+    total_energy = float(aggregates['total_energy'] or 0)
+    total_clients = int(aggregates['total_clients'] or 0)
+    ac_counts = queryset.values('ac_mode').annotate(count=Count('id'))
+    on_count = sum(item['count'] for item in ac_counts if item['ac_mode'] == ACMode.ON)
+    after_hours_energy = (
+        queryset
+        .filter(
+            Q(timestamp__week_day__in=[1, 7])
+            | Q(timestamp__hour__lt=8)
+            | Q(timestamp__hour__gte=17)
+        )
+        .aggregate(total=Sum('energy_usage'))['total']
+        or Decimal('0')
+    )
+    return {
+        'total_energy': total_energy,
+        'avg_temperature': float(aggregates['avg_temperature'] or 0),
+        'total_clients': total_clients,
+        'avg_clients': float(aggregates['avg_clients'] or 0),
+        'readings': readings,
+        'on_percentage': _safe_percentage(on_count, readings),
+        'energy_per_client': total_energy / total_clients if total_clients else 0,
+        'after_hours_energy': float(after_hours_energy),
+    }
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def executive_summary(request):
+    month_value = request.data.get('month')
+    agency_id = request.data.get('agency_id') or None
+
+    try:
+        selected_month = _parse_report_month(month_value)
+    except ValueError:
+        return Response(
+            {'error': 'month must use YYYY-MM format.'},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    agency = None
+    if agency_id not in (None, ''):
+        try:
+            agency = Agency.objects.get(id=agency_id)
+        except (Agency.DoesNotExist, ValueError):
+            return Response(
+                {'error': 'Agency not found.'},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+    queryset = SensorData.objects.select_related('agency').filter(
+        timestamp__year=selected_month.year,
+        timestamp__month=selected_month.month,
+    )
+    regional_queryset = queryset
+    if agency:
+        queryset = queryset.filter(agency=agency)
+
+    metrics = _build_executive_summary_metrics(queryset, regional_queryset)
+    summary = _build_executive_summary_text(
+        month_value=selected_month.strftime('%Y-%m'),
+        agency=agency,
+        metrics=metrics,
+        regional_average=_regional_energy_average(regional_queryset),
+        has_data=queryset.exists(),
+    )
+
+    return Response({
+        'summary': summary,
+        'metrics': metrics,
+    })
+
+
+def _parse_report_month(month_value):
+    month_text = str(month_value or '')
+    if len(month_text) != 7 or month_text[4] != '-':
+        raise ValueError
+    return datetime.strptime(month_text, '%Y-%m')
+
+
+def _build_executive_summary_metrics(queryset, regional_queryset):
+    aggregates = queryset.aggregate(
+        total_energy=Sum('energy_usage'),
+        avg_temperature=Avg('temperature'),
+        clients_count=Sum('clients_count'),
+        readings_count=Count('id'),
+    )
+    total_energy = float(aggregates['total_energy'] or 0)
+    avg_temperature = float(aggregates['avg_temperature'] or 0)
+    clients_count = int(aggregates['clients_count'] or 0)
+    alerts_count = _count_alerts_for_queryset(queryset)
+    after_hours_usage = float(_after_hours_energy(queryset))
+    energy_per_client = total_energy / clients_count if clients_count else 0
+
+    return {
+        'total_energy': round(total_energy, 2),
+        'avg_temperature': round(avg_temperature, 1),
+        'alerts_count': alerts_count,
+        'clients_count': clients_count,
+        'after_hours_energy': round(after_hours_usage, 2),
+        'readings_count': aggregates['readings_count'] or 0,
+        'energy_per_client': round(energy_per_client, 4),
+        'efficiency_level': _efficiency_level(total_energy, clients_count, alerts_count, after_hours_usage, regional_queryset),
+    }
+
+
+def _count_alerts_for_queryset(queryset):
+    count = 0
+    for reading in queryset:
+        count += len(_build_alerts_for_reading(reading))
+    return count
+
+
+def _after_hours_energy(queryset):
+    return (
+        queryset
+        .filter(
+            Q(timestamp__week_day__in=[1, 7])
+            | Q(timestamp__hour__lt=8)
+            | Q(timestamp__hour__gte=17)
+        )
+        .aggregate(total=Sum('energy_usage'))['total']
+        or Decimal('0')
+    )
+
+
+def _regional_energy_average(queryset):
+    agency_totals = (
+        queryset
+        .values('agency')
+        .annotate(total_energy=Sum('energy_usage'))
+    )
+    totals = [float(row['total_energy'] or 0) for row in agency_totals]
+    return sum(totals) / len(totals) if totals else 0
+
+
+def _efficiency_level(total_energy, clients_count, alerts_count, after_hours_usage, regional_queryset):
+    if total_energy <= 0:
+        return 'Moderate'
+
+    score = 0
+    regional_average = _regional_energy_average(regional_queryset)
+    energy_per_client = total_energy / clients_count if clients_count else total_energy
+
+    if regional_average and total_energy > regional_average * 1.2:
+        score += 2
+    elif regional_average and total_energy > regional_average * 1.05:
+        score += 1
+
+    if energy_per_client > 0.25:
+        score += 2
+    elif energy_per_client > 0.16:
+        score += 1
+
+    if alerts_count >= 8:
+        score += 2
+    elif alerts_count >= 3:
+        score += 1
+
+    if after_hours_usage > total_energy * 0.12:
+        score += 2
+    elif after_hours_usage > 0:
+        score += 1
+
+    if score <= 1:
+        return 'Excellent'
+    if score <= 3:
+        return 'Good'
+    if score <= 5:
+        return 'Moderate'
+    return 'Poor'
+
+
+def _build_executive_summary_text(month_value, agency, metrics, regional_average, has_data):
+    scope = agency.name if agency else 'BH Bank agencies'
+    if not has_data:
+        return (
+            f'No sensor readings were available for {scope} during {month_value}. '
+            'The reporting view should be refreshed once operational data is collected for the selected period.'
+        )
+
+    observations = [
+        f'During {month_value}, {scope} recorded {metrics["total_energy"]:.2f} kWh of energy consumption '
+        f'for {metrics["clients_count"]} client visits, with an average temperature of {metrics["avg_temperature"]:.1f}C.'
+    ]
+
+    if regional_average and metrics['total_energy'] > regional_average * 1.15:
+        observations.append('Energy consumption remained above the regional average during the selected period.')
+    elif regional_average and metrics['total_energy'] < regional_average * 0.85:
+        observations.append('Energy consumption remained below the regional average, indicating controlled operational load.')
+    else:
+        observations.append('Energy consumption was broadly aligned with the observed portfolio average.')
+
+    if metrics['avg_temperature'] >= 28:
+        observations.append('Elevated temperatures increased cooling demand across the agency.')
+    elif metrics['avg_temperature'] <= 20 and metrics['readings_count']:
+        observations.append('Temperature conditions were moderate, limiting the expected cooling load.')
+
+    if metrics['alerts_count'] >= 5:
+        observations.append('Several operational alerts were triggered, indicating optimization opportunities.')
+    elif metrics['alerts_count'] > 0:
+        observations.append('A limited number of alerts were detected and should be monitored.')
+    else:
+        observations.append('No significant alert activity was detected for the period.')
+
+    if metrics['after_hours_energy'] > 0:
+        observations.append('Unusual after-hours energy activity was observed and should be reviewed by operations.')
+
+    observations.append(f'The overall energy efficiency level is assessed as {metrics["efficiency_level"]}.')
+    return ' '.join(observations)
+
+
 def _build_daily_ai_recommendations(
     rows,
     peak_clients,
@@ -814,7 +1249,12 @@ def daily_energy_kpi(request):
         queryset
         .annotate(date=TruncDate('timestamp'))
         .values('agency', 'agency__name', 'date')
-        .annotate(total_energy=Sum('energy_usage'))
+        .annotate(
+            total_energy=Sum('energy_usage'),
+            total_clients=Sum('clients_count'),
+            avg_clients=Avg('clients_count'),
+            readings_count=Count('id'),
+        )
         .order_by('agency', 'date')
     )
 
@@ -823,7 +1263,10 @@ def daily_energy_kpi(request):
             'agency': row['agency'],
             'agency_name': row['agency__name'],
             'date': row['date'],
-            'total_energy': row['total_energy'],
+            'total_energy': round(float(row['total_energy'] or 0), 2),
+            'total_clients': row['total_clients'] or 0,
+            'avg_clients': round(float(row['avg_clients'] or 0), 1),
+            'readings_count': row['readings_count'],
         }
         for row in data
     ]

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
-export type ApiSubject = 'subjects' | 'regions' | 'agencies' | 'sensor-data' | 'ai-detector/demo' | 'ai-detector/daily' | 'ai-detector/monthly' | 'alerts/recent' | 'kpis/energy/daily' | 'kpis/energy/monthly' | 'kpis/energy/compare';
+export type ApiSubject = 'subjects' | 'regions' | 'agencies' | 'sensor-data' | 'ai-detector/demo' | 'ai-detector/daily' | 'ai-detector/monthly' | 'alerts/recent' | 'chatbot' | 'reports/executive-summary' | 'kpis/energy/daily' | 'kpis/energy/monthly' | 'kpis/energy/compare';
 
 export const FRONTEND_API_SUBJECTS: readonly ApiSubject[] = [
   'subjects',
@@ -13,6 +13,8 @@ export const FRONTEND_API_SUBJECTS: readonly ApiSubject[] = [
   'ai-detector/daily',
   'ai-detector/monthly',
   'alerts/recent',
+  'chatbot',
+  'reports/executive-summary',
   'kpis/energy/daily',
   'kpis/energy/monthly',
   'kpis/energy/compare'
@@ -63,6 +65,9 @@ export interface DailyEnergyKpi {
   agency_name: string;
   date: string;
   total_energy: number;
+  total_clients: number;
+  avg_clients: number;
+  readings_count: number;
 }
 
 export interface MonthlyEnergyKpi {
@@ -247,6 +252,39 @@ export interface AiDetectorDailyResponse {
   message: string;
 }
 
+export interface ChatbotRequest {
+  message: string;
+  month?: string;
+  agency_id?: number | null;
+}
+
+export interface ChatbotResponse {
+  reply: string;
+  intent: 'greeting' | 'energy_kpi' | 'alerts' | 'compare_agencies' | 'recommendations' | 'monthly_summary' | 'explain_dashboard' | 'fallback';
+  suggestions: string[];
+}
+
+export interface ExecutiveSummaryRequest {
+  month: string;
+  agency_id?: number | null;
+}
+
+export interface ExecutiveSummaryMetrics {
+  total_energy: number;
+  avg_temperature: number;
+  alerts_count: number;
+  clients_count: number;
+  after_hours_energy: number;
+  readings_count: number;
+  energy_per_client: number;
+  efficiency_level: 'Excellent' | 'Good' | 'Moderate' | 'Poor';
+}
+
+export interface ExecutiveSummaryResponse {
+  summary: string;
+  metrics: ExecutiveSummaryMetrics;
+}
+
 interface BackendSubjectsResponse {
   subjects: string[];
 }
@@ -372,6 +410,14 @@ export class ApiService {
       .set('agency', agencyId)
       .set('month', month);
     return this.http.get<AiDetectorMonthlyResponse>('/api/ai-detector/monthly/', { params });
+  }
+
+  askChatbot(payload: ChatbotRequest): Observable<ChatbotResponse> {
+    return this.http.post<ChatbotResponse>('/api/chatbot/', payload);
+  }
+
+  generateExecutiveSummary(payload: ExecutiveSummaryRequest): Observable<ExecutiveSummaryResponse> {
+    return this.http.post<ExecutiveSummaryResponse>('/api/reports/executive-summary/', payload);
   }
 
   checkSubjectsCompatibility(): Observable<SubjectsCompatibilityResult> {

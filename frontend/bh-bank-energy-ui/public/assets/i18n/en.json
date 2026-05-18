@@ -83,6 +83,13 @@
     "noAlertsForMonth": "No alerts for this month.",
     "notificationMessagesDisabled": "Notification messages are disabled in Settings.",
     "monthlyEnergyByAgency": "Monthly Energy Usage by Agency",
+    "energyClientTrend": "Energy and Client Traffic Trend",
+    "clientEnergyComparison": "Clients vs Energy Usage",
+    "energyPerClientByMonth": "Energy per Client by Month",
+    "monthlyEnergyAndClients": "Monthly Energy Usage and Clients",
+    "energyUsageChart": "Energy Usage",
+    "clientChart": "Client Traffic",
+    "totalClientsTrend": "Total Clients",
     "loadingChart": "Loading chart...",
     "noMonthlyData": "No monthly data available.",
     "alerts": {
@@ -229,7 +236,18 @@
     "energyTrendByMonth": "Energy Trend by Month",
     "energyTrendByDay": "Energy Trend by Day",
     "energyTrendByWeek": "Energy Trend by Week",
+    "clientTrendByMonth": "Client Trend by Month",
+    "clientTrendByDay": "Client Trend by Day",
+    "clientTrendByWeek": "Client Trend by Week",
+    "chartFilter": "Chart type",
+    "energyChart": "Energy chart",
+    "clientChart": "Client chart",
+    "agencyFilter": "Agency",
+    "allAgencies": "All agencies",
     "agencyComparison": "Agency Comparison",
+    "clientComparison": "Client Comparison",
+    "averageClients": "Average Clients",
+    "totalClients": "Total Clients",
     "agency": "Agency",
     "status": {
       "loading": "Loading monthly energy summaries...",
@@ -243,6 +261,9 @@
     "subtitle": "Review operational summaries and energy performance reports for BH Bank agencies.",
     "reportYear": "Report Year",
     "year": "Year",
+    "month": "Month",
+    "agency": "Agency",
+    "allAgencies": "All agencies",
     "totalEnergy": "Total Energy",
     "averageMonthlyEnergy": "Average Monthly Energy",
     "peakMonth": "Peak Month",
@@ -250,6 +271,12 @@
     "numberOfReadings": "Number of Readings",
     "totalEnergyLabel": "Total energy",
     "averageTemperature": "Average temperature",
+    "clientsCount": "Clients count",
+    "alertsCount": "Alerts count",
+    "efficiencyLevel": "Efficiency level",
+    "afterHoursEnergy": "After-hours energy",
+    "occupancyEstimation": "Occupancy estimation",
+    "energyChartTitle": "Monthly Energy Chart",
     "exportCsv": "Export CSV",
     "exportNoData": "No report data to export for {{year}}.",
     "noReports": "No reports found for this year.",
@@ -263,6 +290,41 @@
       "High": "High",
       "Normal": "Normal",
       "Low": "Low"
+    },
+    "executiveSummary": {
+      "title": "Executive Summary",
+      "subtitle": "Generate a management-ready paragraph from energy, alert, client, and efficiency indicators.",
+      "generate": "Generate Summary",
+      "generating": "Generating...",
+      "error": "Executive summary generation failed. Please try again."
+    },
+    "pdf": {
+      "title": "Energy Monitoring Report",
+      "export": "Export PDF Report",
+      "exporting": "Exporting PDF...",
+      "error": "PDF export failed. Please try again.",
+      "agency": "Agency",
+      "month": "Selected month",
+      "exportDate": "Export date",
+      "executiveSummary": "Executive Summary",
+      "mainKpis": "Main KPIs",
+      "energyAnalysis": "Energy Analysis",
+      "alerts": "Alerts",
+      "recommendations": "Recommendations",
+      "charts": "Charts",
+      "afterHoursObservation": "After-hours usage was detected and should be reviewed by operations.",
+      "normalOperationsObservation": "No after-hours consumption issue was detected in the selected period.",
+      "noAlerts": "No critical or abnormal usage alerts were detected.",
+      "alertsDetected": "{{count}} alert events were detected, including critical or abnormal usage indicators.",
+      "recommendationAfterHours": "Reduce AC and equipment usage after business hours.",
+      "recommendationCooling": "Optimize cooling thresholds during high-temperature periods.",
+      "recommendationAlerts": "Monitor recurring alerts and treat abnormal usage quickly.",
+      "recommendationTraffic": "Monitor high-traffic periods and align AC scheduling with occupancy."
+    },
+    "occupancy": {
+      "high": "High occupancy",
+      "moderate": "Moderate occupancy",
+      "low": "Low occupancy"
     }
   },
   "compareAgencies": {
@@ -511,10 +573,37 @@
     "allTypes": "All",
     "noAgencies": "No agencies found.",
     "contact": "Contact",
+    "types": {
+      "all": "All",
+      "agency": "Agency",
+      "businessCenter": "Business center",
+      "regionalOffice": "Regional office",
+      "headOffice": "Head office",
+      "branch": "Branch",
+      "atm": "ATM"
+    },
     "status": {
       "loading": "Loading agencies...",
       "loaded": "{{count}} agencies loaded.",
       "failed": "Failed to load agencies."
+    }
+  },
+  "energyAssistant": {
+    "title": "Energy Assistant",
+    "close": "Close Energy Assistant",
+    "welcome": "Hello, I am the Energy Assistant. Ask me about KPIs, alerts, agency comparisons, recommendations, monthly summaries, or dashboard indicators.",
+    "month": "Month",
+    "agency": "Agency",
+    "autoMonth": "Auto",
+    "allAgencies": "All agencies",
+    "placeholder": "Ask about energy monitoring...",
+    "send": "Send",
+    "loading": "Assistant is checking energy data...",
+    "error": "The assistant could not answer right now. Please try again.",
+    "suggestions": {
+      "compare": "Compare agencies",
+      "alerts": "Show alerts",
+      "recommendations": "Give recommendations"
     }
   },
   "footer": {

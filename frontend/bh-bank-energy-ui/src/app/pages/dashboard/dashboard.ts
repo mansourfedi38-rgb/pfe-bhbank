@@ -71,7 +71,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     activeAlerts: ''
   };
 
-  private agencyChart: Chart | null = null;
+  private energyChart: Chart | null = null;
+  private clientChart: Chart | null = null;
   private readonly subscriptions = new Subscription();
   private refreshInterval: any;
   private latestAlertSignature = '';
@@ -98,7 +99,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(this.translate.onLangChange.subscribe(() => {
       this.updateSelectedMonthSummary();
-      this.createMonthlyAgencyChart();
+      this.createEnergyClientTrendChart();
     }));
 
     this.subscriptions.add(this.temperatureUnit.unit$.subscribe(() => {
@@ -136,13 +137,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
   onMonthChange(): void {
     this.selectedAlertMonth = this.selectedMonth;
     this.updateSelectedMonthSummary();
-    this.createMonthlyAgencyChart();
+    this.createEnergyClientTrendChart();
     this.loadRecentAlerts();
   }
 
   onAgencyChange(): void {
     this.updateSelectedMonthSummary();
-    this.createMonthlyAgencyChart();
+    this.createEnergyClientTrendChart();
     this.loadRecentAlerts();
   }
 
@@ -203,7 +204,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
         this.kpiStatus = this.translate.instant('dashboard.status.loadedMonthly', { count: this.monthlyRows.length });
         this.updateSelectedMonthSummary();
-        this.createMonthlyAgencyChart();
+        this.createEnergyClientTrendChart();
         this.loadRecentAlerts();
       },
       error: (err) => {
@@ -267,34 +268,47 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
-  private createMonthlyAgencyChart(): void {
+  private createEnergyClientTrendChart(): void {
     this.chartsLoading = false;
-    const rows = this.getSelectedMonthRows();
+    const trendRows = this.buildMonthlyTrendRows();
 
-    if (rows.length === 0) {
+    if (trendRows.length === 0) {
       this.chartsEmpty = true;
       this.cdr.detectChanges();
       return;
     }
 
     setTimeout(() => {
-      if (this.agencyChart) {
-        this.agencyChart.destroy();
+      if (this.energyChart) {
+        this.energyChart.destroy();
+      }
+      if (this.clientChart) {
+        this.clientChart.destroy();
       }
 
-      const ctx = document.getElementById('agencyChart') as HTMLCanvasElement;
-      if (!ctx) return;
+      const energyCtx = document.getElementById('dashboardEnergyChart') as HTMLCanvasElement;
+      const clientCtx = document.getElementById('dashboardClientChart') as HTMLCanvasElement;
+      if (!energyCtx || !clientCtx) return;
 
-      this.agencyChart = new Chart(ctx, {
+      const selectedMonthColor = 'rgba(227, 6, 19, 0.82)';
+      const defaultMonthColor = 'rgba(8, 38, 77, 0.76)';
+
+      this.energyChart = new Chart(energyCtx, {
         type: 'bar',
         data: {
-          labels: rows.map((row) => row.agency_name),
+          labels: trendRows.map((row) => row.month),
           datasets: [{
-            label: `${this.translate.instant('dashboard.monthlyEnergyByAgency')} (${this.selectedMonth})`,
-            data: rows.map((row) => Number(row.total_energy)),
-            backgroundColor: 'rgba(220, 53, 69, 0.72)',
-            borderColor: 'rgba(220, 53, 69, 1)',
-            borderWidth: 1
+            label: this.translate.instant('energyUsage.totalEnergy'),
+            data: trendRows.map((row) => row.totalEnergy),
+            backgroundColor: trendRows.map((row) =>
+              row.month === this.selectedMonth ? selectedMonthColor : defaultMonthColor
+            ),
+            borderColor: trendRows.map((row) =>
+              row.month === this.selectedMonth ? 'rgba(227, 6, 19, 1)' : 'rgba(8, 38, 77, 1)'
+            ),
+            borderWidth: 1,
+            borderRadius: 8,
+            maxBarThickness: 48
           }]
         },
         options: {
@@ -305,6 +319,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
               display: true,
               position: 'top',
               labels: { color: this.chartTextColor() }
+            },
+            tooltip: {
+              callbacks: {
+                label: (context) => {
+                  const row = trendRows[context.dataIndex];
+                  return [
+                    `${row.month}`,
+                    `${this.translate.instant('energyUsage.totalEnergy')}: ${row.totalEnergy.toFixed(2)} kWh`,
+                    `${this.translate.instant('compareAgencies.labels.energyPerClient')}: ${row.energyPerClient.toFixed(3)} kWh`
+                  ];
+                }
+              }
             }
           },
           scales: {
@@ -323,7 +349,71 @@ export class DashboardComponent implements OnInit, OnDestroy {
               grid: { color: this.chartGridColor() },
               title: {
                 display: true,
-                text: this.translate.instant('sensors.agency'),
+                text: this.translate.instant('dashboard.month'),
+                color: this.chartTextColor()
+              }
+            }
+          }
+        }
+      });
+
+      this.clientChart = new Chart(clientCtx, {
+        type: 'bar',
+        data: {
+          labels: trendRows.map((row) => row.month),
+          datasets: [{
+            label: this.translate.instant('energyUsage.totalClients'),
+            data: trendRows.map((row) => row.totalClients),
+            backgroundColor: trendRows.map((row) =>
+              row.month === this.selectedMonth ? selectedMonthColor : 'rgba(14, 116, 144, 0.76)'
+            ),
+            borderColor: trendRows.map((row) =>
+              row.month === this.selectedMonth ? 'rgba(227, 6, 19, 1)' : 'rgba(14, 116, 144, 1)'
+            ),
+            borderWidth: 1,
+            borderRadius: 8,
+            maxBarThickness: 48
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              position: 'top',
+              labels: { color: this.chartTextColor() }
+            },
+            tooltip: {
+              callbacks: {
+                label: (context) => {
+                  const row = trendRows[context.dataIndex];
+                  return [
+                    `${row.month}`,
+                    `${this.translate.instant('energyUsage.totalClients')}: ${row.totalClients.toFixed(0)}`,
+                    `${this.translate.instant('energyUsage.totalEnergy')}: ${row.totalEnergy.toFixed(2)} kWh`
+                  ];
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { color: this.chartTextColor() },
+              grid: { color: this.chartGridColor() },
+              title: {
+                display: true,
+                text: this.translate.instant('energyUsage.totalClients'),
+                color: this.chartTextColor()
+              }
+            },
+            x: {
+              ticks: { color: this.chartTextColor() },
+              grid: { color: this.chartGridColor() },
+              title: {
+                display: true,
+                text: this.translate.instant('dashboard.month'),
                 color: this.chartTextColor()
               }
             }
@@ -340,6 +430,39 @@ export class DashboardComponent implements OnInit, OnDestroy {
       row.month === this.selectedMonth
       && (this.selectedAgencyId === null || row.agency === this.selectedAgencyId)
     );
+  }
+
+  private buildMonthlyTrendRows(): { month: string; totalEnergy: number; totalClients: number; energyPerClient: number }[] {
+    const monthMap = new Map<string, { totalEnergy: number; totalClients: number }>();
+
+    this.monthlyRows
+      .filter((row) => this.selectedAgencyId === null || row.agency === this.selectedAgencyId)
+      .forEach((row) => {
+        const current = monthMap.get(row.month) || { totalEnergy: 0, totalClients: 0 };
+        current.totalEnergy += Number(row.total_energy);
+        current.totalClients += this.monthlyTotalClients(row);
+        monthMap.set(row.month, current);
+      });
+
+    return DASHBOARD_MONTHS
+      .filter((month) => monthMap.has(month))
+      .map((month) => ({
+        month,
+        totalEnergy: Number((monthMap.get(month)?.totalEnergy || 0).toFixed(2)),
+        totalClients: Math.round(monthMap.get(month)?.totalClients || 0),
+        energyPerClient: this.energyPerClient(
+          monthMap.get(month)?.totalEnergy || 0,
+          monthMap.get(month)?.totalClients || 0
+        )
+      }));
+  }
+
+  private energyPerClient(totalEnergy: number, totalClients: number): number {
+    return totalClients > 0 ? Number((totalEnergy / totalClients).toFixed(3)) : 0;
+  }
+
+  private monthlyTotalClients(row: MonthlyEnergyKpi): number {
+    return Number(row.avg_clients || 0) * Number(row.readings_count || 0);
   }
 
   private formatLatestReading(row?: SensorData): string {

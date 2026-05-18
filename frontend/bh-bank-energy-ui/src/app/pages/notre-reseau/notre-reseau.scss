@@ -293,7 +293,7 @@
 
 .agency-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   margin-bottom: 12px;
 }
@@ -304,10 +304,23 @@
 }
 
 .agency-header h3 {
+  margin-top: 4px;
   font-size: 15px;
   font-weight: 800;
   color: #0a2342;
   text-transform: uppercase;
+}
+
+.agency-type-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: rgba(227, 6, 19, 0.08);
+  color: #e30613;
+  padding: 4px 9px;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
 }
 
 .agency-details {
@@ -363,6 +376,26 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+::ng-deep .marker-head-office {
+  background: #e30613;
+}
+
+::ng-deep .marker-regional-office {
+  background: #0e7490;
+}
+
+::ng-deep .marker-business-center {
+  background: #166534;
+}
+
+::ng-deep .marker-branch {
+  background: #7c3aed;
+}
+
+::ng-deep .marker-atm {
+  background: #b45309;
 }
 
 ::ng-deep .marker-pin span {

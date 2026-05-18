@@ -42,6 +42,71 @@
       </div>
     </section>
 
+    <section class="executive-summary-section" *ngIf="!isLoading && !hasError">
+      <div class="summary-controls">
+        <div class="summary-title">
+          <div class="card-top red-line"></div>
+          <h2>{{ 'reports.executiveSummary.title' | translate }}</h2>
+          <p>{{ 'reports.executiveSummary.subtitle' | translate }}</p>
+        </div>
+
+        <div class="summary-filter-group">
+          <label for="summary-month">{{ 'reports.month' | translate }}</label>
+          <select id="summary-month" [(ngModel)]="selectedReportMonth">
+            <option *ngFor="let month of availableMonths" [ngValue]="month">{{ month }}</option>
+          </select>
+        </div>
+
+        <div class="summary-filter-group">
+          <label for="summary-agency">{{ 'reports.agency' | translate }}</label>
+          <select id="summary-agency" [(ngModel)]="selectedAgencyId">
+            <option [ngValue]="null">{{ 'reports.allAgencies' | translate }}</option>
+            <option *ngFor="let agency of agencies" [ngValue]="agency.id">{{ agency.name }}</option>
+          </select>
+        </div>
+
+        <div class="summary-actions">
+          <button type="button" class="summary-btn" [disabled]="summaryLoading || !selectedReportMonth" (click)="generateSummary()">
+            {{ summaryLoading ? ('reports.executiveSummary.generating' | translate) : ('reports.executiveSummary.generate' | translate) }}
+          </button>
+          <button type="button" class="pdf-btn" [disabled]="pdfExporting || !selectedReportMonth" (click)="exportPdf()">
+            {{ pdfExporting ? ('reports.pdf.exporting' | translate) : ('reports.pdf.export' | translate) }}
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="summaryError" class="summary-error">
+        {{ summaryError }}
+      </div>
+
+      <div *ngIf="executiveSummary" class="summary-result">
+        <p class="summary-paragraph">{{ executiveSummary.summary }}</p>
+
+        <div class="summary-kpis">
+          <div class="summary-kpi">
+            <span>{{ 'reports.totalEnergy' | translate }}</span>
+            <strong>{{ executiveSummary.metrics.total_energy.toFixed(2) }} kWh</strong>
+          </div>
+          <div class="summary-kpi">
+            <span>{{ 'reports.averageTemperature' | translate }}</span>
+            <strong>{{ formatTemperature(executiveSummary.metrics.avg_temperature) }}</strong>
+          </div>
+          <div class="summary-kpi">
+            <span>{{ 'reports.clientsCount' | translate }}</span>
+            <strong>{{ executiveSummary.metrics.clients_count }}</strong>
+          </div>
+          <div class="summary-kpi">
+            <span>{{ 'reports.alertsCount' | translate }}</span>
+            <strong>{{ executiveSummary.metrics.alerts_count }}</strong>
+          </div>
+          <div class="summary-kpi">
+            <span>{{ 'reports.efficiencyLevel' | translate }}</span>
+            <strong>{{ executiveSummary.metrics.efficiency_level }}</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="cards">
       <div *ngIf="isLoading" class="loading-indicator">
         <p>{{ 'reports.status.loading' | translate }}</p>
@@ -79,6 +144,24 @@
         <div class="card-top red-line"></div>
         <h3>{{ 'reports.numberOfReadings' | translate }}</h3>
         <p>{{ cards.totalReadings }}</p>
+      </div>
+    </section>
+
+    <section id="reportPdfCapture" class="report-chart-section" *ngIf="!isLoading && !hasError && filteredReportCards.length > 0">
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>{{ 'reports.energyChartTitle' | translate }}</h3>
+          <span>{{ selectedYear }}</span>
+        </div>
+        <div class="bar-chart">
+          <div *ngFor="let bar of reportChartBars()" class="bar-item">
+            <div class="bar-value">{{ bar.value.toFixed(0) }}</div>
+            <div class="bar-track">
+              <div class="bar-fill" [style.height.px]="bar.height"></div>
+            </div>
+            <div class="bar-label">{{ bar.label.slice(5) }}</div>
+          </div>
+        </div>
       </div>
     </section>
 

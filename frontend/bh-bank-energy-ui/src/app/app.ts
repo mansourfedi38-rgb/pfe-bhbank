@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
+import { EnergyAssistantComponent } from './components/energy-assistant/energy-assistant';
 import { Footer } from './shared/footer/footer';
 import { ThemeService } from './services/theme.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, Footer],
+  imports: [RouterOutlet, Footer, EnergyAssistantComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })

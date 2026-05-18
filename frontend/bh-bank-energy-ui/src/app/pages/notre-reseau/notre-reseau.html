@@ -64,7 +64,7 @@
             (click)="selectType(type.key)">
             <i *ngIf="type.key" class="fa-solid fa-location-dot"></i>
             <span *ngIf="!type.key">{{ 'notreReseau.allTypes' | translate }}</span>
-            <span *ngIf="type.key">{{ type.label }}</span>
+            <span *ngIf="type.key">{{ getTypeLabel(type.key) }}</span>
           </button>
         </div>
 
@@ -83,7 +83,10 @@
             (click)="focusOnMap(agency)">
             <div class="agency-header">
               <i class="fa-solid fa-building-columns"></i>
-              <h3>{{ agency.name }}</h3>
+              <div>
+                <span class="agency-type-badge">{{ getTypeLabel(agency.agency_type || '') }}</span>
+                <h3>{{ agency.name }}</h3>
+              </div>
             </div>
             <div class="agency-details">
               <p *ngIf="agency.address" class="detail-row">

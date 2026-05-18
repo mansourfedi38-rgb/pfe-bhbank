@@ -5,6 +5,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import * as L from 'leaflet';
 import { NavbarComponent } from '../../components/navbar/navbar';
 import { ApiService, Agency, Region } from '../../services/api.service';
+import { OFFICIAL_BH_NETWORK_LOCATIONS } from './official-network-locations';
 
 @Component({
   selector: 'app-notre-reseau',
@@ -27,13 +28,19 @@ export class NotreReseauComponent implements OnInit, AfterViewInit {
   private markers: L.Marker[] = [];
 
   agencyTypes = [
-    { key: '', label: 'Tous' },
-    { key: 'AGENCE', label: 'Agence' },
-    { key: 'CENTRE_AFFAIRES', label: "Centre d'affaires" },
-    { key: 'DIRECTION_REGIONALE', label: 'Direction régionale' },
-    { key: 'SIEGE', label: 'Siège' },
-    { key: 'SUCCURSALE', label: 'Succursale' },
-    { key: 'GAB', label: 'GAB' },
+    { key: '', labelKey: 'notreReseau.types.all' },
+    { key: 'SIEGE', labelKey: 'notreReseau.types.headOffice' },
+    { key: 'DIRECTION_REGIONALE', labelKey: 'notreReseau.types.regionalOffice' },
+    { key: 'CENTRE_AFFAIRES', labelKey: 'notreReseau.types.businessCenter' },
+    { key: 'SUCCURSALE', labelKey: 'notreReseau.types.branch' },
+    { key: 'AGENCE', labelKey: 'notreReseau.types.agency' },
+    { key: 'GAB', labelKey: 'notreReseau.types.atm' },
+  ];
+
+  private readonly extraNetworkLocations = OFFICIAL_BH_NETWORK_LOCATIONS;
+  private readonly extraRegions: Region[] = [
+    { id: 24, name: 'Kasserine' },
+    { id: 25, name: 'Sidi Bouzid' }
   ];
 
   constructor(
@@ -44,6 +51,9 @@ export class NotreReseauComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.loadData();
+    this.translate.onLangChange.subscribe(() => {
+      this.applyFilters();
+    });
   }
 
   ngAfterViewInit(): void {
@@ -57,7 +67,7 @@ export class NotreReseauComponent implements OnInit, AfterViewInit {
 
     this.api.getRegions().subscribe({
       next: (regions) => {
-        this.regions = regions;
+        this.regions = this.mergeRegions(regions);
       },
       error: () => {
         this.backendStatus = this.translate.instant('notreReseau.status.failed');
@@ -66,10 +76,10 @@ export class NotreReseauComponent implements OnInit, AfterViewInit {
 
     this.api.getAgencies().subscribe({
       next: (agencies) => {
-        this.agencies = agencies;
+        this.agencies = this.mergeNetworkLocations(agencies);
         this.applyFilters();
         this.isLoading = false;
-        this.backendStatus = this.translate.instant('notreReseau.status.loaded', { count: agencies.length });
+        this.backendStatus = this.translate.instant('notreReseau.status.loaded', { count: this.agencies.length });
         this.cdr.detectChanges();
         setTimeout(() => {
           this.updateMarkers();
@@ -97,16 +107,8 @@ export class NotreReseauComponent implements OnInit, AfterViewInit {
   private updateMarkers(): void {
     if (!this.map) return;
 
-    // Clear existing markers
     this.markers.forEach((m) => this.map!.removeLayer(m));
     this.markers = [];
-
-    const icon = L.divIcon({
-      className: 'custom-marker',
-      html: '<div class="marker-pin"><span>BH</span></div>',
-      iconSize: [36, 36],
-      iconAnchor: [18, 36]
-    });
 
     const bounds = L.latLngBounds([]);
 
@@ -114,15 +116,14 @@ export class NotreReseauComponent implements OnInit, AfterViewInit {
       if (agency.latitude && agency.longitude) {
         const lat = Number(agency.latitude);
         const lng = Number(agency.longitude);
-        const marker = L.marker([lat, lng], { icon })
+        const marker = L.marker([lat, lng], { icon: this.markerIcon(agency.agency_type || '') })
           .addTo(this.map!)
-          .bindPopup(`<strong>${agency.name}</strong><br>${agency.address || ''}`);
+          .bindPopup(`<strong>${agency.name}</strong><br>${this.getTypeLabel(agency.agency_type || '')}<br>${agency.address || ''}`);
         this.markers.push(marker);
         bounds.extend([lat, lng]);
       }
     });
 
-    // Fit map to show all markers with padding
     if (bounds.isValid()) {
       this.map.fitBounds(bounds, { padding: [60, 60], maxZoom: 16 });
     }
@@ -144,7 +145,8 @@ export class NotreReseauComponent implements OnInit, AfterViewInit {
       result = result.filter(
         (a) =>
           a.name.toLowerCase().includes(kw) ||
-          (a.address && a.address.toLowerCase().includes(kw))
+          (a.address && a.address.toLowerCase().includes(kw)) ||
+          this.getTypeLabel(a.agency_type || '').toLowerCase().includes(kw)
       );
     }
 
@@ -186,6 +188,48 @@ export class NotreReseauComponent implements OnInit, AfterViewInit {
 
   getTypeLabel(type: string): string {
     const t = this.agencyTypes.find((x) => x.key === type);
-    return t?.label || type;
+    return t ? this.translate.instant(t.labelKey) : type;
+  }
+
+  private mergeNetworkLocations(agencies: Agency[]): Agency[] {
+    const existingNames = new Set(agencies.map((agency) => agency.name.trim().toLowerCase()));
+    const extras = this.extraNetworkLocations.filter((location) => !existingNames.has(location.name.trim().toLowerCase()));
+    return [...agencies, ...extras].sort((a, b) => {
+      const typeOrder = this.typeOrder(a.agency_type || '') - this.typeOrder(b.agency_type || '');
+      return typeOrder || a.name.localeCompare(b.name);
+    });
+  }
+
+  private mergeRegions(regions: Region[]): Region[] {
+    const regionNames = new Set(regions.map((region) => region.name.trim().toLowerCase()));
+    const extras = this.extraRegions.filter((region) => !regionNames.has(region.name.trim().toLowerCase()));
+    return [...regions, ...extras].sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  private markerIcon(type: string): L.DivIcon {
+    const label = type === 'GAB' ? 'GAB' : 'BH';
+    return L.divIcon({
+      className: 'custom-marker',
+      html: `<div class="marker-pin ${this.markerClass(type)}"><span>${label}</span></div>`,
+      iconSize: [36, 36],
+      iconAnchor: [18, 36]
+    });
+  }
+
+  private markerClass(type: string): string {
+    const classes: Record<string, string> = {
+      SIEGE: 'marker-head-office',
+      DIRECTION_REGIONALE: 'marker-regional-office',
+      CENTRE_AFFAIRES: 'marker-business-center',
+      SUCCURSALE: 'marker-branch',
+      GAB: 'marker-atm'
+    };
+    return classes[type] || 'marker-agency';
+  }
+
+  private typeOrder(type: string): number {
+    const order = ['SIEGE', 'DIRECTION_REGIONALE', 'CENTRE_AFFAIRES', 'SUCCURSALE', 'AGENCE', 'GAB'];
+    const index = order.indexOf(type);
+    return index === -1 ? order.length : index;
   }
 }

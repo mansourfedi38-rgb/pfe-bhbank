@@ -116,7 +116,7 @@
       <div class="chart-container single-chart">
         <div class="card">
           <div class="card-top red-line"></div>
-          <h3>{{ 'dashboard.monthlyEnergyByAgency' | translate }}</h3>
+          <h3>{{ 'dashboard.monthlyEnergyAndClients' | translate }}</h3>
 
           <div *ngIf="chartsLoading" class="chart-loading">
             <p>{{ 'dashboard.loadingChart' | translate }}</p>
@@ -130,8 +130,20 @@
             <p>{{ 'dashboard.noMonthlyData' | translate }}</p>
           </div>
 
-          <div *ngIf="!chartsLoading && !chartError && !chartsEmpty" class="chart-wrapper">
-            <canvas id="agencyChart"></canvas>
+          <div *ngIf="!chartsLoading && !chartError && !chartsEmpty" class="dashboard-chart-stack">
+            <div class="chart-panel">
+              <h4>{{ 'dashboard.energyUsageChart' | translate }}</h4>
+              <div class="chart-wrapper">
+                <canvas id="dashboardEnergyChart"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-panel">
+              <h4>{{ 'dashboard.clientChart' | translate }}</h4>
+              <div class="chart-wrapper">
+                <canvas id="dashboardClientChart"></canvas>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -8,6 +8,7 @@ import Chart from 'chart.js/auto';
 import { ApiService, DailyEnergyKpi, MonthlyEnergyKpi } from '../../services/api.service';
 
 type EnergyRange = 'month' | 'quarter' | 'year';
+type ChartMetric = 'energy' | 'clients';
 type TrendPoint = { label: string; total: number };
 type AgencyTrendPanel = { agency: string; labels: string[]; data: number[]; color: string; backgroundColor: string };
 
@@ -27,6 +28,8 @@ export class EnergyUsageComponent implements OnInit {
   isLoading = true;
   hasError = false;
   selectedRange: EnergyRange = 'month';
+  selectedChartMetric: ChartMetric = 'energy';
+  selectedAgencyFilter = '';
   monthlyRows: MonthlyEnergyKpi[] = [];
   dailyRows: DailyEnergyKpi[] = [];
   filteredRows: MonthlyEnergyKpi[] = [];
@@ -34,6 +37,7 @@ export class EnergyUsageComponent implements OnInit {
   trendPoints: TrendPoint[] = [];
   agencyTrendPanels: AgencyTrendPanel[] = [];
   agencyTotals: { agency: string; total: number }[] = [];
+  agencyClientTotals: { agency: string; total: number }[] = [];
 
   cards = {
     totalEnergy: '',
@@ -87,6 +91,7 @@ export class EnergyUsageComponent implements OnInit {
           : months.filter((month) => month.startsWith(FULL_YEAR_VALUE));
 
     this.filteredRows = this.monthlyRows.filter((row) => selectedMonths.includes(row.month));
+    this.ensureSelectedAgencyFilter();
     this.recalculateSummaries();
     this.createTrendChart();
   }
@@ -101,14 +106,20 @@ export class EnergyUsageComponent implements OnInit {
     const totalEnergy = this.filteredRows.reduce((sum, row) => sum + Number(row.total_energy), 0);
     const monthMap = new Map<string, number>();
     const agencyMap = new Map<string, number>();
+    const agencyClientMap = new Map<string, number>();
 
     this.filteredRows.forEach((row) => {
       monthMap.set(row.month, (monthMap.get(row.month) || 0) + Number(row.total_energy));
       agencyMap.set(row.agency_name, (agencyMap.get(row.agency_name) || 0) + Number(row.total_energy));
+      const totalClients = this.monthlyTotalClients(row);
+      agencyClientMap.set(row.agency_name, (agencyClientMap.get(row.agency_name) || 0) + totalClients);
     });
 
     this.monthTotals = Array.from(monthMap.entries()).map(([month, total]) => ({ month, total }));
     this.agencyTotals = Array.from(agencyMap.entries())
+      .map(([agency, total]) => ({ agency, total }))
+      .sort((a, b) => b.total - a.total);
+    this.agencyClientTotals = Array.from(agencyClientMap.entries())
       .map(([agency, total]) => ({ agency, total }))
       .sort((a, b) => b.total - a.total);
 
@@ -156,7 +167,7 @@ export class EnergyUsageComponent implements OnInit {
           data: {
             labels: panel.labels,
             datasets: [{
-              label: `${panel.agency} (kWh)`,
+              label: this.chartDatasetLabel(panel.agency),
               data: panel.data,
               borderColor: panel.color,
               backgroundColor: panel.backgroundColor,
@@ -182,7 +193,7 @@ export class EnergyUsageComponent implements OnInit {
                 grid: { color: this.chartGridColor() },
                 title: {
                   display: true,
-                  text: this.translate.instant('energyUsage.totalEnergy') + ' (kWh)',
+                  text: this.chartYAxisTitle(),
                   color: this.chartTextColor()
                 }
               },
@@ -205,6 +216,16 @@ export class EnergyUsageComponent implements OnInit {
   }
 
   trendChartTitle(): string {
+    if (this.selectedChartMetric === 'clients') {
+      if (this.selectedRange === 'month') {
+        return this.translate.instant('energyUsage.clientTrendByDay');
+      }
+      if (this.selectedRange === 'quarter') {
+        return this.translate.instant('energyUsage.clientTrendByWeek');
+      }
+      return this.translate.instant('energyUsage.clientTrendByMonth');
+    }
+
     if (this.selectedRange === 'month') {
       return this.translate.instant('energyUsage.energyTrendByDay');
     }
@@ -222,6 +243,40 @@ export class EnergyUsageComponent implements OnInit {
       return this.translate.instant('energyUsage.averageEnergyPerWeek');
     }
     return this.translate.instant('energyUsage.averageEnergyPerMonth');
+  }
+
+  applyChartMetric(metric: ChartMetric): void {
+    this.selectedChartMetric = metric;
+    this.buildAgencyTrendPanels();
+    this.createTrendChart();
+  }
+
+  applyAgencyFilter(event: Event): void {
+    this.selectedAgencyFilter = (event.target as HTMLSelectElement).value;
+    this.buildAgencyTrendPanels();
+    this.createTrendChart();
+  }
+
+  availableAgencies(): string[] {
+    return Array.from(new Set(this.filteredRows.map((row) => row.agency_name))).sort();
+  }
+
+  comparisonTitle(): string {
+    return this.selectedChartMetric === 'clients'
+      ? this.translate.instant('energyUsage.clientComparison')
+      : this.translate.instant('energyUsage.agencyComparison');
+  }
+
+  chartYAxisTitle(): string {
+    return this.selectedChartMetric === 'clients'
+      ? this.translate.instant('energyUsage.totalClients')
+      : `${this.translate.instant('energyUsage.totalEnergy')} (kWh)`;
+  }
+
+  chartDatasetLabel(agency: string): string {
+    return this.selectedChartMetric === 'clients'
+      ? `${agency} (${this.translate.instant('energyUsage.totalClients')})`
+      : `${agency} (kWh)`;
   }
 
   private buildDailyTrend(): TrendPoint[] {
@@ -268,7 +323,8 @@ export class EnergyUsageComponent implements OnInit {
 
   private buildAgencyTrendPanels(): void {
     const trendLabels = this.trendPoints.map((row) => row.label);
-    const agencies = Array.from(new Set(this.filteredRows.map((row) => row.agency_name))).sort();
+    const allAgencies = this.availableAgencies();
+    const agencies = allAgencies.filter((agency) => agency === this.selectedAgencyFilter);
     const labelIndex = new Map(trendLabels.map((label, index) => [label, index]));
 
     this.agencyTrendPanels = agencies.map((agency, index) => {
@@ -291,7 +347,7 @@ export class EnergyUsageComponent implements OnInit {
           const panel = panelByAgency.get(row.agency_name);
           const index = labelIndex.get(this.formatDay(row.date));
           if (panel && index !== undefined) {
-            panel.data[index] += Number(row.total_energy);
+            panel.data[index] += this.dailyChartValue(row);
           }
         });
       return;
@@ -313,7 +369,7 @@ export class EnergyUsageComponent implements OnInit {
           const panel = panelByAgency.get(row.agency_name);
           const index = labelIndex.get(this.weekLabel(start));
           if (panel && index !== undefined) {
-            panel.data[index] += Number(row.total_energy);
+            panel.data[index] += this.dailyChartValue(row);
           }
         });
       return;
@@ -323,9 +379,25 @@ export class EnergyUsageComponent implements OnInit {
       const panel = panelByAgency.get(row.agency_name);
       const index = labelIndex.get(row.month);
       if (panel && index !== undefined) {
-        panel.data[index] += Number(row.total_energy);
+        panel.data[index] += this.monthlyChartValue(row);
       }
     });
+  }
+
+  private dailyChartValue(row: DailyEnergyKpi): number {
+    return this.selectedChartMetric === 'clients'
+      ? Number(row.total_clients || 0)
+      : Number(row.total_energy);
+  }
+
+  private monthlyChartValue(row: MonthlyEnergyKpi): number {
+    return this.selectedChartMetric === 'clients'
+      ? this.monthlyTotalClients(row)
+      : Number(row.total_energy);
+  }
+
+  private monthlyTotalClients(row: MonthlyEnergyKpi): number {
+    return Number(row.avg_clients || 0) * Number(row.readings_count || 0);
   }
 
   private chartPalette(index: number): { border: string; background: string } {
@@ -353,6 +425,13 @@ export class EnergyUsageComponent implements OnInit {
       return THREE_MONTH_VALUES.map((month) => this.formatMonth(month)).join(' / ');
     }
     return FULL_YEAR_VALUE;
+  }
+
+  private ensureSelectedAgencyFilter(): void {
+    const agencies = this.availableAgencies();
+    if (!agencies.includes(this.selectedAgencyFilter)) {
+      this.selectedAgencyFilter = agencies[0] || '';
+    }
   }
 
   private oneMonthValue(): string {

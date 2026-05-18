@@ -1,0 +1,73 @@
+<div class="assistant-shell" [class.open]="isOpen">
+  <button
+    type="button"
+    class="assistant-toggle"
+    (click)="toggleChat()"
+    [attr.aria-label]="'energyAssistant.title' | translate">
+    <span>EA</span>
+  </button>
+
+  <section *ngIf="isOpen" class="assistant-window" aria-live="polite">
+    <header class="assistant-header">
+      <div>
+        <span class="assistant-kicker">BH BANK</span>
+        <h2>{{ 'energyAssistant.title' | translate }}</h2>
+      </div>
+      <button type="button" class="close-button" (click)="closeChat()" [attr.aria-label]="'energyAssistant.close' | translate">
+        x
+      </button>
+    </header>
+
+    <div class="assistant-filters">
+      <label>
+        <span>{{ 'energyAssistant.month' | translate }}</span>
+        <select [(ngModel)]="selectedMonth">
+          <option value="">{{ 'energyAssistant.autoMonth' | translate }}</option>
+          <option *ngFor="let month of availableMonths" [ngValue]="month">{{ month }}</option>
+        </select>
+      </label>
+
+      <label>
+        <span>{{ 'energyAssistant.agency' | translate }}</span>
+        <select [(ngModel)]="selectedAgencyId">
+          <option [ngValue]="null">{{ 'energyAssistant.allAgencies' | translate }}</option>
+          <option *ngFor="let agency of agencies" [ngValue]="agency.id">{{ agency.name }}</option>
+        </select>
+      </label>
+    </div>
+
+    <div #messagesPanel class="messages-panel">
+      <div *ngFor="let message of messages" class="message-row" [class.user]="message.sender === 'user'">
+        <div class="message-bubble">
+          {{ message.text }}
+        </div>
+      </div>
+
+      <div *ngIf="isLoading" class="loading-state">
+        {{ 'energyAssistant.loading' | translate }}
+      </div>
+    </div>
+
+    <div *ngIf="errorMessage" class="assistant-error">
+      {{ errorMessage }}
+    </div>
+
+    <div class="suggestion-list">
+      <button *ngFor="let suggestion of suggestions" type="button" (click)="sendSuggestion(suggestion)">
+        {{ suggestion }}
+      </button>
+    </div>
+
+    <form class="assistant-input" (ngSubmit)="sendMessage()">
+      <input
+        type="text"
+        name="assistantMessage"
+        [(ngModel)]="draftMessage"
+        [placeholder]="'energyAssistant.placeholder' | translate"
+        [disabled]="isLoading">
+      <button type="submit" [disabled]="isLoading || !draftMessage.trim()">
+        {{ 'energyAssistant.send' | translate }}
+      </button>
+    </form>
+  </section>
+</div>

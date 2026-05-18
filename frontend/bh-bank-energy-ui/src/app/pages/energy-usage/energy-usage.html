@@ -73,7 +73,25 @@
 
     <section class="summary-grid" *ngIf="!isLoading && !hasError">
       <div class="summary-panel">
-        <h3>{{ trendChartTitle() }}</h3>
+        <div class="panel-heading">
+          <h3>{{ trendChartTitle() }}</h3>
+          <div class="chart-controls">
+            <label class="agency-filter">
+              <span>{{ 'energyUsage.agencyFilter' | translate }}</span>
+              <select [value]="selectedAgencyFilter" (change)="applyAgencyFilter($event)">
+                <option *ngFor="let agency of availableAgencies()" [value]="agency">{{ agency }}</option>
+              </select>
+            </label>
+            <div class="chart-filter" role="group" [attr.aria-label]="'energyUsage.chartFilter' | translate">
+              <button [class.active]="selectedChartMetric === 'energy'" (click)="applyChartMetric('energy')">
+                {{ 'energyUsage.energyChart' | translate }}
+              </button>
+              <button [class.active]="selectedChartMetric === 'clients'" (click)="applyChartMetric('clients')">
+                {{ 'energyUsage.clientChart' | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
         <div class="agency-chart-list">
           <div class="agency-chart" *ngFor="let panel of agencyTrendPanels; let i = index">
             <h4>{{ panel.agency }}</h4>
@@ -85,8 +103,8 @@
       </div>
 
       <div class="summary-panel">
-        <h3>{{ 'energyUsage.agencyComparison' | translate }}</h3>
-        <table class="summary-table">
+        <h3>{{ comparisonTitle() }}</h3>
+        <table class="summary-table" *ngIf="selectedChartMetric === 'energy'">
           <thead>
             <tr>
               <th>{{ 'energyUsage.agency' | translate }}</th>
@@ -97,6 +115,20 @@
             <tr *ngFor="let row of agencyTotals">
               <td>{{ row.agency }}</td>
               <td>{{ row.total.toFixed(2) }} kWh</td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="summary-table" *ngIf="selectedChartMetric === 'clients'">
+          <thead>
+            <tr>
+              <th>{{ 'energyUsage.agency' | translate }}</th>
+              <th>{{ 'energyUsage.totalClients' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of agencyClientTotals">
+              <td>{{ row.agency }}</td>
+              <td>{{ row.total.toFixed(0) }} {{ 'common.clientsUnit' | translate }}</td>
             </tr>
           </tbody>
         </table>
