@@ -6,6 +6,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NavbarComponent } from '../../components/navbar/navbar';
 import { Agency, ApiService, SensorData } from '../../services/api.service';
 import { AutoRefreshService } from '../../services/auto-refresh.service';
+import { TemperatureAlertThresholdService } from '../../services/temperature-alert-threshold.service';
 import { TemperatureUnitService } from '../../services/temperature-unit.service';
 
 const SENSOR_AGENCY_NAMES = [
@@ -17,7 +18,15 @@ const SENSOR_MIN_DATE = '2025-01-01';
 const SENSOR_MAX_DATE = '2026-04-30';
 
 type SensorTableFrequency = 'hour' | 'day' | 'week' | 'month';
-type SensorDisplayRow = SensorData & { periodLabel?: string };
+type SensorDisplayRow = SensorData & {
+  periodLabel?: string;
+  acOnHours?: number;
+  acEcoHours?: number;
+  acOffHours?: number;
+  activeAcHours?: number;
+  activeAcPercent?: number;
+  readingCount?: number;
+};
 
 @Component({
   selector: 'app-sensors',
@@ -51,6 +60,7 @@ export class SensorsComponent implements OnInit, OnDestroy {
   private hasAppliedFilters = false;
   private pollingInterval: any;
   private temperatureUnitSubscription?: { unsubscribe: () => void };
+  private temperatureAlertThresholdSubscription?: { unsubscribe: () => void };
   private autoRefreshSubscription?: { unsubscribe: () => void };
   private languageSubscription?: { unsubscribe: () => void };
 
@@ -58,6 +68,7 @@ export class SensorsComponent implements OnInit, OnDestroy {
     private api: ApiService,
     private autoRefresh: AutoRefreshService,
     private translate: TranslateService,
+    private temperatureAlertThreshold: TemperatureAlertThresholdService,
     private temperatureUnit: TemperatureUnitService,
     private cdr: ChangeDetectorRef
   ) {}
@@ -89,6 +100,9 @@ export class SensorsComponent implements OnInit, OnDestroy {
       this.updateSummaryCards();
       this.cdr.detectChanges();
     });
+    this.temperatureAlertThresholdSubscription = this.temperatureAlertThreshold.threshold$.subscribe(() => {
+      this.cdr.detectChanges();
+    });
     this.autoRefreshSubscription = this.autoRefresh.interval$.subscribe((interval) => {
       this.configureAutoRefresh(this.autoRefresh.toMilliseconds(interval));
     });
@@ -105,6 +119,7 @@ export class SensorsComponent implements OnInit, OnDestroy {
       clearInterval(this.pollingInterval);
     }
     this.temperatureUnitSubscription?.unsubscribe();
+    this.temperatureAlertThresholdSubscription?.unsubscribe();
     this.autoRefreshSubscription?.unsubscribe();
     this.languageSubscription?.unsubscribe();
   }
@@ -210,6 +225,20 @@ export class SensorsComponent implements OnInit, OnDestroy {
     return this.temperatureUnit.format(val);
   }
 
+  isTemperatureAlert(row: SensorDisplayRow): boolean {
+    return Number(row.temperature) > this.temperatureAlertThreshold.thresholdCelsius;
+  }
+
+  formatTemperatureAlert(row: SensorDisplayRow): string {
+    if (!this.isTemperatureAlert(row)) {
+      return '';
+    }
+
+    return this.translate.instant('sensors.temperatureAlert', {
+      threshold: this.temperatureUnit.format(this.temperatureAlertThreshold.thresholdCelsius)
+    });
+  }
+
   formatEnergy(val: string): string {
     return `${Number(val).toFixed(3)} kWh`;
   }
@@ -220,6 +249,28 @@ export class SensorsComponent implements OnInit, OnDestroy {
 
   formatTableTimestamp(row: SensorDisplayRow): string {
     return row.periodLabel || this.formatTimestamp(row.timestamp);
+  }
+
+  formatAcDetails(row: SensorDisplayRow): string {
+    if (!row.readingCount || row.readingCount <= 1) {
+      return this.translate.instant('sensors.acDetails.singleReading');
+    }
+
+    return this.translate.instant('sensors.acDetails.aggregate', {
+      on: row.acOnHours ?? 0,
+      eco: row.acEcoHours ?? 0,
+      off: row.acOffHours ?? 0,
+      active: row.activeAcHours ?? 0,
+      percent: row.activeAcPercent ?? 0
+    });
+  }
+
+  formatReadingCount(row: SensorDisplayRow): string {
+    if (!row.readingCount || row.readingCount <= 1) {
+      return '';
+    }
+
+    return this.translate.instant('sensors.readingCount', { count: row.readingCount });
   }
 
   acModeClass(mode: string): string {
@@ -313,11 +364,12 @@ export class SensorsComponent implements OnInit, OnDestroy {
     const totalClients = rows.reduce((sum, row) => sum + Number(row.clients_count), 0);
     const totalEnergy = rows.reduce((sum, row) => sum + Number(row.energy_usage), 0);
     const avgTemperature = rows.reduce((sum, row) => sum + Number(row.temperature), 0) / rows.length;
-    const acMode = rows.some((row) => row.ac_mode === 'ON')
-      ? 'ON'
-      : rows.some((row) => row.ac_mode === 'ECO')
-        ? 'ECO'
-        : 'OFF';
+    const acOnHours = rows.filter((row) => row.ac_mode === 'ON').length;
+    const acEcoHours = rows.filter((row) => row.ac_mode === 'ECO').length;
+    const acOffHours = rows.filter((row) => row.ac_mode === 'OFF').length;
+    const activeAcHours = acOnHours + acEcoHours;
+    const activeAcPercent = Math.round((activeAcHours / rows.length) * 100);
+    const acMode = this.dominantAcMode(acOnHours, acEcoHours, acOffHours);
     const periodStart = this.periodStart(first.timestamp);
 
     return {
@@ -327,8 +379,26 @@ export class SensorsComponent implements OnInit, OnDestroy {
       energy_usage: totalEnergy.toFixed(3),
       ac_mode: acMode,
       timestamp: periodStart.toISOString(),
-      periodLabel: this.periodLabel(periodStart)
+      periodLabel: this.periodLabel(periodStart),
+      acOnHours,
+      acEcoHours,
+      acOffHours,
+      activeAcHours,
+      activeAcPercent,
+      readingCount: rows.length
     };
+  }
+
+  private dominantAcMode(onCount: number, ecoCount: number, offCount: number): 'OFF' | 'ECO' | 'ON' {
+    if (onCount >= ecoCount && onCount >= offCount) {
+      return 'ON';
+    }
+
+    if (ecoCount >= onCount && ecoCount >= offCount) {
+      return 'ECO';
+    }
+
+    return 'OFF';
   }
 
   private periodKey(timestamp: string): string {

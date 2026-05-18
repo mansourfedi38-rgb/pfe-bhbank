@@ -70,6 +70,8 @@
     "subtitle": "Bienvenue sur la plateforme intelligente de surveillance BH Bank.",
     "selectedMonth": "Mois sélectionné",
     "month": "Mois",
+    "agency": "Agence",
+    "allAgencies": "Toutes les agences",
     "totalEnergyThisMonth": "Énergie totale ce mois-ci",
     "averageTemperatureThisMonth": "Température moyenne ce mois-ci",
     "peakAgencyThisMonth": "Agence la plus consommatrice ce mois-ci",
@@ -86,7 +88,7 @@
     "alerts": {
       "high_temperature": {
         "type": "Température élevée",
-        "message": "{{agency}} a enregistré {{temperature}}, au-dessus du seuil de confort de 30 °C."
+        "message": "{{agency}} a enregistré {{temperature}}, au-dessus du seuil d’alerte de {{temperatureThreshold}}."
       },
       "high_energy_usage": {
         "type": "Forte consommation d'énergie",
@@ -136,6 +138,9 @@
     "energyAlertThreshold": "Seuil d’alerte énergétique",
     "energyAlertThresholdHelp": "Choisissez quand les alertes de forte consommation apparaissent.",
     "alertMeWhenEnergyExceeds": "M’alerter lorsque l’énergie dépasse :",
+    "temperatureAlertThreshold": "Seuil d’alerte température",
+    "temperatureAlertThresholdHelp": "Choisissez quand les alertes de température élevée apparaissent.",
+    "alertMeWhenTemperatureExceeds": "M’alerter lorsque la température dépasse :",
     "autoRefreshData": "Actualisation automatique des données",
     "autoRefreshDataHelp": "Choisissez la fréquence d’actualisation du tableau de bord et des capteurs.",
     "refreshEvery10Sec": "Toutes les 10 s",
@@ -180,10 +185,16 @@
     "clients": "Clients",
     "energyUsage": "Consommation énergétique",
     "timestamp": "Horodatage",
+    "temperatureAlert": "Au-dessus du seuil {{threshold}}",
     "metrics": {
       "clients": "{{count}} clients",
       "activeAc": "{{active}}h/{{total}}h climatisations actives"
     },
+    "acDetails": {
+      "singleReading": "Lecture horaire",
+      "aggregate": "ON {{on}}h, ECO {{eco}}h, OFF {{off}}h. Actif {{active}}h ({{percent}}%)."
+    },
+    "readingCount": "{{count}} lectures horaires",
     "status": {
       "loading": "Chargement des capteurs depuis le backend...",
       "waitingForApply": "Sélectionnez une période, puis appliquez les filtres.",
@@ -354,6 +365,27 @@
       "policies": "Comparer les politiques d’utilisation des équipements entre agences et documenter les différences opérationnelles.",
       "generateData": "Générer ou sélectionner une période contenant des lectures de capteurs avant de comparer les agences.",
       "monitor": "Continuer à suivre l’énergie par client et l’usage de la climatisation pour détecter les écarts futurs."
+    },
+    "insightTypes": {
+      "temperature": "Température",
+      "clients": "Clients",
+      "ac_mode": "Mode AC",
+      "efficiency": "Efficacité",
+      "general": "Général"
+    },
+    "insightFactors": {
+      "temperature": "{{diff}} °C d’écart",
+      "clients": "{{diff}} clients de plus",
+      "acMode": "{{diff}}% d’utilisation ON en plus",
+      "efficiency": "{{diff}}% d’efficacité en moins",
+      "general": "Aucune différence significative détectée"
+    },
+    "insightMessages": {
+      "temperature": "{{higher}} a une température moyenne plus élevée ({{higherTemp}} °C contre {{lowerTemp}} °C), ce qui peut demander plus d’énergie pour le refroidissement.",
+      "clients": "{{higher}} sert {{diff}} clients de plus ({{percent}}% en plus), ce qui augmente généralement la consommation énergétique.",
+      "acMode": "{{higher}} utilise le mode AC ON plus souvent ({{higherPercent}}% contre {{lowerPercent}}%), ce qui augmente fortement la consommation.",
+      "efficiency": "{{higher}} consomme {{percent}}% d’énergie en plus par client ({{higherValue}} contre {{lowerValue}}), ce qui suggère une efficacité plus faible.",
+      "general": "Les deux agences ont des profils énergétiques similaires."
     }
   },
   "aiDetector": {

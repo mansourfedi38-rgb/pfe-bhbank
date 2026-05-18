@@ -70,6 +70,8 @@
     "subtitle": "مرحبًا بك في منصة المراقبة الذكية لبنك BH.",
     "selectedMonth": "الشهر المحدد",
     "month": "الشهر",
+    "agency": "الوكالة",
+    "allAgencies": "كل الوكالات",
     "totalEnergyThisMonth": "إجمالي الطاقة هذا الشهر",
     "averageTemperatureThisMonth": "متوسط الحرارة هذا الشهر",
     "peakAgencyThisMonth": "أكثر وكالة استهلاكًا هذا الشهر",
@@ -86,7 +88,7 @@
     "alerts": {
       "high_temperature": {
         "type": "درجة حرارة مرتفعة",
-        "message": "سجلت {{agency}} درجة {{temperature}}، وهي أعلى من حد الراحة 30 °C."
+        "message": "سجلت {{agency}} درجة {{temperature}}، وهي أعلى من حد التنبيه {{temperatureThreshold}}."
       },
       "high_energy_usage": {
         "type": "استهلاك طاقة مرتفع",
@@ -136,6 +138,9 @@
     "energyAlertThreshold": "حد تنبيه الطاقة",
     "energyAlertThresholdHelp": "اختر متى تظهر تنبيهات استهلاك الطاقة المرتفع.",
     "alertMeWhenEnergyExceeds": "نبّهني عندما تتجاوز الطاقة:",
+    "temperatureAlertThreshold": "حد تنبيه الحرارة",
+    "temperatureAlertThresholdHelp": "اختر متى تظهر تنبيهات درجة الحرارة المرتفعة.",
+    "alertMeWhenTemperatureExceeds": "نبّهني عندما تتجاوز الحرارة:",
     "autoRefreshData": "التحديث التلقائي للبيانات",
     "autoRefreshDataHelp": "اختر عدد مرات تحديث لوحة التحكم وبيانات المستشعرات.",
     "refreshEvery10Sec": "كل 10 ثوانٍ",
@@ -180,10 +185,16 @@
     "clients": "العملاء",
     "energyUsage": "استهلاك الطاقة",
     "timestamp": "الوقت",
+    "temperatureAlert": "أعلى من الحد {{threshold}}",
     "metrics": {
       "clients": "{{count}} عميل",
       "activeAc": "{{active}}h/{{total}}h تكييف نشط"
     },
+    "acDetails": {
+      "singleReading": "قراءة ساعية",
+      "aggregate": "ON {{on}}h, ECO {{eco}}h, OFF {{off}}h. نشط {{active}}h ({{percent}}%)."
+    },
+    "readingCount": "{{count}} قراءات ساعية",
     "status": {
       "loading": "جارٍ تحميل بيانات المستشعرات من الخلفية...",
       "waitingForApply": "حدد نطاق التاريخ، ثم طبّق الفلاتر.",
@@ -354,6 +365,27 @@
       "policies": "مقارنة سياسات استخدام المعدات بين الوكالات وتوثيق الفروق التشغيلية.",
       "generateData": "قم بتوليد أو اختيار فترة تحتوي على قراءات مستشعرات قبل مقارنة الوكالات.",
       "monitor": "استمر في مراقبة الطاقة لكل عميل واستخدام التكييف لاكتشاف أي انحرافات مستقبلية."
+    },
+    "insightTypes": {
+      "temperature": "درجة الحرارة",
+      "clients": "العملاء",
+      "ac_mode": "وضع التكييف",
+      "efficiency": "الكفاءة",
+      "general": "عام"
+    },
+    "insightFactors": {
+      "temperature": "فرق {{diff}} °C",
+      "clients": "{{diff}} عملاء أكثر",
+      "acMode": "استخدام وضع ON أكثر بـ {{diff}}%",
+      "efficiency": "كفاءة أقل بـ {{diff}}%",
+      "general": "لم يتم اكتشاف فروق مهمة"
+    },
+    "insightMessages": {
+      "temperature": "{{higher}} لديها متوسط حرارة أعلى ({{higherTemp}} °C مقابل {{lowerTemp}} °C)، مما قد يتطلب طاقة أكبر للتبريد.",
+      "clients": "{{higher}} تخدم {{diff}} عملاء أكثر ({{percent}}% أكثر)، وهذا عادة يزيد استهلاك الطاقة.",
+      "acMode": "{{higher}} تستخدم وضع AC ON بشكل أكثر تكرارًا ({{higherPercent}}% مقابل {{lowerPercent}}%)، مما يزيد استهلاك الطاقة بشكل واضح.",
+      "efficiency": "{{higher}} تستهلك طاقة أكثر لكل عميل بنسبة {{percent}}% ({{higherValue}} مقابل {{lowerValue}})، مما يشير إلى كفاءة أقل.",
+      "general": "لدى الوكالتين ملفات طاقة متشابهة."
     }
   },
   "aiDetector": {

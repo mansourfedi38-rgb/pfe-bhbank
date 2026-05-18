@@ -1,10 +1,10 @@
-import { NgFor, NgIf, DecimalPipe, UpperCasePipe } from '@angular/common';
+import { DecimalPipe, NgFor, NgIf } from '@angular/common';
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NavbarComponent } from '../../components/navbar/navbar';
-import { ApiService, Region, Agency, ComparisonResponse, MonthlyEnergyKpi } from '../../services/api.service';
+import { Agency, ApiService, ComparisonResponse, Insight, MonthlyEnergyKpi, Region } from '../../services/api.service';
 import { TemperatureUnitService } from '../../services/temperature-unit.service';
 import { Subscription } from 'rxjs';
 
@@ -41,7 +41,6 @@ const COMPARE_MONTHS = [
   imports: [
     NgIf,
     NgFor,
-    UpperCasePipe,
     TranslateModule,
     DecimalPipe,
     FormsModule,
@@ -251,6 +250,81 @@ export class CompareAgenciesComponent implements OnInit, OnDestroy {
     return translated === `compareAgencies.recommendationText.${key}` ? recommendation : translated;
   }
 
+  getInsightType(insight: Insight): string {
+    const key = `compareAgencies.insightTypes.${insight.type}`;
+    const translated = this.translate.instant(key);
+    return translated === key ? insight.type : translated;
+  }
+
+  getInsightFactor(insight: Insight): string {
+    if (!this.comparisonResult) {
+      return insight.factor;
+    }
+
+    const context = this.getInsightContext();
+    switch (insight.type) {
+      case 'temperature':
+        return this.translate.instant('compareAgencies.insightFactors.temperature', {
+          diff: context.temperatureDiff.toFixed(1)
+        });
+      case 'clients':
+        return this.translate.instant('compareAgencies.insightFactors.clients', {
+          diff: context.clientsDiff
+        });
+      case 'ac_mode':
+        return this.translate.instant('compareAgencies.insightFactors.acMode', {
+          diff: context.acOnDiff.toFixed(0)
+        });
+      case 'efficiency':
+        return this.translate.instant('compareAgencies.insightFactors.efficiency', {
+          diff: context.energyPerClientPct.toFixed(0)
+        });
+      case 'general':
+        return this.translate.instant('compareAgencies.insightFactors.general');
+      default:
+        return insight.factor;
+    }
+  }
+
+  getInsightText(insight: Insight): string {
+    if (!this.comparisonResult) {
+      return insight.text;
+    }
+
+    const context = this.getInsightContext();
+    switch (insight.type) {
+      case 'temperature':
+        return this.translate.instant('compareAgencies.insightMessages.temperature', {
+          higher: context.higher.name,
+          higherTemp: context.higher.average_temperature.toFixed(1),
+          lowerTemp: context.lower.average_temperature.toFixed(1)
+        });
+      case 'clients':
+        return this.translate.instant('compareAgencies.insightMessages.clients', {
+          higher: context.higher.name,
+          diff: context.clientsDiff,
+          percent: context.clientsPct.toFixed(0)
+        });
+      case 'ac_mode':
+        return this.translate.instant('compareAgencies.insightMessages.acMode', {
+          higher: context.higher.name,
+          higherPercent: context.higher.on_percentage.toFixed(0),
+          lowerPercent: context.lower.on_percentage.toFixed(0)
+        });
+      case 'efficiency':
+        return this.translate.instant('compareAgencies.insightMessages.efficiency', {
+          higher: context.higher.name,
+          percent: context.energyPerClientPct.toFixed(0),
+          higherValue: context.higher.energy_per_client.toFixed(2),
+          lowerValue: context.lower.energy_per_client.toFixed(2)
+        });
+      case 'general':
+        return this.translate.instant('compareAgencies.insightMessages.general');
+      default:
+        return insight.text;
+    }
+  }
+
   private updateComparisonCards(): void {
     if (!this.comparisonResult) return;
 
@@ -281,6 +355,30 @@ export class CompareAgenciesComponent implements OnInit, OnDestroy {
     if (recommendation.includes('Generate or select')) return 'generateData';
     if (recommendation.includes('Continue monitoring')) return 'monitor';
     return 'policies';
+  }
+
+  private getInsightContext() {
+    const agency1 = this.comparisonResult!.agency_1;
+    const agency2 = this.comparisonResult!.agency_2;
+    const higher = agency1.total_energy >= agency2.total_energy ? agency1 : agency2;
+    const lower = agency1.total_energy >= agency2.total_energy ? agency2 : agency1;
+    const clientsDiff = Math.max(0, higher.total_clients - lower.total_clients);
+    const clientsPct = lower.total_clients > 0 ? (clientsDiff / lower.total_clients) * 100 : 0;
+    const acOnDiff = Math.max(0, higher.on_percentage - lower.on_percentage);
+    const energyPerClientDiff = Math.max(0, higher.energy_per_client - lower.energy_per_client);
+    const energyPerClientPct = lower.energy_per_client > 0
+      ? (energyPerClientDiff / lower.energy_per_client) * 100
+      : 0;
+
+    return {
+      higher,
+      lower,
+      temperatureDiff: higher.average_temperature - lower.average_temperature,
+      clientsDiff,
+      clientsPct,
+      acOnDiff,
+      energyPerClientPct
+    };
   }
 
   private getPeriodFilter(): { month?: string; date_from?: string; date_to?: string } {

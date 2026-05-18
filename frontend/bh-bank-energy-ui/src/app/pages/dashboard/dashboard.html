@@ -22,10 +22,21 @@
     </section>
 
     <section class="filter-section">
-      <label for="month-select">{{ 'dashboard.month' | translate }}</label>
-      <select id="month-select" [(ngModel)]="selectedMonth" (change)="onMonthChange()">
-        <option *ngFor="let month of availableMonths" [ngValue]="month">{{ month }}</option>
-      </select>
+      <div class="filter-field">
+        <label for="month-select">{{ 'dashboard.month' | translate }}</label>
+        <select id="month-select" [(ngModel)]="selectedMonth" (change)="onMonthChange()">
+          <option *ngFor="let month of availableMonths" [ngValue]="month">{{ month }}</option>
+        </select>
+      </div>
+
+      <div class="filter-field">
+        <label for="agency-select">{{ 'dashboard.agency' | translate }}</label>
+        <select id="agency-select" [(ngModel)]="selectedAgencyId" (change)="onAgencyChange()">
+          <option [ngValue]="null">{{ 'dashboard.allAgencies' | translate }}</option>
+          <option *ngFor="let agency of availableAgencies" [ngValue]="agency.id">{{ agency.name }}</option>
+        </select>
+      </div>
+
       <button type="button" class="refresh-btn" (click)="refreshNow()">
         {{ 'dashboard.refreshNow' | translate }}
       </button>

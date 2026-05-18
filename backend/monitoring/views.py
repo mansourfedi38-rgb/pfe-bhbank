@@ -609,12 +609,14 @@ def _build_crowded_hours(rows):
 @api_view(['GET'])
 def recent_alerts(request):
     month = request.query_params.get('month')
+    agency = request.query_params.get('agency')
     energy_threshold = _get_energy_alert_threshold(request)
+    temperature_threshold = _get_temperature_alert_threshold(request)
     queryset = (
         SensorData.objects
         .select_related('agency')
         .filter(
-            Q(temperature__gt=30)
+            Q(temperature__gt=temperature_threshold)
             | Q(energy_usage__gt=energy_threshold)
             | (
                 Q(energy_usage__gt=1)
@@ -642,15 +644,16 @@ def recent_alerts(request):
             timestamp__month=month_number,
         )
 
+    if agency:
+        queryset = queryset.filter(agency_id=agency)
+
     queryset = queryset.order_by('-timestamp')[:200]
 
     candidates = []
     for reading in queryset:
-        candidates.extend(_build_alerts_for_reading(reading, energy_threshold))
-        if len(candidates) >= 50:
-            break
+        candidates.extend(_build_alerts_for_reading(reading, energy_threshold, temperature_threshold))
 
-    return Response(_select_diverse_recent_alerts(candidates))
+    return Response(_summarize_alerts_for_dashboard(candidates))
 
 
 def _get_energy_alert_threshold(request):
@@ -662,20 +665,30 @@ def _get_energy_alert_threshold(request):
     return threshold if threshold > 0 else 4
 
 
-def _build_alerts_for_reading(reading, energy_threshold=4):
+def _get_temperature_alert_threshold(request):
+    raw_value = request.query_params.get('temperature_threshold')
+    try:
+        threshold = float(raw_value) if raw_value is not None else 30
+    except (TypeError, ValueError):
+        threshold = 30
+    return threshold if -50 < threshold < 80 else 30
+
+
+def _build_alerts_for_reading(reading, energy_threshold=4, temperature_threshold=30):
     alerts = []
     temperature = float(reading.temperature)
     energy_usage = float(reading.energy_usage)
 
-    if temperature > 30:
+    if temperature > temperature_threshold:
         alerts.append({
             'agency_name': reading.agency.name,
             'type': 'High temperature',
             'alert_key': 'high_temperature',
             'severity': 'critical',
-            'message': f'{reading.agency.name} recorded {temperature:.1f}°C, above the 30°C comfort threshold.',
+            'message': f'{reading.agency.name} recorded {temperature:.1f}°C, above the {temperature_threshold:.1f}°C temperature alert threshold.',
             'timestamp': reading.timestamp,
             'temperature': round(temperature, 1),
+            'temperature_threshold': round(temperature_threshold, 1),
         })
 
     if energy_usage > energy_threshold:
@@ -702,6 +715,54 @@ def _build_alerts_for_reading(reading, energy_threshold=4):
         })
 
     return alerts
+
+
+def _summarize_alerts_for_dashboard(candidates):
+    """Keep dashboard alerts concise: one monthly remark per agency and alert type."""
+    grouped = {}
+
+    for alert in candidates:
+        month = _alert_month(alert)
+        key = (
+            month,
+            alert['agency_name'],
+            alert.get('alert_key') or alert['type'],
+        )
+        existing = grouped.get(key)
+
+        if not existing:
+            grouped[key] = {**alert, 'occurrences': 1}
+            continue
+
+        existing['occurrences'] += 1
+        if alert['timestamp'] > existing['timestamp']:
+            existing['timestamp'] = alert['timestamp']
+
+        if 'temperature' in alert:
+            existing['temperature'] = max(
+                existing.get('temperature', alert['temperature']),
+                alert['temperature'],
+            )
+            existing['temperature_threshold'] = alert.get(
+                'temperature_threshold',
+                existing.get('temperature_threshold'),
+            )
+
+        if 'energy_usage' in alert:
+            existing['energy_usage'] = max(
+                existing.get('energy_usage', alert['energy_usage']),
+                alert['energy_usage'],
+            )
+            existing['energy_threshold'] = alert.get(
+                'energy_threshold',
+                existing.get('energy_threshold'),
+            )
+
+    return sorted(
+        grouped.values(),
+        key=lambda alert: alert['timestamp'],
+        reverse=True,
+    )
 
 
 def _is_outside_business_hours(value):

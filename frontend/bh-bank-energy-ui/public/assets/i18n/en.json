@@ -70,6 +70,8 @@
     "subtitle": "Welcome to the BH Bank smart monitoring platform.",
     "selectedMonth": "Selected Month",
     "month": "Month",
+    "agency": "Agency",
+    "allAgencies": "All agencies",
     "totalEnergyThisMonth": "Total Energy This Month",
     "averageTemperatureThisMonth": "Average Temperature This Month",
     "peakAgencyThisMonth": "Peak Agency This Month",
@@ -86,7 +88,7 @@
     "alerts": {
       "high_temperature": {
         "type": "High temperature",
-        "message": "{{agency}} recorded {{temperature}}, above the 30°C comfort threshold."
+        "message": "{{agency}} recorded {{temperature}}, above the {{temperatureThreshold}} alert threshold."
       },
       "high_energy_usage": {
         "type": "High energy usage",
@@ -136,6 +138,9 @@
     "energyAlertThreshold": "Energy Alert Threshold",
     "energyAlertThresholdHelp": "Choose when high-energy alerts appear.",
     "alertMeWhenEnergyExceeds": "Alert me when energy exceeds:",
+    "temperatureAlertThreshold": "Temperature Alert Threshold",
+    "temperatureAlertThresholdHelp": "Choose when high-temperature alerts appear.",
+    "alertMeWhenTemperatureExceeds": "Alert me when temperature exceeds:",
     "autoRefreshData": "Auto Refresh Data",
     "autoRefreshDataHelp": "Choose how often dashboard and sensor data refresh.",
     "refreshEvery10Sec": "Every 10 sec",
@@ -180,10 +185,16 @@
     "clients": "Clients",
     "energyUsage": "Energy Usage",
     "timestamp": "Timestamp",
+    "temperatureAlert": "Above {{threshold}} threshold",
     "metrics": {
       "clients": "{{count}} clients",
       "activeAc": "{{active}}h/{{total}}h active AC"
     },
+    "acDetails": {
+      "singleReading": "Hourly reading",
+      "aggregate": "ON {{on}}h, ECO {{eco}}h, OFF {{off}}h. Active {{active}}h ({{percent}}%)."
+    },
+    "readingCount": "{{count}} hourly readings",
     "status": {
       "loading": "Loading sensors from backend...",
       "waitingForApply": "Select a date range, then apply filters.",
@@ -354,6 +365,27 @@
       "policies": "Compare equipment usage policies between agencies and document operational differences.",
       "generateData": "Generate or select a period with sensor readings before comparing agencies.",
       "monitor": "Continue monitoring energy per client and AC usage to detect future deviations."
+    },
+    "insightTypes": {
+      "temperature": "Temperature",
+      "clients": "Clients",
+      "ac_mode": "AC mode",
+      "efficiency": "Efficiency",
+      "general": "General"
+    },
+    "insightFactors": {
+      "temperature": "{{diff}}°C difference",
+      "clients": "{{diff}} more clients",
+      "acMode": "{{diff}}% more ON mode usage",
+      "efficiency": "{{diff}}% lower efficiency",
+      "general": "No significant differences detected"
+    },
+    "insightMessages": {
+      "temperature": "{{higher}} has a higher average temperature ({{higherTemp}}°C vs {{lowerTemp}}°C), which may require more energy for cooling.",
+      "clients": "{{higher}} serves {{diff}} more clients ({{percent}}% more), which typically increases energy consumption.",
+      "acMode": "{{higher}} runs AC in ON mode more frequently ({{higherPercent}}% vs {{lowerPercent}}%), consuming significantly more energy.",
+      "efficiency": "{{higher}} consumes {{percent}}% more energy per client ({{higherValue}} vs {{lowerValue}}), suggesting lower efficiency.",
+      "general": "Both agencies have similar energy profiles."
     }
   },
   "aiDetector": {

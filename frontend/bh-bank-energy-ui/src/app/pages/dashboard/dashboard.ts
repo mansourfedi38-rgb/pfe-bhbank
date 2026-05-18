@@ -11,6 +11,7 @@ import { ApiService, MonthlyEnergyKpi, RecentAlert, SensorData } from '../../ser
 import { AutoRefreshService } from '../../services/auto-refresh.service';
 import { EnergyAlertThresholdService } from '../../services/energy-alert-threshold.service';
 import { NotificationPreferencesService } from '../../services/notification-preferences.service';
+import { TemperatureAlertThresholdService } from '../../services/temperature-alert-threshold.service';
 import { TemperatureUnitService } from '../../services/temperature-unit.service';
 
 const DASHBOARD_MONTHS = [
@@ -31,6 +32,16 @@ const DASHBOARD_MONTHS = [
   '2026-03',
   '2026-04'
 ];
+const DASHBOARD_AGENCY_NAMES = [
+  'bh bank mrezga',
+  'bh bank nabeul',
+  'bh bank dar chaaben'
+];
+
+type DashboardAgencyOption = {
+  id: number;
+  name: string;
+};
 
 @Component({
   selector: 'app-dashboard',
@@ -47,7 +58,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   recentAlerts: RecentAlert[] = [];
   selectedMonth = '';
   selectedAlertMonth = '';
+  selectedAgencyId: number | null = null;
   availableMonths: string[] = [];
+  availableAgencies: DashboardAgencyOption[] = [];
   latestReadingTime = '';
 
   dashboardMetrics = {
@@ -73,6 +86,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private translate: TranslateService,
     private energyAlertThreshold: EnergyAlertThresholdService,
     private notificationPreferences: NotificationPreferencesService,
+    private temperatureAlertThreshold: TemperatureAlertThresholdService,
     private temperatureUnit: TemperatureUnitService,
     private cdr: ChangeDetectorRef
   ) {}
@@ -84,6 +98,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(this.translate.onLangChange.subscribe(() => {
       this.updateSelectedMonthSummary();
+      this.createMonthlyAgencyChart();
     }));
 
     this.subscriptions.add(this.temperatureUnit.unit$.subscribe(() => {
@@ -91,6 +106,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }));
 
     this.subscriptions.add(this.energyAlertThreshold.threshold$.subscribe(() => {
+      this.loadRecentAlerts();
+    }));
+
+    this.subscriptions.add(this.temperatureAlertThreshold.threshold$.subscribe(() => {
       this.loadRecentAlerts();
     }));
 
@@ -121,6 +140,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.loadRecentAlerts();
   }
 
+  onAgencyChange(): void {
+    this.updateSelectedMonthSummary();
+    this.createMonthlyAgencyChart();
+    this.loadRecentAlerts();
+  }
+
   onAlertMonthChange(): void {
     this.loadRecentAlerts();
   }
@@ -144,6 +169,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const translated = this.translate.instant(`dashboard.alerts.${key}.message`, {
       agency: alert.agency_name,
       temperature: alert.temperature !== undefined ? this.temperatureUnit.format(alert.temperature) : '',
+      temperatureThreshold: this.temperatureUnit.format(
+        alert.temperature_threshold ?? this.temperatureAlertThreshold.thresholdCelsius
+      ),
       energy: this.formatEnergy(alert.energy_usage),
       threshold: this.formatEnergy(alert.energy_threshold)
     });
@@ -167,6 +195,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       next: ({ monthlyKpi, latestReadings }) => {
         this.monthlyRows = monthlyKpi.filter((row) => DASHBOARD_MONTHS.includes(row.month));
         this.latestReadings = latestReadings;
+        this.availableAgencies = this.getAvailableAgencies(this.monthlyRows);
         const monthsWithData = new Set(this.monthlyRows.map((row) => row.month));
         this.availableMonths = DASHBOARD_MONTHS.filter((month) => monthsWithData.has(month));
         this.selectedMonth = this.availableMonths[this.availableMonths.length - 1] || '';
@@ -189,9 +218,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private loadRecentAlerts(): void {
-    this.api.getRecentAlerts(this.selectedAlertMonth, this.energyAlertThreshold.threshold).subscribe({
+    this.api.getRecentAlerts(
+      this.selectedAlertMonth,
+      this.energyAlertThreshold.threshold,
+      this.temperatureAlertThreshold.thresholdCelsius,
+      this.selectedAgencyId
+    ).subscribe({
       next: (alerts) => {
-        this.allRecentAlerts = alerts.slice(0, 5);
+        this.allRecentAlerts = alerts;
         this.playSoundForNewAlerts(this.allRecentAlerts);
         this.applyNotificationVisibility();
         this.cdr.detectChanges();
@@ -302,7 +336,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private getSelectedMonthRows(): MonthlyEnergyKpi[] {
-    return this.monthlyRows.filter((row) => row.month === this.selectedMonth);
+    return this.monthlyRows.filter((row) =>
+      row.month === this.selectedMonth
+      && (this.selectedAgencyId === null || row.agency === this.selectedAgencyId)
+    );
   }
 
   private formatLatestReading(row?: SensorData): string {
@@ -312,8 +349,27 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private formatLatestReadingForMonth(month: string): string {
     if (!month) return this.notAvailable();
-    const row = this.latestReadings.find((reading) => reading.timestamp.startsWith(month));
+    const row = this.latestReadings.find((reading) =>
+      reading.timestamp.startsWith(month)
+      && (this.selectedAgencyId === null || reading.agency === this.selectedAgencyId)
+    );
     return this.formatLatestReading(row);
+  }
+
+  private getAvailableAgencies(rows: MonthlyEnergyKpi[]): DashboardAgencyOption[] {
+    const agencies = new Map<number, string>();
+    rows.forEach((row) => {
+      if (DASHBOARD_AGENCY_NAMES.includes(this.normalizeName(row.agency_name))) {
+        agencies.set(row.agency, row.agency_name);
+      }
+    });
+
+    return Array.from(agencies.entries())
+      .map(([id, name]) => ({ id, name }))
+      .sort((a, b) =>
+        DASHBOARD_AGENCY_NAMES.indexOf(this.normalizeName(a.name))
+        - DASHBOARD_AGENCY_NAMES.indexOf(this.normalizeName(b.name))
+      );
   }
 
   private setLoadingState(): void {
@@ -371,7 +427,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private applyNotificationVisibility(): void {
     if (this.notificationPreferences.notifications === 'enabled') {
       this.recentAlerts = this.allRecentAlerts;
-      this.dashboardMetrics.activeAlerts = String(this.recentAlerts.length);
+      this.dashboardMetrics.activeAlerts = String(this.allRecentAlerts.length);
     } else {
       this.recentAlerts = [];
       this.dashboardMetrics.activeAlerts = '0';
@@ -405,5 +461,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (intervalMs !== null) {
       this.refreshInterval = setInterval(() => this.loadDashboardData(), intervalMs);
     }
+  }
+
+  private normalizeName(value: string): string {
+    return value.trim().toLowerCase();
   }
 }

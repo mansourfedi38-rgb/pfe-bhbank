@@ -93,6 +93,26 @@
 
       <div class="setting-card">
         <div class="card-top blue-line"></div>
+        <h3>{{ 'settings.temperatureAlertThreshold' | translate }}</h3>
+        <p>{{ 'settings.temperatureAlertThresholdHelp' | translate }}</p>
+        <label class="input-label" for="temperature-alert-threshold">
+          {{ 'settings.alertMeWhenTemperatureExceeds' | translate }}
+        </label>
+        <div class="unit-input">
+          <input
+            id="temperature-alert-threshold"
+            type="number"
+            step="0.1"
+            [(ngModel)]="temperatureAlertThreshold"
+            (change)="onTemperatureAlertThresholdChange(temperatureAlertThreshold)"
+            (blur)="onTemperatureAlertThresholdChange(temperatureAlertThreshold)"
+          />
+          <span>{{ temperatureSymbol }}</span>
+        </div>
+      </div>
+
+      <div class="setting-card">
+        <div class="card-top blue-line"></div>
         <h3>{{ 'settings.autoRefreshData' | translate }}</h3>
         <p>{{ 'settings.autoRefreshDataHelp' | translate }}</p>
         <select [(ngModel)]="autoRefreshInterval" (change)="onAutoRefreshChange(autoRefreshInterval)">

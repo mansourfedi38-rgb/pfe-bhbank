@@ -55,6 +55,7 @@ export interface RecentAlert {
   temperature?: number;
   energy_usage?: number;
   energy_threshold?: number;
+  temperature_threshold?: number;
 }
 
 export interface DailyEnergyKpi {
@@ -304,13 +305,19 @@ export class ApiService {
     return this.http.get<SensorData[]>('/api/sensor-data/', { params });
   }
 
-  getRecentAlerts(month?: string, energyThreshold?: number): Observable<RecentAlert[]> {
+  getRecentAlerts(month?: string, energyThreshold?: number, temperatureThreshold?: number, agency?: number | null): Observable<RecentAlert[]> {
     let params = new HttpParams();
     if (month) {
       params = params.set('month', month);
     }
+    if (agency !== undefined && agency !== null) {
+      params = params.set('agency', agency);
+    }
     if (energyThreshold !== undefined) {
       params = params.set('energy_threshold', energyThreshold);
+    }
+    if (temperatureThreshold !== undefined) {
+      params = params.set('temperature_threshold', temperatureThreshold);
     }
     return this.http.get<RecentAlert[]>('/api/alerts/recent/', { params });
   }

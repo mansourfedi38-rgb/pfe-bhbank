@@ -262,10 +262,10 @@
           <div *ngIf="comparisonResult.insights.length > 0; else noInsights" class="insights-list">
             <div *ngFor="let insight of comparisonResult.insights" class="insight-card">
               <div class="insight-header">
-                <span class="insight-type">{{ insight.type | uppercase }}</span>
-                <span class="insight-factor">{{ insight.factor }}</span>
+                <span class="insight-type">{{ getInsightType(insight) }}</span>
+                <span class="insight-factor">{{ getInsightFactor(insight) }}</span>
               </div>
-              <p class="insight-text">{{ insight.text }}</p>
+              <p class="insight-text">{{ getInsightText(insight) }}</p>
             </div>
           </div>
           <ng-template #noInsights>

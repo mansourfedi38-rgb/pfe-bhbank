@@ -52,6 +52,30 @@ export class TemperatureUnitService {
     return `${converted.toFixed(fractionDigits)}${this.symbol}`;
   }
 
+  toDisplayValue(valueInCelsius: number | string): number {
+    const value = Number(valueInCelsius);
+
+    if (!Number.isFinite(value)) {
+      return 0;
+    }
+
+    return this.unit === 'fahrenheit'
+      ? (value * 9 / 5) + 32
+      : value;
+  }
+
+  fromDisplayValue(value: number | string): number {
+    const parsed = Number(value);
+
+    if (!Number.isFinite(parsed)) {
+      return 0;
+    }
+
+    return this.unit === 'fahrenheit'
+      ? (parsed - 32) * 5 / 9
+      : parsed;
+  }
+
   get symbol(): string {
     return this.unit === 'fahrenheit' ? '°F' : '°C';
   }

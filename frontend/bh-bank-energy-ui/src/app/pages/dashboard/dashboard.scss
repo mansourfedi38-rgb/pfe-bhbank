@@ -236,6 +236,13 @@
   padding: 16px 18px;
   margin-bottom: 22px;
   box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05);
+  flex-wrap: wrap;
+}
+
+.filter-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .filter-section label {
@@ -543,5 +550,16 @@
 
   .card p {
     font-size: 28px;
+  }
+
+  .filter-field {
+    width: 100%;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .filter-section select,
+  .refresh-btn {
+    width: 100%;
   }
 }

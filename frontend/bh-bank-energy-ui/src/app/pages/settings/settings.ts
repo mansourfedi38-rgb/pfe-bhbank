@@ -6,6 +6,7 @@ import { NavbarComponent } from '../../components/navbar/navbar';
 import { AutoRefreshInterval, AutoRefreshService } from '../../services/auto-refresh.service';
 import { EnergyAlertThresholdService } from '../../services/energy-alert-threshold.service';
 import { NotificationMode, NotificationPreferencesService, NotificationSoundMode } from '../../services/notification-preferences.service';
+import { TemperatureAlertThresholdService } from '../../services/temperature-alert-threshold.service';
 import { TemperatureUnit, TemperatureUnitService } from '../../services/temperature-unit.service';
 import { ThemeMode, ThemeService } from '../../services/theme.service';
 
@@ -25,6 +26,7 @@ export class SettingsComponent implements OnInit {
   theme: ThemeMode = 'default';
   temperatureUnit: TemperatureUnit = 'celsius';
   energyAlertThreshold = 4;
+  temperatureAlertThreshold = 30;
   autoRefreshInterval: AutoRefreshInterval = '30000';
 
   // App UI language
@@ -37,6 +39,7 @@ export class SettingsComponent implements OnInit {
     private autoRefresh: AutoRefreshService,
     private energyAlertThresholdService: EnergyAlertThresholdService,
     private notificationPreferences: NotificationPreferencesService,
+    private temperatureAlertThresholdService: TemperatureAlertThresholdService,
     private temperatureUnitService: TemperatureUnitService,
     private themeService: ThemeService
   ) {}
@@ -58,6 +61,9 @@ export class SettingsComponent implements OnInit {
     this.applyDirection(safeLang);
     this.temperatureUnit = this.temperatureUnitService.unit;
     this.energyAlertThreshold = this.energyAlertThresholdService.threshold;
+    this.temperatureAlertThreshold = this.temperatureUnitService.toDisplayValue(
+      this.temperatureAlertThresholdService.thresholdCelsius
+    );
     this.autoRefreshInterval = this.autoRefresh.interval;
     this.notificationsEnabled = this.notificationPreferences.notifications;
     this.notificationSound = this.notificationPreferences.sound;
@@ -86,11 +92,26 @@ export class SettingsComponent implements OnInit {
   onTemperatureUnitChange(unit: TemperatureUnit) {
     this.temperatureUnit = unit;
     this.temperatureUnitService.setUnit(unit);
+    this.temperatureAlertThreshold = this.temperatureUnitService.toDisplayValue(
+      this.temperatureAlertThresholdService.thresholdCelsius
+    );
   }
 
   onEnergyAlertThresholdChange(value: number | string) {
     this.energyAlertThresholdService.setThreshold(value);
     this.energyAlertThreshold = this.energyAlertThresholdService.threshold;
+  }
+
+  get temperatureSymbol(): string {
+    return this.temperatureUnitService.symbol;
+  }
+
+  onTemperatureAlertThresholdChange(value: number | string) {
+    const thresholdCelsius = this.temperatureUnitService.fromDisplayValue(value);
+    this.temperatureAlertThresholdService.setThresholdCelsius(thresholdCelsius);
+    this.temperatureAlertThreshold = this.temperatureUnitService.toDisplayValue(
+      this.temperatureAlertThresholdService.thresholdCelsius
+    );
   }
 
   onAutoRefreshChange(value: AutoRefreshInterval | string) {

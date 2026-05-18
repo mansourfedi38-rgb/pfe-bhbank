@@ -135,15 +135,32 @@
             <tbody>
               <tr *ngFor="let row of visibleRows">
                 <td>{{ getAgencyName(row.agency) }}</td>
-                <td>{{ formatTemperature(row.temperature) }}</td>
+                <td>
+                  <div class="temperature-cell">
+                    <span [class.temperature-alert-value]="isTemperatureAlert(row)">
+                      {{ formatTemperature(row.temperature) }}
+                    </span>
+                    <span *ngIf="isTemperatureAlert(row)" class="temperature-alert-detail">
+                      {{ formatTemperatureAlert(row) }}
+                    </span>
+                  </div>
+                </td>
                 <td>{{ row.clients_count }}</td>
                 <td>{{ formatEnergy(row.energy_usage) }}</td>
                 <td>
-                  <span class="ac-badge" [class]="acModeClass(row.ac_mode)">
-                    {{ row.ac_mode }}
-                  </span>
+                  <div class="ac-cell">
+                    <span class="ac-badge" [class]="acModeClass(row.ac_mode)">
+                      {{ row.ac_mode }}
+                    </span>
+                    <span class="ac-detail">{{ formatAcDetails(row) }}</span>
+                  </div>
                 </td>
-                <td>{{ formatTableTimestamp(row) }}</td>
+                <td>
+                  <div class="period-cell">
+                    <span>{{ formatTableTimestamp(row) }}</span>
+                    <span *ngIf="formatReadingCount(row)" class="period-detail">{{ formatReadingCount(row) }}</span>
+                  </div>
+                </td>
               </tr>
             </tbody>
           </table>
