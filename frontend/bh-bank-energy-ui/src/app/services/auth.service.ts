@@ -49,8 +49,17 @@ export class AuthService {
     );
   }
 
-  resetPassword(email: string, newPassword: string): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>('/api/auth/reset-password/', { email, new_password: newPassword });
+  requestPasswordResetCode(admin: string, email: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>('/api/auth/request-password-reset-code/', { admin, email });
+  }
+
+  resetPassword(admin: string, email: string, code: string, newPassword: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>('/api/auth/reset-password/', {
+      admin,
+      email,
+      code,
+      new_password: newPassword
+    });
   }
 
   logout(): void {

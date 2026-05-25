@@ -44,8 +44,16 @@
     "subtitle": "استعد الوصول الآمن إلى حساب إدارة الطاقة الخاص ببنك BH.",
     "heading": "نسيت كلمة المرور",
     "instruction": "أدخل بياناتك أدناه لإعادة تعيين كلمة المرور.",
+    "stepIdentity": "التحقق",
+    "stepReset": "كلمة مرور جديدة",
+    "adminLabel": "المسؤول",
     "emailLabel": "البريد الإلكتروني",
     "emailPlaceholder": "أدخل بريدك الإلكتروني",
+    "sendCode": "إرسال الرمز",
+    "sendingCode": "جارٍ إرسال الرمز...",
+    "codeSent": "تم إرسال رمز التحقق إلى البريد الإلكتروني.",
+    "codeLabel": "رمز التحقق",
+    "codePlaceholder": "أدخل الرمز المكون من 6 أرقام",
     "newPasswordLabel": "كلمة المرور الجديدة",
     "newPasswordPlaceholder": "أدخل كلمة المرور الجديدة",
     "confirmPasswordLabel": "تأكيد كلمة المرور",
@@ -59,6 +67,9 @@
     "success": "تم إعادة تعيين كلمة المرور بنجاح.",
     "error": {
       "allFieldsRequired": "يرجى ملء جميع الحقول.",
+      "adminEmailMismatch": "المسؤول المحدد لا يطابق هذا البريد الإلكتروني.",
+      "codeSendFailed": "تعذر إرسال رمز التحقق.",
+      "invalidCode": "رمز التحقق غير صالح أو منتهي الصلاحية.",
       "invalidCaptcha": "إجابة الكابتشا غير صحيحة. حاول مرة أخرى.",
       "passwordTooShort": "يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.",
       "passwordsDoNotMatch": "كلمتا المرور غير متطابقتين.",
@@ -542,6 +553,27 @@
       "loading": "جارٍ تحميل الوكالات...",
       "loaded": "تم تحميل {{count}} وكالة.",
       "failed": "فشل تحميل الوكالات."
+    }
+  },
+  "energyAssistant": {
+    "title": "Energy Assistant",
+    "close": "Close Energy Assistant",
+    "welcome": "Hello, I am the Energy Assistant. Ask me about the platform, modules, navigation, agencies, sensor data, reports, AI detection, KPIs, alerts, comparisons, or recommendations.",
+    "month": "Month",
+    "agency": "Agency",
+    "autoMonth": "Auto",
+    "allAgencies": "All agencies",
+    "placeholder": "Ask about energy monitoring...",
+    "send": "Send",
+    "loading": "Assistant is checking energy data...",
+    "error": "The assistant could not answer right now. Please try again.",
+    "suggestions": {
+      "platform": "Explain the platform",
+      "modules": "List modules",
+      "aiDetector": "Explain AI detector",
+      "compare": "Compare agencies",
+      "alerts": "Show alerts",
+      "recommendations": "Give recommendations"
     }
   },
   "footer": {

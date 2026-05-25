@@ -256,11 +256,33 @@ export interface ChatbotRequest {
   message: string;
   month?: string;
   agency_id?: number | null;
+  language?: 'en' | 'fr' | 'ar';
 }
 
 export interface ChatbotResponse {
   reply: string;
-  intent: 'greeting' | 'energy_kpi' | 'alerts' | 'compare_agencies' | 'recommendations' | 'monthly_summary' | 'explain_dashboard' | 'fallback';
+  intent:
+    | 'greeting'
+    | 'platform_overview'
+    | 'modules'
+    | 'navigation'
+    | 'agency_network'
+    | 'data_model'
+    | 'ai_detector'
+    | 'reports'
+    | 'settings'
+    | 'security'
+    | 'api'
+    | 'energy_kpi'
+    | 'alerts'
+    | 'compare_agencies'
+    | 'recommendations'
+    | 'monthly_summary'
+    | 'explain_dashboard'
+    | 'fallback';
+  month?: string;
+  agency_id?: number | null;
+  agency_name?: string | null;
   suggestions: string[];
 }
 

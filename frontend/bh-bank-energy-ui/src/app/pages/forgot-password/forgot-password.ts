@@ -6,6 +6,9 @@ import { NgIf } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 
+type ResetAdmin = 'hedi' | 'fedi';
+type ResetStep = 'identity' | 'reset';
+
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
@@ -14,10 +17,13 @@ import { AuthService } from '../../services/auth.service';
   styleUrl: './forgot-password.scss'
 })
 export class ForgotPasswordComponent implements OnInit {
+  selectedAdmin: ResetAdmin = 'hedi';
   email = '';
+  verificationCode = '';
   newPassword = '';
   confirmPassword = '';
   captchaAnswer = '';
+  currentStep: ResetStep = 'identity';
 
   captchaNum1 = 0;
   captchaNum2 = 0;
@@ -37,6 +43,16 @@ export class ForgotPasswordComponent implements OnInit {
     this.generateCaptcha();
   }
 
+  onAdminChange(): void {
+    this.email = '';
+    this.verificationCode = '';
+    this.newPassword = '';
+    this.confirmPassword = '';
+    this.errorMessage = '';
+    this.successMessage = '';
+    this.currentStep = 'identity';
+  }
+
   generateCaptcha(): void {
     this.captchaNum1 = Math.floor(Math.random() * 9) + 1;
     this.captchaNum2 = Math.floor(Math.random() * 9) + 1;
@@ -44,19 +60,58 @@ export class ForgotPasswordComponent implements OnInit {
     this.captchaAnswer = '';
   }
 
-  onSubmit(): void {
+  sendVerificationCode(): void {
     this.errorMessage = '';
     this.successMessage = '';
 
-    if (!this.email || !this.newPassword || !this.confirmPassword || !this.captchaAnswer) {
+    if (!this.email || !this.captchaAnswer) {
       this.errorMessage = this.translate.instant('forgotPassword.error.allFieldsRequired');
       return;
     }
 
-    const captchaValue = parseInt(this.captchaAnswer, 10);
-    if (isNaN(captchaValue) || captchaValue !== this.correctCaptcha) {
-      this.errorMessage = this.translate.instant('forgotPassword.error.invalidCaptcha');
-      this.generateCaptcha();
+    if (!this.isSelectedAdminEmailValid()) {
+      this.errorMessage = this.translate.instant('forgotPassword.error.adminEmailMismatch');
+      return;
+    }
+
+    if (!this.isCaptchaValid()) {
+      return;
+    }
+
+    this.isLoading = true;
+
+    this.auth.requestPasswordResetCode(this.selectedAdmin, this.email).subscribe({
+      next: () => {
+        this.isLoading = false;
+        this.currentStep = 'reset';
+        this.successMessage = this.translate.instant('forgotPassword.codeSent');
+        this.generateCaptcha();
+      },
+      error: (err: HttpErrorResponse) => {
+        this.isLoading = false;
+        const msg = err?.error?.error || this.translate.instant('forgotPassword.error.codeSendFailed');
+        this.errorMessage = msg;
+        this.generateCaptcha();
+      }
+    });
+  }
+
+  onSubmit(): void {
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    if (!this.email || !this.verificationCode || !this.newPassword || !this.confirmPassword) {
+      this.errorMessage = this.translate.instant('forgotPassword.error.allFieldsRequired');
+      return;
+    }
+
+    if (!this.isSelectedAdminEmailValid()) {
+      this.errorMessage = this.translate.instant('forgotPassword.error.adminEmailMismatch');
+      return;
+    }
+
+    if (!/^\d{6}$/.test(this.verificationCode.trim())) {
+      this.errorMessage = this.translate.instant('forgotPassword.error.invalidCode');
       return;
     }
 
@@ -72,14 +127,16 @@ export class ForgotPasswordComponent implements OnInit {
 
     this.isLoading = true;
 
-    this.auth.resetPassword(this.email, this.newPassword).subscribe({
+    this.auth.resetPassword(this.selectedAdmin, this.email, this.verificationCode, this.newPassword).subscribe({
       next: () => {
         this.isLoading = false;
         this.successMessage = this.translate.instant('forgotPassword.success');
         this.email = '';
+        this.verificationCode = '';
         this.newPassword = '';
         this.confirmPassword = '';
         this.captchaAnswer = '';
+        this.currentStep = 'identity';
         this.generateCaptcha();
       },
       error: (err: HttpErrorResponse) => {
@@ -88,5 +145,24 @@ export class ForgotPasswordComponent implements OnInit {
         this.errorMessage = msg;
       }
     });
+  }
+
+  private isCaptchaValid(): boolean {
+    const captchaValue = parseInt(this.captchaAnswer, 10);
+    if (isNaN(captchaValue) || captchaValue !== this.correctCaptcha) {
+      this.errorMessage = this.translate.instant('forgotPassword.error.invalidCaptcha');
+      this.generateCaptcha();
+      return false;
+    }
+
+    return true;
+  }
+
+  private isSelectedAdminEmailValid(): boolean {
+    const adminEmails: Record<ResetAdmin, string> = {
+      hedi: 'medhedibousnina01@gmail.com',
+      fedi: 'mansourfedi38@gmail.com'
+    };
+    return this.email.trim().toLowerCase() === adminEmails[this.selectedAdmin];
   }
 }

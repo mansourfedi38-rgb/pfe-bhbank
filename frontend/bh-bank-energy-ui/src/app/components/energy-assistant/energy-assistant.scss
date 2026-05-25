@@ -24,7 +24,7 @@
   right: 0;
   bottom: 72px;
   width: min(360px, calc(100vw - 32px));
-  max-height: min(640px, calc(100vh - 110px));
+  height: min(640px, calc(100vh - 110px));
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -101,10 +101,11 @@
 }
 
 .messages-panel {
-  min-height: 220px;
-  max-height: 310px;
+  flex: 1 1 auto;
+  min-height: 0;
   padding: 14px 12px;
   overflow-y: auto;
+  overflow-x: hidden;
   background: #ffffff;
 }
 
@@ -153,24 +154,34 @@
 
 .suggestion-list {
   display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
   gap: 7px;
-  padding: 0 12px 10px;
-  overflow-x: auto;
+  max-height: 86px;
+  padding: 10px 12px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-top: 1px solid #eef1f5;
+  background: #ffffff;
 }
 
 .suggestion-list button {
-  flex: 0 0 auto;
+  flex: 1 1 calc(50% - 7px);
+  min-width: 0;
   border: 1px solid rgba(227, 6, 19, 0.24);
-  border-radius: 999px;
+  border-radius: 8px;
   background: #fff5f6;
   color: #b30510;
   padding: 7px 10px;
   font-size: 0.78rem;
   font-weight: 700;
+  line-height: 1.2;
+  white-space: normal;
   cursor: pointer;
 }
 
 .assistant-input {
+  flex: 0 0 auto;
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 8px;

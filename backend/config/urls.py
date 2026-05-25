@@ -19,12 +19,13 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenRefreshView
-from monitoring.views import EmailTokenObtainPairView, reset_password
+from monitoring.views import EmailTokenObtainPairView, request_password_reset_code, reset_password
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/auth/login/', EmailTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/auth/request-password-reset-code/', request_password_reset_code, name='request_password_reset_code'),
     path('api/auth/reset-password/', reset_password, name='reset_password'),
     path('api/', include('monitoring.urls')),
 ]

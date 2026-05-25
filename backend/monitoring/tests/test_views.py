@@ -385,6 +385,47 @@ class ChatbotTests(BaseAPITestCase):
         self.assertEqual(response.data["intent"], "greeting")
         self.assertIn("Energy Assistant", response.data["reply"])
 
+    def test_french_language_response(self):
+        response = self.client.post(
+            "/api/chatbot/",
+            {"message": "Explain the platform", "month": "2026-04", "language": "fr"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["intent"], "platform_overview")
+        self.assertIn("plateforme", response.data["reply"].lower())
+        self.assertIn("Expliquer la plateforme", response.data["suggestions"])
+
+    def test_arabic_language_response(self):
+        response = self.client.post(
+            "/api/chatbot/",
+            {"message": "Explain the platform", "month": "2026-04", "language": "ar"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["intent"], "platform_overview")
+        self.assertIn("منصة", response.data["reply"])
+        self.assertIn("اشرح المنصة", response.data["suggestions"])
+
+    def test_platform_overview_intent(self):
+        response = self.post_chatbot("Explain the platform")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["intent"], "platform_overview")
+        self.assertIn("BH Bank energy monitoring", response.data["reply"])
+
+    def test_modules_intent(self):
+        response = self.post_chatbot("List modules")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["intent"], "modules")
+        self.assertIn("Dashboard", response.data["reply"])
+        self.assertIn("/ai-detector", response.data["reply"])
+
+    def test_ai_detector_intent(self):
+        response = self.post_chatbot("Explain AI detector")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["intent"], "ai_detector")
+        self.assertIn("occupancy", response.data["reply"])
+
     def test_kpi_intent(self):
         self.create_april_reading()
         response = self.post_chatbot("Show energy KPI")
@@ -398,6 +439,42 @@ class ChatbotTests(BaseAPITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["intent"], "alerts")
         self.assertIn("alert", response.data["reply"].lower())
+
+    def test_message_context_overrides_filter_context(self):
+        SensorData.objects.create(
+            agency=self.agency1,
+            temperature="31.50",
+            clients_count=12,
+            energy_usage="4.500",
+            ac_mode=ACMode.ON,
+            timestamp=datetime(2025, 7, 7, 10, 0, tzinfo=dt_timezone.utc),
+        )
+
+        response = self.post_chatbot("i want the alerts in 2025 for bh bank nabeul")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["intent"], "alerts")
+        self.assertEqual(response.data["month"], "2025-07")
+        self.assertEqual(response.data["agency_id"], self.agency1.id)
+        self.assertIn("2025-07", response.data["reply"])
+
+    def test_message_context_accepts_explicit_month(self):
+        SensorData.objects.create(
+            agency=self.agency2,
+            temperature="24.00",
+            clients_count=8,
+            energy_usage="1.500",
+            ac_mode=ACMode.ECO,
+            timestamp=datetime(2025, 4, 12, 10, 0, tzinfo=dt_timezone.utc),
+        )
+
+        response = self.post_chatbot("show energy kpi for mrezga 2025-04")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["intent"], "energy_kpi")
+        self.assertEqual(response.data["month"], "2025-04")
+        self.assertEqual(response.data["agency_id"], self.agency2.id)
+        self.assertIn("BH Bank Mrezga", response.data["reply"])
 
     def test_recommendations_intent(self):
         self.create_april_reading()
