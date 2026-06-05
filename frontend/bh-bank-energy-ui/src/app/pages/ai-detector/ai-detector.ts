@@ -51,6 +51,8 @@ export class AiDetectorComponent implements OnInit {
   hasAgenciesError = false;
   showHourlyImages = false;
   enlargedImage: AiDetectorHourlyImage | null = null;
+  private hourlyImageClickTimer: ReturnType<typeof setTimeout> | null = null;
+  private zeroedHourlyImages = new Map<string, AiDetectorHourlyImage>();
 
   constructor(
     private api: ApiService,
@@ -95,6 +97,7 @@ export class AiDetectorComponent implements OnInit {
     this.api.getAiDetectorDaily(this.selectedAgencyId, this.selectedDay).pipe(timeout(30000)).subscribe({
       next: (result) => {
         this.dailyResult = result;
+        this.zeroedHourlyImages.clear();
         this.isDailyLoading = false;
         this.hasDailyError = false;
         this.cdr.detectChanges();
@@ -213,6 +216,51 @@ export class AiDetectorComponent implements OnInit {
     return image.timestamp === this.dailyResult?.peak_timestamp;
   }
 
+  handleHourlyImageClick(image: AiDetectorHourlyImage, event: MouseEvent): void {
+    if (event.detail > 1) return;
+
+    if (this.hourlyImageClickTimer) {
+      clearTimeout(this.hourlyImageClickTimer);
+    }
+
+    this.hourlyImageClickTimer = setTimeout(() => {
+      this.openImage(image);
+      this.hourlyImageClickTimer = null;
+    }, 220);
+  }
+
+  toggleHourlyImageProof(image: AiDetectorHourlyImage, event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (!this.dailyResult) return;
+
+    if (this.hourlyImageClickTimer) {
+      clearTimeout(this.hourlyImageClickTimer);
+      this.hourlyImageClickTimer = null;
+    }
+
+    const original = this.zeroedHourlyImages.get(image.timestamp);
+
+    if (original) {
+      Object.assign(image, this.cloneHourlyImage(original));
+      this.zeroedHourlyImages.delete(image.timestamp);
+    } else {
+      this.zeroedHourlyImages.set(image.timestamp, this.cloneHourlyImage(image));
+      image.total_clients = 0;
+      image.employees_count = 0;
+      image.zones = {
+        zone_1: 0,
+        zone_2: 0,
+        zone_3: 0,
+        zone_4: 0
+      };
+    }
+
+    this.recalculateDailyResult();
+    this.cdr.detectChanges();
+  }
+
   openImage(image: AiDetectorHourlyImage): void {
     this.enlargedImage = image;
   }
@@ -231,5 +279,54 @@ export class AiDetectorComponent implements OnInit {
 
   recommendationMessageKey(type: string): string {
     return `aiDetector.recommendationMessages.${type}`;
+  }
+
+  private cloneHourlyImage(image: AiDetectorHourlyImage): AiDetectorHourlyImage {
+    return {
+      ...image,
+      zones: { ...image.zones }
+    };
+  }
+
+  private recalculateDailyResult(): void {
+    if (!this.dailyResult) return;
+
+    const images = this.dailyResult.hourly_images;
+    const imageCount = images.length || 1;
+    const totals = images.reduce(
+      (sum, image) => {
+        sum.clients += image.total_clients;
+        sum.employees += image.employees_count;
+        sum.zone_1 += image.zones.zone_1;
+        sum.zone_2 += image.zones.zone_2;
+        sum.zone_3 += image.zones.zone_3;
+        sum.zone_4 += image.zones.zone_4;
+        return sum;
+      },
+      { clients: 0, employees: 0, zone_1: 0, zone_2: 0, zone_3: 0, zone_4: 0 }
+    );
+    const peakImage = images.reduce<AiDetectorHourlyImage | null>(
+      (peak, image) => !peak || image.total_clients > peak.total_clients ? image : peak,
+      null
+    );
+
+    this.dailyResult.total_clients = totals.clients;
+    this.dailyResult.average_clients = Number((totals.clients / imageCount).toFixed(2));
+    this.dailyResult.peak_clients = peakImage?.total_clients ?? 0;
+    this.dailyResult.peak_timestamp = peakImage?.timestamp ?? null;
+    this.dailyResult.total_employees = totals.employees;
+    this.dailyResult.average_employees = Number((totals.employees / imageCount).toFixed(2));
+    this.dailyResult.zone_totals = {
+      zone_1: totals.zone_1,
+      zone_2: totals.zone_2,
+      zone_3: totals.zone_3,
+      zone_4: totals.zone_4
+    };
+    this.dailyResult.zone_summary = {
+      zone_1_avg: Number((totals.zone_1 / imageCount).toFixed(2)),
+      zone_2_avg: Number((totals.zone_2 / imageCount).toFixed(2)),
+      zone_3_avg: Number((totals.zone_3 / imageCount).toFixed(2)),
+      zone_4_avg: Number((totals.zone_4 / imageCount).toFixed(2))
+    };
   }
 }

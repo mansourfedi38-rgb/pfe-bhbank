@@ -164,7 +164,8 @@
               *ngFor="let image of dailyResult.hourly_images"
               class="hourly-image-card"
               [class.peak-hour-card]="isPeakHour(image)"
-              (click)="openImage(image)">
+              (click)="handleHourlyImageClick(image, $event)"
+              (dblclick)="toggleHourlyImageProof(image, $event)">
               <div *ngIf="isPeakHour(image)" class="peak-ribbon">{{ 'aiDetector.busiestBadge' | translate }}</div>
               <img [src]="image.image_url" [attr.alt]="'aiDetector.alt.hourlyImage' | translate" loading="lazy" />
               <div class="hourly-card-body">
